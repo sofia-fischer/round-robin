@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Laravel\Fortify\Fortify;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -58,4 +62,49 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /*
+    |-------------------------------------------------------------------------------------
+    | Capabilities
+    |-------------------------------------------------------------------------------------
+    */
+
+    public static function login($email, $password)
+    {
+        Fortify::authenticateUsing(function ($request) use ($email, $password) {
+            $user = User::where('email', $email)->first();
+
+            if ($user && Hash::check($password, $user->password)) {
+                return $user;
+            }
+        });
+
+        return Auth::user();
+    }
+
+    public function register($name, $email, $password)
+    {
+        $input = [
+            'name'     => $name,
+            'email'    => $email,
+            'password' => Hash::make($password),
+        ];
+
+        Validator::make($input, [
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class),
+            ],
+            'password' => $this->passwordRules(),
+        ])->validate();
+
+        $user = User::create($input);
+        Auth::loginUsingId($user->id);
+
+        return Auth::user();
+    }
 }
