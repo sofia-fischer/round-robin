@@ -31,6 +31,7 @@ class Player extends Model
         'user_id',
         'name',
         'counter',
+        'color',
         'created_at',
         'updated_at',
         'deleted_at',

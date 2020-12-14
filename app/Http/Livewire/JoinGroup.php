@@ -21,18 +21,32 @@ class JoinGroup extends Component
 
     public ?string $password = null;
 
-    public ?string $errorMessage = null;
-
     private $names = [
-        'Marine',
-        'Cyan',
-        'Emerald',
-        'Ivory',
-        'Citron',
-        'Fuchsia',
-        'Ruby',
-        'Indigo',
-        'Sterling',
+        'Alpha',
+        'Beta',
+        'Gamma',
+        'Delta',
+        'Epsilon',
+        'Digamma',
+        'Zeta',
+        'Eta',
+        'Theta',
+        'Iota',
+        'Kappa',
+        'Lambda',
+        'Mu',
+        'Nu',
+        'Xi',
+        'Omicron',
+        'Pi',
+        'Rho',
+        'Sigma',
+        'Tau',
+        'Upsilon',
+        'Phi',
+        'Chi',
+        'Psi',
+        'Omega',
     ];
 
     public function render()
@@ -53,23 +67,23 @@ class JoinGroup extends Component
             return $this->redirect('/group/' . $group->uuid);
         }
 
-        if (Auth::id()) {
-            $user = Auth::user();
-        }
-
-        if ($this->tab == 'login') {
-            $user = User::login($this->email, $this->password);
-        }
-
-        if ($this->tab == 'register') {
-            $user = User::register($this->name, $this->email, $this->password);
+        switch ($this->tab) {
+            case 'login':
+                $user = User::login($this->email, $this->password);
+                break;
+            case 'register':
+                $user = User::registerNew($this->name, $this->email, $this->password);
+                break;
+            default:
+                $user = User::anonymLogin($this->name ?? collect($this->names)->random());
+                break;
         }
 
         Player::create([
             'uuid'     => Str::uuid(),
-            'user_id'  => $user->id ?? null,
+            'user_id'  => $user->id,
             'group_id' => $group->id,
-            'name'     => $user->id ?? $this->name ?? collect($this->names)->random(),
+            'name'     => $user->name,
             'counter'  => 0,
         ]);
 
