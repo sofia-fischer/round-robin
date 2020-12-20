@@ -3,13 +3,15 @@
         <div class="bg-gray-600 p-4 text-white">
             In the Room
         </div>
-        <div wire:poll.3000ms>
+        <div>
             @foreach($group->player as $player)
                 <div class="p-4 bg-{{ $player->color ?? 'white' }}-100 flex justify-between">
                     {{ $player->name }}
 
                     @if($group->host_user_id == Auth::id() && $player->id != Auth::id())
-                        <button wire:click="kickPlayer({{$player->id}})" wire:loading.attr="disabled">❌</button>
+                        <button wire:click="kickPlayer({{$player->id}})" wire:loading.attr="disabled" class="text-md">
+                            ❌
+                        </button>
                     @endif
                 </div>
             @endforeach
@@ -23,13 +25,15 @@
         <div class="p-4">
             <div class="flex my-8 mx-4">
                 <label class="self-center mr-4">Name</label>
-                <input wire:model.defer='playerName' class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500 "
+                <input wire:model.defer='playerName'
+                       class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500 "
                        wire:keydown.enter="updatePlayerName">
             </div>
 
             <div class="flex my-8 mx-4">
                 <label for='color' class="self-center mr-4">Color</label>
-                <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500" wire:change="updateColor"
+                <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500"
+                        wire:change="updateColor"
                         wire:model="color">
                     <option value="orange">Orange</option>
                     <option value="red">Red</option>
@@ -52,7 +56,8 @@
             <div class="p-4 flex flex-col content-center">
                 <div class="flex my-8 mx-4">
                     <label for='color' class="self-center mr-4">Game</label>
-                    <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500" wire:change="updateGame"
+                    <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500"
+                            wire:change="updateGame"
                             wire:model="game">
                         <option value="1">Wavelength</option>
                     </select>
@@ -64,4 +69,37 @@
             </div>
         </div>
     @endif
+
+{{--    <script>--}}
+{{--        (function () {--}}
+{{--            document.addEventListener('livewire:load', () => {--}}
+{{--                console.log('alive')--}}
+{{--                // console.log(Echo.connector.channel('lol'))--}}
+
+{{--                --}}{{--var pusher = new Pusher(this.app.key, {--}}
+{{--                --}}{{--    wsHost: this.app.host === null ? window.location.hostname : this.app.host,--}}
+{{--                --}}{{--    wsPort: this.port === null ? 6001 : this.port,--}}
+{{--                --}}{{--    wssPort: this.port === null ? 6001 : this.port,--}}
+{{--                --}}{{--    wsPath: this.app.path === null ? '' : this.app.path,--}}
+{{--                --}}{{--    disableStats: true,--}}
+{{--                --}}{{--    authEndpoint: '{{ url(request()->path().'/auth') }}',--}}
+{{--                --}}{{--    auth: {--}}
+{{--                --}}{{--        headers: {--}}
+{{--                --}}{{--            'X-CSRF-Token': "{{ csrf_token() }}",--}}
+{{--                --}}{{--            'X-App-ID': this.app.id--}}
+{{--                --}}{{--        }--}}
+{{--                --}}{{--    },--}}
+{{--                --}}{{--    enabledTransports: ['ws', 'flash']--}}
+{{--                --}}{{--});--}}
+
+{{--                Pusher.subscribe('lol')--}}
+{{--                    .bind('App\\Queue\\Events\\PlayerUpdated', (data) => {--}}
+{{--                        console.log('looooool')--}}
+{{--                    });--}}
+{{--                // Echo.channel('lol')--}}
+{{--                //     .notification(event => console.log(event))--}}
+{{--                //     .on('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))--}}
+{{--            });--}}
+{{--        }());--}}
+{{--    </script>--}}
 </div>

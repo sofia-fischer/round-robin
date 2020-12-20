@@ -5,6 +5,8 @@ namespace App\Http\Livewire;
 use App\Models\Game;
 use App\Models\Group;
 use App\Models\Player;
+use App\Queue\Events\PlayerCreated;
+use App\Queue\Events\PlayerUpdated;
 use Livewire\Component;
 
 class GroupRoom extends Component
@@ -14,6 +16,19 @@ class GroupRoom extends Component
     public $color = null;
 
     public $playerName = null;
+
+    /**
+     * @return array
+     */
+    public function getListeners() : array
+    {
+        $channel = 'lol';
+
+        return [
+            'echo:' . $channel . ',' . PlayerCreated::class => '$refresh',
+            'echo:' . $channel . ',' . PlayerUpdated::class => '$refresh',
+        ];
+    }
 
     public function render()
     {
@@ -31,17 +46,20 @@ class GroupRoom extends Component
     {
         $this->group->authenticatedPlayer->color = $this->color;
         $this->group->authenticatedPlayer->save();
+        event(new PlayerUpdated($this->group->authenticatedPlayer->id));
     }
 
     public function updatePlayerName()
     {
         $this->group->authenticatedPlayer->name = $this->playerName;
         $this->group->authenticatedPlayer->save();
+        event(new PlayerUpdated($this->group->authenticatedPlayer->id));
     }
 
     public function kickPlayer($playerId)
     {
         Player::find($playerId)->delete();
+        event(new PlayerUpdated($playerId));
     }
 
     public function startGame()

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Group;
 use App\Models\Player;
 use App\Models\User;
+use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -79,13 +80,15 @@ class JoinGroup extends Component
                 break;
         }
 
-        Player::create([
+        $player = Player::create([
             'uuid'     => Str::uuid(),
             'user_id'  => $user->id,
             'group_id' => $group->id,
             'name'     => $user->name,
             'counter'  => 0,
         ]);
+
+        event(new PlayerCreated($player->id));
 
         return $this->redirect('/group/' . $group->uuid);
     }

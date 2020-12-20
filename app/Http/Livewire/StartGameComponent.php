@@ -2,10 +2,10 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Game;
 use App\Models\GameLogic;
 use App\Models\Group;
 use App\Models\Player;
+use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -34,12 +34,13 @@ class StartGameComponent extends Component
 
         // create Game
         $player = Player::create([
-            'uuid'       => Str::uuid(),
-            'user_id'    => Auth::id(),
-            'name'       => Auth::user()->name,
-            'counter'    => 0,
-            'group_id'=> $group->id,
+            'uuid'     => Str::uuid(),
+            'user_id'  => Auth::id(),
+            'name'     => Auth::user()->name,
+            'counter'  => 0,
+            'group_id' => $group->id,
         ]);
+        event(new PlayerCreated($player->id));
 
         $this->redirect('/group/' . $group->uuid);
     }
