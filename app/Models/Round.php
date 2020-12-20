@@ -8,36 +8,34 @@ use Illuminate\Support\Facades\Auth;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
- * Class Game
+ * Class Round
  *
  * Fillables
  *
  * @property  int id
  * @property  string uuid
- * @property  int game_logic_id
- * @property  int group_id
- * @property  Carbon started_at
- * @property  Carbon ended_at
+ * @property  int game_id
+ * @property  int active_player_id
+ * @property  array payload
+ * @property  Carbon completed_at
  * @property  Carbon created_at
  * @property  Carbon updated_at
  * @property  Carbon deleted_at
  *
  * Relationships
  *
- * @property \Illuminate\Support\Collection rounds
- * @property Round currentRound
- * @property \Illuminate\Support\Collection players
- * @property GameLogic logic
- * @property Player authenticatedPlayer
+ * @property Game game
+ * @property Player activePlayer
+ * @property Player authenticatedPlayerMove
+ * @property \Illuminate\Support\Collection moves
  *
  * Attributes
  *
- * @property Player currentPlayer
- * @property Player nextPlayer
+ * @property bool authenticatedPlayerIsActive
  *
  * @package app/Database/Models
  */
-class Game extends Model
+class Round extends Model
 {
     /*
     |--------------------------------------------------------------------------
@@ -53,10 +51,10 @@ class Game extends Model
     protected $fillable = [
         'id',
         'uuid',
-        'game_logic_id',
-        'group_id',
-        'started_at',
-        'ended_at',
+        'game_id',
+        'active_player_id',
+        'payload',
+        'completed_at',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -68,6 +66,7 @@ class Game extends Model
      * @var array
      */
     protected $casts = [
+        'payload' => 'array',
     ];
 
     /**
@@ -86,29 +85,24 @@ class Game extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function rounds()
+    public function game()
     {
-        return $this->hasMany(Round::class);
+        return $this->belongsTo(Game::class, 'game_id');
     }
 
-    public function currentRound()
+    public function activePlayer()
     {
-        return $this->hasOne(Round::class)->latest();
+        return $this->belongsTo(Player::class, 'active_player_id');
     }
 
-    public function players()
+    public function authenticatedPlayerMove()
     {
-        return $this->hasMany(Player::class, 'group_id', 'group_id');
+        return $this->hasOne(Move::class)->where('user_id', Auth::id());
     }
 
-    public function authenticatedPlayer()
+    public function moves()
     {
-        return $this->hasOne(Player::class, 'group_id', 'group_id')->where('user_id', Auth::id());
-    }
-
-    public function logic()
-    {
-        return $this->belongsTo(GameLogic::class, 'game_logic_id');
+        return $this->hasMany(Move::class);
     }
 
     /*
@@ -117,14 +111,9 @@ class Game extends Model
     |--------------------------------------------------------------------------
     */
 
-    protected function getCurrentPlayerAttribute()
+    protected function getAuthenticatedPlayerIsActiveAttribute()
     {
-        return $this->players()->latest()->skip(($this->rounds()->count() % $this->players()->count()) - 1)->first();
-    }
-
-    protected function getNextPlayerAttribute()
-    {
-        return $this->players()->latest()->skip((($this->rounds()->count() + 1) % $this->players()->count()) - 1)->first();
+        return $this->activePlayer->user_id == Auth::id();
     }
 
     /*
@@ -139,27 +128,4 @@ class Game extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function startGame()
-    {
-        $className = $this->logic->policy;
-        $logic = app($className);
-
-        return $logic->startGame($this);
-    }
-
-    public function roundAction(array $options = null)
-    {
-        $className = $this->logic->policy;
-        $logic = app($className);
-
-        return $logic->roundAction($this->currentRound, $options);
-    }
-
-    public function nextRound()
-    {
-        $className = $this->logic->policy;
-        $logic = app($className);
-
-        return $logic->nextRound($this->currentRound);
-    }
 }

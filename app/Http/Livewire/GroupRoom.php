@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Player;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\PlayerUpdated;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class GroupRoom extends Component
@@ -64,10 +65,16 @@ class GroupRoom extends Component
 
     public function startGame()
     {
-        Game::create([
+        /** @var Game $game */
+        $game = Game::create([
+            'uuid'          => Str::uuid(),
             'game_logic_id' => 1,
             'group_id'      => $this->group->id,
             'started_at'    => now(),
         ]);
+
+        $game->startGame();
+
+        $this->redirect('\game\\' . $game->uuid);
     }
 }

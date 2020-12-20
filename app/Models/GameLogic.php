@@ -27,9 +27,7 @@ class GameLogic extends Model
         'id',
         'uuid',
         'name',
-        'start_logic',
-        'round_logic',
-        'win_logic',
+        'policy',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -53,51 +51,4 @@ class GameLogic extends Model
         return 'uuid';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Attributes
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Capabilities
-    |--------------------------------------------------------------------------
-    */
-
-    public function startGame()
-    {
-        $className = $this->start_logic;
-        $calculator = app($className);
-
-        return $calculator->handle();
-    }
-
-    public function checkForWin()
-    {
-        $className = $this->round_logic;
-        $calculator = app($className);
-
-        return $calculator->handle();
-    }
-
-    public function endRound()
-    {
-        $className = $this->win_logic;
-        $calculator = app($className);
-
-        return $calculator->handle();
-    }
 }

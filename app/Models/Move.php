@@ -7,24 +7,32 @@ use Illuminate\Support\Carbon;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
- * Class Player
+ * Class Move
  *
  * Fillables
  *
  * @property  int id
  * @property  string uuid
- * @property  int group_id
+ * @property  int round_id
+ * @property  int player_id
  * @property  int user_id
- * @property  string name
- * @property  int counter
- * @property  string color
+ * @property  array payload
  * @property  Carbon created_at
  * @property  Carbon updated_at
  * @property  Carbon deleted_at
-
+ *
+ * Relationships
+ *
+ * @property Round round
+ * @property Player player
+ *
+ * Attributes
+ *
+ * @property bool authenticatedPlayerIsActive
+ *
  * @package app/Database/Models
  */
-class Player extends Model
+class Move extends Model
 {
     /*
     |--------------------------------------------------------------------------
@@ -40,12 +48,10 @@ class Player extends Model
     protected $fillable = [
         'id',
         'uuid',
-        'agent',
-        'group_id',
+        'round_id',
+        'player_id',
         'user_id',
-        'name',
-        'counter',
-        'color',
+        'payload',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -57,6 +63,7 @@ class Player extends Model
      * @var array
      */
     protected $casts = [
+        'payload' => 'array',
     ];
 
     /**
@@ -75,9 +82,14 @@ class Player extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function group()
+    public function round()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Game::class, 'round_id');
+    }
+
+    public function player()
+    {
+        return $this->belongsTo(Player::class, 'player_id');
     }
 
     /*
