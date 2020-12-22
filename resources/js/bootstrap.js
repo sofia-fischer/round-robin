@@ -24,11 +24,11 @@ console.log('init echo started')
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
-    wsHost: window.location.hostname,
-    cluster: process.env.PUSHER_APP_CLUSTER,
-    forceTLS: false,
-    enabledTransports: ['ws', 'wss']
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    forceTLS: true
 });
 
 console.log(window.Echo.connector)
 
+window.Echo.channel('lol')
+    .listen('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))

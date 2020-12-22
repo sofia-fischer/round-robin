@@ -119,12 +119,18 @@ class Game extends Model
 
     protected function getCurrentPlayerAttribute()
     {
-        return $this->players()->latest()->skip(($this->rounds()->count() % $this->players()->count()) - 1)->first();
+        return $this->players()
+            ->latest()
+            ->skip($this->rounds()->count() % $this->players()->count())
+            ->first();
     }
 
     protected function getNextPlayerAttribute()
     {
-        return $this->players()->latest()->skip((($this->rounds()->count() + 1) % $this->players()->count()) - 1)->first();
+        return $this->players()
+            ->latest()
+            ->skip(($this->rounds()->count() + 1) % $this->players()->count())
+            ->first();
     }
 
     /*

@@ -27,11 +27,11 @@ class PlayerUpdated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        $player = Player::find($this->player_id);
-
-        if (!$player) {
-            return;
-        }
+//        $player = Player::find($this->player_id);
+//
+//        if (!$player) {
+//            return;
+//        }
 
         return new Channel('lol');
     }

@@ -26,8 +26,8 @@ class GroupRoom extends Component
         $channel = 'lol';
 
         return [
-            'echo:' . $channel . ',' . PlayerCreated::class => '$refresh',
-            'echo:' . $channel . ',' . PlayerUpdated::class => '$refresh',
+            'echo:' . $channel . ',.' . PlayerCreated::class => '$refresh',
+            'echo:' . $channel . ',.' . PlayerUpdated::class => '$refresh',
         ];
     }
 

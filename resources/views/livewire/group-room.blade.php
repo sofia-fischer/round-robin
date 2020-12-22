@@ -71,36 +71,15 @@
         </div>
     @endif
 
-    {{--    <script>--}}
-    {{--        (function () {--}}
-    {{--            document.addEventListener('livewire:load', () => {--}}
-    {{--                console.log('alive')--}}
-    {{--                // console.log(Echo.connector.channel('lol'))--}}
+        <script>
+            (function () {
+                document.addEventListener('livewire:load', () => {
+                    console.log('alive')
 
-    {{--                --}}{{--var pusher = new Pusher(this.app.key, {--}}
-    {{--                --}}{{--    wsHost: this.app.host === null ? window.location.hostname : this.app.host,--}}
-    {{--                --}}{{--    wsPort: this.port === null ? 6001 : this.port,--}}
-    {{--                --}}{{--    wssPort: this.port === null ? 6001 : this.port,--}}
-    {{--                --}}{{--    wsPath: this.app.path === null ? '' : this.app.path,--}}
-    {{--                --}}{{--    disableStats: true,--}}
-    {{--                --}}{{--    authEndpoint: '{{ url(request()->path().'/auth') }}',--}}
-    {{--                --}}{{--    auth: {--}}
-    {{--                --}}{{--        headers: {--}}
-    {{--                --}}{{--            'X-CSRF-Token': "{{ csrf_token() }}",--}}
-    {{--                --}}{{--            'X-App-ID': this.app.id--}}
-    {{--                --}}{{--        }--}}
-    {{--                --}}{{--    },--}}
-    {{--                --}}{{--    enabledTransports: ['ws', 'flash']--}}
-    {{--                --}}{{--});--}}
-
-    {{--                Pusher.subscribe('lol')--}}
-    {{--                    .bind('App\\Queue\\Events\\PlayerUpdated', (data) => {--}}
-    {{--                        console.log('looooool')--}}
-    {{--                    });--}}
-    {{--                // Echo.channel('lol')--}}
-    {{--                //     .notification(event => console.log(event))--}}
-    {{--                //     .on('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))--}}
-    {{--            });--}}
-    {{--        }());--}}
-    {{--    </script>--}}
+                    Echo.channel('lol')
+                        .notification(event => console.log(event))
+                        .on('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))
+                });
+            }());
+        </script>
 </div>

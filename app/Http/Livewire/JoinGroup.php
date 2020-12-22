@@ -68,16 +68,20 @@ class JoinGroup extends Component
             return $this->redirect('/group/' . $group->uuid);
         }
 
-        switch ($this->tab) {
-            case 'login':
-                $user = User::login($this->email, $this->password);
-                break;
-            case 'register':
-                $user = User::registerNew($this->name, $this->email, $this->password);
-                break;
-            default:
-                $user = User::anonymLogin($this->name ?? collect($this->names)->random());
-                break;
+        $user = Auth::user();
+
+        if (!$user) {
+            switch ($this->tab) {
+                case 'login':
+                    $user = User::login($this->email, $this->password);
+                    break;
+                case 'register':
+                    $user = User::registerNew($this->name, $this->email, $this->password);
+                    break;
+                default:
+                    $user = User::anonymLogin($this->name ?? collect($this->names)->random());
+                    break;
+            }
         }
 
         $player = Player::create([
