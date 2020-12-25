@@ -3,11 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Models\Game;
+use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameRoundAction;
 use Livewire\Component;
 
 class WaveLengthComponent extends Component
 {
-    public int $gameId;
+    public Game $game;
 
     public int $value = 50;
 
@@ -15,26 +17,31 @@ class WaveLengthComponent extends Component
 
     public function render()
     {
-        /** @var Game $game */
-        $game = Game::find($this->gameId);
+        return view('livewire.WaveLengthComponent');
+    }
 
-        return view('livewire.WaveLengthComponent', [
-            'round' => $game->currentRound,
-        ]);
+    /**
+     * @return array
+     */
+    public function getListeners() : array
+    {
+        $channel = 'Group.' . $this->game->uuid;
+
+        return [
+            'echo:' . $channel . ',.' . GameEnded::class       => '$refresh',
+            'echo:' . $channel . ',.' . GameRoundAction::class => '$refresh',
+            'refreshPage'                                      => '$refresh',
+        ];
     }
 
     public function giveClue()
     {
-        /** @var Game $game */
-        $game = Game::find($this->gameId);
-        $game->roundAction(['clue' => $this->clue]);
+        $this->game->roundAction(['clue' => $this->clue]);
     }
 
     public function setGuess()
     {
-        /** @var Game $game */
-        $game = Game::find($this->gameId);
-        $game->roundAction(['guess' => $this->value]);
+        $this->game->roundAction(['guess' => $this->value]);
     }
 
     public function nextRound()
@@ -42,8 +49,6 @@ class WaveLengthComponent extends Component
         $this->value = 50;
         $this->clue = null;
 
-        /** @var Game $game */
-        $game = Game::find($this->gameId);
-        $game->nextRound();
+        $this->game->nextRound();
     }
 }

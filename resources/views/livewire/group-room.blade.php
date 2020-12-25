@@ -1,28 +1,54 @@
-<div class="flex flex-wrap justify-evenly">
-    <div class="border-2 rounded-md border-gray-600 flex-grow m-4">
-        <div class="bg-gray-600 p-4 text-white">
-            In the Room
+<?php
+/* @var App\Models\Group $group */
+?>
+
+<div class="max-w-7xl mt-4 mx-auto sm:px-6 lg:px-8 flex flex-wrap content-center justify-between">
+
+    {{--  Player in the Room  --}}
+    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+        <div class="p-4 bg-gray-700">
+            <h2 class="text-white text-lg font-semibold mb-4 text-center">
+                Player in the room
+            </h2>
         </div>
         <div>
-            @foreach($group->player as $player)
-                <div class="p-4 bg-{{ $player->color ?? 'white' }}-100 flex justify-between">
-                    {{ $player->name }}
+            @foreach($group->players as $player)
+                <div class="bg-{{ $player->color ?? 'white' }}-100 flex justify-between">
+                    <div class="p-4">
+                        {{ $player->name }}
+                    </div>
 
                     @if($group->host_user_id == Auth::id() && $player->id != Auth::id())
-                        <button wire:click="kickPlayer({{$player->id}})" wire:loading.attr="disabled" class="text-md">
-                            ❌
-                        </button>
+                        <div wire:click="kickPlayer({{$player->id}})" wire:loading.attr="disabled"
+                             class="text-md text-gray-500  pr-2">
+                            x
+                        </div>
                     @endif
                 </div>
             @endforeach
         </div>
     </div>
 
-    <div class="border-2 rounded-md border-gray-600 flex-grow m-4">
-        <div class="bg-gray-600 p-4 text-white">
-            Player Settings
+    {{--  Auth Settings  --}}
+    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+        <div class="p-4 bg-gray-700">
+            <h2 class="text-white text-lg font-semibold mb-4 text-center">
+                Settings
+            </h2>
         </div>
+
+        {{--  Game Settings  --}}
         <div class="p-4">
+            @if($gameId || $group->host_user_id == Auth::id())
+                <div class="flex mb-8 mx-4">
+                    <button
+                        class="bg-pink-500 text-white rounded-full px-4 py-2 w-64 mx-auto"
+                        wire:click="joinGame">
+                        {{ $gameId ? 'Join ' : ' Start ' }}
+                    </button>
+                </div>
+            @endif
+
             <div class="flex my-8 mx-4">
                 <label class="self-center mr-4">Name</label>
                 <input wire:model.defer='playerName'
@@ -48,38 +74,40 @@
         </div>
     </div>
 
-    @if($group->host_user_id == Auth::id())
-        <div class="border-2 rounded-md border-gray-600 flex-grow m-4">
-            <div class="bg-gray-600 p-4 text-white">
-                Game Settings
-            </div>
-            <div class="p-4 flex flex-col content-center">
-                <div class="flex my-8 mx-4">
-                    <label for='color' class="self-center mr-4">Game</label>
-                    <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500"
-                            wire:change="updateGame"
-                            wire:model="game">
-                        <option value="1">Wavelength</option>
-                    </select>
-                </div>
-
-                <button class="bg-{{ $group->authenticatedPlayer->color }}-500 text-white rounded-full px-4 py-2"
-                        wire:click="startGame">
-                    Start
-                </button>
-            </div>
+    {{--  Games  --}}
+    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+        <div class="p-4 bg-gray-700">
+            <h2 class="text-white text-lg font-semibold mb-4 text-center">
+                Join a game
+            </h2>
         </div>
-    @endif
 
-        <script>
-            (function () {
-                document.addEventListener('livewire:load', () => {
-                    console.log('alive')
+        <div class="flex flex-col content-center">
+            @foreach($group->games as $game)
+                <button class="p-4 font-semibold w-full
+                        {{ $game->id == $gameId ? 'bg-gray-200 text-pink-500' : 'hover:bg-gray-100 text-gray-500 ' }}"
+                        wire:click="$set('gameId', {{ $game->id }})">
+                    {{ $game->logic->name }}
+                    <label class="text-gray-500">
+                        (Round {{ $game->rounds()->count() }})
+                    </label>
+                </button>
+            @endforeach
+        </div>
 
-                    Echo.channel('lol')
-                        .notification(event => console.log(event))
-                        .on('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))
-                });
-            }());
-        </script>
+        <div class="p-4 bg-gray-700">
+            <h2 class="text-white text-lg font-semibold mb-4 text-center">
+                Start a new Game
+            </h2>
+        </div>
+
+        <div class="flex flex-col content-center">
+            @foreach(\App\Models\GameLogic::all() as $gameLogic)
+                <button class="p-4 hover:bg-pink-100 text-gray-500 font-semibold"
+                        wire:click="startNewGame({{ $gameLogic->id }})">
+                    {{ $gameLogic->name }}
+                </button>
+            @endforeach
+        </div>
+    </div>
 </div>

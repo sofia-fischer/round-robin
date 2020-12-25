@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
@@ -32,7 +31,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @package app/Database/Models
  */
-class Move extends Model
+class Move extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -65,16 +64,6 @@ class Move extends Model
     protected $casts = [
         'payload' => 'array',
     ];
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
 
     /*
     |--------------------------------------------------------------------------

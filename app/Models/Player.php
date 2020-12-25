@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
@@ -21,10 +20,9 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property  Carbon created_at
  * @property  Carbon updated_at
  * @property  Carbon deleted_at
-
  * @package app/Database/Models
  */
-class Player extends Model
+class Player extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -58,16 +56,6 @@ class Player extends Model
      */
     protected $casts = [
     ];
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
 
     /*
     |--------------------------------------------------------------------------

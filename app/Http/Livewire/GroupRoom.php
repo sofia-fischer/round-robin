@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Player;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\PlayerUpdated;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -14,20 +15,23 @@ class GroupRoom extends Component
 {
     public Group $group;
 
-    public $color = null;
+    public ?string $color = null;
 
-    public $playerName = null;
+    public ?string $playerName = null;
+
+    public ?int $gameId = null;
 
     /**
      * @return array
      */
     public function getListeners() : array
     {
-        $channel = 'lol';
+        $channel = 'Group.' . $this->group->uuid;
 
         return [
             'echo:' . $channel . ',.' . PlayerCreated::class => '$refresh',
             'echo:' . $channel . ',.' . PlayerUpdated::class => '$refresh',
+            'refreshPage'                                    => '$refresh',
         ];
     }
 
@@ -63,17 +67,36 @@ class GroupRoom extends Component
         event(new PlayerUpdated($playerId));
     }
 
-    public function startGame()
+    public function startNewGame($logicId)
     {
         /** @var Game $game */
         $game = Game::create([
             'uuid'          => Str::uuid(),
-            'game_logic_id' => 1,
+            'game_logic_id' => $logicId,
             'group_id'      => $this->group->id,
-            'started_at'    => now(),
         ]);
 
-        $game->startGame();
+        $this->gameId = $game->id;
+
+        $this->emit('refreshPage');
+    }
+
+    public function joinGame()
+    {
+        /** @var Game $game */
+        $game = Game::findOrFail($this->gameId);
+
+        if ($game->started_at) {
+            $this->redirect('\game\\' . $game->uuid);
+
+            return;
+        }
+
+        if ($this->group->host_user_id != Auth::id()) {
+            return;
+        }
+
+        $game->start();
 
         $this->redirect('\game\\' . $game->uuid);
     }

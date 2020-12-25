@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameRoundAction;
+use App\Queue\Events\GameStarted;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
@@ -37,7 +39,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @package app/Database/Models
  */
-class Game extends Model
+class Game extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -69,16 +71,6 @@ class Game extends Model
      */
     protected $casts = [
     ];
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -145,12 +137,14 @@ class Game extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function startGame()
+    public function start()
     {
         $className = $this->logic->policy;
         $logic = app($className);
 
-        return $logic->startGame($this);
+
+        $logic->startGame($this);
+        event(new GameStarted($this->id));
     }
 
     public function roundAction(array $options = null)
@@ -158,7 +152,9 @@ class Game extends Model
         $className = $this->logic->policy;
         $logic = app($className);
 
-        return $logic->roundAction($this->currentRound, $options);
+
+        $logic->roundAction($this->currentRound, $options);
+        event(new GameRoundAction($this->id));
     }
 
     public function nextRound()
@@ -166,6 +162,8 @@ class Game extends Model
         $className = $this->logic->policy;
         $logic = app($className);
 
-        return $logic->nextRound($this->currentRound);
+
+        $logic->nextRound($this->currentRound);
+        event(new GameEnded($this->id));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
@@ -35,7 +34,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @package app/Database/Models
  */
-class Round extends Model
+class Round extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -68,16 +67,6 @@ class Round extends Model
     protected $casts = [
         'payload' => 'array',
     ];
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
 
     /*
     |--------------------------------------------------------------------------

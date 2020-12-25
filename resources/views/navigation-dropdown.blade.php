@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 bg-gray-700">
+<nav x-data="{ open: false }" class="bg-white bg-gray-800">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -11,7 +11,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 text-orange-500 sm:-my-px sm:ml-10 sm:flex pt-4 text-lg">
+                <div class="hidden space-x-8 text-pink-400 sm:-my-px sm:ml-10 sm:flex pt-4 text-lg">
                     <a href="{{ route('dashboard') }}">
                         {{ __('Round Robin') }}
                     </a>
@@ -23,7 +23,7 @@
                 <div>
                     <x-jet-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="p-4 text-orange-500">
+                            <button class="p-4 text-pink-400">
                                 {{ Auth::user()->name }}
                             </button>
                         </x-slot>

@@ -2,17 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Jenssegers\Agent\Facades\Agent;
 
 /**
  * Class Group
  *
+ * Fillables
+ *
+ * @property  int id
+ * @property  string uuid
+ * @property  int host_user_id
+ * @property  string token
+ * @property  Carbon created_at
+ * @property  Carbon updated_at
+ * @property  Carbon deleted_at
+ *
+ * Relationships
+ * @property host
+ * @property players
+ * @property authenticatedPlayer
+ * @property games
+ *
  * @package App\Database\Models
  */
-class Group extends Model
+class Group extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -43,16 +58,6 @@ class Group extends Model
     protected $casts = [
     ];
 
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -64,7 +69,7 @@ class Group extends Model
         return $this->belongsTo(User::class, 'host_user_id');
     }
 
-    public function player()
+    public function players()
     {
         return $this->hasMany(Player::class);
     }
@@ -79,13 +84,6 @@ class Group extends Model
     public function games()
     {
         return $this->hasMany(Game::class);
-    }
-
-    public function currentGame()
-    {
-        return $this->hasOne(Game::class)
-            ->whereNull('ended_at')
-            ->latest();
     }
 
     /*

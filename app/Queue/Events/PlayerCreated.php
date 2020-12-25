@@ -2,7 +2,7 @@
 
 namespace App\Queue\Events;
 
-use App\Models\Player;
+use App\Models\Group;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -27,12 +27,12 @@ class PlayerCreated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        $player = Player::find($this->player_id);
+        $round = Group::query()
+            ->whereHas('players', function ($players) {
+                $players->where('id', $this->player_id);
+            })
+            ->firstOrFail();
 
-        if (!$player) {
-            return;
-        }
-
-        return new Channel('lol');
+        return new Channel('Group.' . $round->uuid);
     }
 }

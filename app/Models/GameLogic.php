@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
@@ -10,7 +9,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @package app/Database/Models
  */
-class GameLogic extends Model
+class GameLogic extends BaseModel
 {
     /*
     |--------------------------------------------------------------------------
@@ -40,15 +39,5 @@ class GameLogic extends Model
      */
     protected $casts = [
     ];
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
-    }
 
 }

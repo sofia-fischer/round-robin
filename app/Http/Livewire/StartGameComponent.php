@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\GameLogic;
 use App\Models\Group;
 use App\Models\Player;
 use App\Queue\Events\PlayerCreated;
@@ -14,18 +13,11 @@ class StartGameComponent extends Component
 {
     public function render()
     {
-        return view('livewire.start-game-component', [
-            'games' => GameLogic::all(),
-        ]);
+        return view('livewire.start-game-component');
     }
 
-    public function startGame($gameId)
+    public function newGroup()
     {
-        $logic = GameLogic::findOrFail($gameId);
-
-        // clear all old groups of the host
-        Group::where('host_user_id', Auth::id())->delete();
-
         // create a new Group
         $group = Group::create([
             'uuid'         => Str::uuid(),

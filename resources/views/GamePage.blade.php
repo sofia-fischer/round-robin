@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
                 @if(!$game->logic_id == 1)
-                    <livewire:wave-length-component :gameId="$game->id"></livewire:wave-length-component>
+                    <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
                 @endif
             </div>
         </div>
