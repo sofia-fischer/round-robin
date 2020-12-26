@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Models\Game;
 use App\Models\Group;
-use App\Models\Player;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\PlayerUpdated;
 use Illuminate\Support\Facades\Auth;
@@ -59,12 +58,6 @@ class GroupRoom extends Component
         $this->group->authenticatedPlayer->name = $this->playerName;
         $this->group->authenticatedPlayer->save();
         event(new PlayerUpdated($this->group->authenticatedPlayer->id));
-    }
-
-    public function kickPlayer($playerId)
-    {
-        Player::find($playerId)->delete();
-        event(new PlayerUpdated($playerId));
     }
 
     public function startNewGame($logicId)

@@ -15,6 +15,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property  int round_id
  * @property  int player_id
  * @property  int user_id
+ * @property  int score
  * @property  array payload
  * @property  Carbon created_at
  * @property  Carbon updated_at
@@ -50,6 +51,7 @@ class Move extends BaseModel
         'round_id',
         'player_id',
         'user_id',
+        'score',
         'payload',
         'created_at',
         'updated_at',
@@ -73,7 +75,7 @@ class Move extends BaseModel
 
     public function round()
     {
-        return $this->belongsTo(Game::class, 'round_id');
+        return $this->belongsTo(Round::class, 'round_id');
     }
 
     public function player()

@@ -6,8 +6,6 @@ class WelcomePage
 {
     public function __invoke()
     {
-        return view('WelcomePage', [
-            'tabs'      => 'lol',
-        ]);
+        return view('WelcomePage');
     }
 }

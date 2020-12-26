@@ -13,16 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-   return redirect('/welcome');
-});
-
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/', \App\View\Pages\WelcomePage::class);
 
 Route::get('/welcome', \App\View\Pages\WelcomePage::class);
 
-Route::get('/group/{group}', \App\View\Pages\GroupRoomPage::class);
+Route::get('/group/{group}', \App\View\Pages\GroupRoomPage::class)->middleware(['auth:sanctum']);
 
-Route::get('/game/{game}', \App\View\Pages\GamePage::class);
+Route::get('/game/{game}', \App\View\Pages\GamePage::class)->middleware(['auth:sanctum']);

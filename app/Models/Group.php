@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -20,10 +21,10 @@ use Illuminate\Support\Str;
  * @property  Carbon deleted_at
  *
  * Relationships
- * @property host
- * @property players
- * @property authenticatedPlayer
- * @property games
+ * @property Player host
+ * @property Collection players
+ * @property Player authenticatedPlayer
+ * @property Collection games
  *
  * @package App\Database\Models
  */

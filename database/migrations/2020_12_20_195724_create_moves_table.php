@@ -19,6 +19,7 @@ class CreateMovesTable extends Migration
             $table->unsignedInteger('round_id')->nullable();
             $table->unsignedInteger('player_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
+            $table->integer('score')->nullable();
             $table->json('payload')->nullable();
             $table->timestamps();
             $table->softDeletes();

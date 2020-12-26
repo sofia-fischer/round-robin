@@ -25,7 +25,7 @@ class WaveLengthComponent extends Component
      */
     public function getListeners() : array
     {
-        $channel = 'Group.' . $this->game->uuid;
+        $channel = 'Game.' . $this->game->uuid;
 
         return [
             'echo:' . $channel . ',.' . GameEnded::class       => '$refresh',

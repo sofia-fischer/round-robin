@@ -27,8 +27,3 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: true
 });
-
-console.log(window.Echo.connector)
-
-window.Echo.channel('lol')
-    .listen('App\\Queue\\Events\\PlayerUpdated', event => console.log(event))

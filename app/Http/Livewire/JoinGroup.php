@@ -89,7 +89,6 @@ class JoinGroup extends Component
             'user_id'  => $user->id,
             'group_id' => $group->id,
             'name'     => $user->name,
-            'counter'  => 0,
         ]);
 
         event(new PlayerCreated($player->id));

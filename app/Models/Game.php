@@ -31,6 +31,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property \Illuminate\Support\Collection players
  * @property GameLogic logic
  * @property Player authenticatedPlayer
+ * @property Group group
  *
  * Attributes
  *
@@ -103,6 +104,11 @@ class Game extends BaseModel
         return $this->belongsTo(GameLogic::class, 'game_logic_id');
     }
 
+    public function group()
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Attributes
@@ -144,6 +150,8 @@ class Game extends BaseModel
 
 
         $logic->startGame($this);
+        $this->started_at = now();
+        $this->save();
         event(new GameStarted($this->id));
     }
 

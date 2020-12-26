@@ -20,11 +20,13 @@
 </head>
 <body class="font-sans antialiased">
 <div class="min-h-screen bg-gray-900">
-    @livewire('navigation-dropdown')
 
     <!-- Page Heading -->
-    <header></header>
+    <header>
+        <livewire:top-bar-component></livewire:top-bar-component>
+    </header>
     <!-- Page Content -->
+
     <main>
         {{ $slot }}
     </main>

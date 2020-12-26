@@ -27,12 +27,12 @@ class PlayerCreated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        $round = Group::query()
+        $group = Group::query()
             ->whereHas('players', function ($players) {
                 $players->where('id', $this->player_id);
             })
             ->firstOrFail();
 
-        return new Channel('Group.' . $round->uuid);
+        return new Channel('Group.' . $group->uuid);
     }
 }

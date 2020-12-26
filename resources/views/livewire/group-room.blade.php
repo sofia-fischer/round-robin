@@ -4,33 +4,21 @@
 
 <div class="max-w-7xl mt-4 mx-auto sm:px-6 lg:px-8 flex flex-wrap content-center justify-between">
 
-    {{--  Player in the Room  --}}
-    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+    {{--  Token  --}}
+    <div class="bg-white shadow-xl m-1 w-full">
         <div class="p-4 bg-gray-700">
             <h2 class="text-white text-lg font-semibold mb-4 text-center">
-                Player in the room
+                Group Token: <label class="text-pink-500">{{ $group->token }}</label>
             </h2>
-        </div>
-        <div>
-            @foreach($group->players as $player)
-                <div class="bg-{{ $player->color ?? 'white' }}-100 flex justify-between">
-                    <div class="p-4">
-                        {{ $player->name }}
-                    </div>
-
-                    @if($group->host_user_id == Auth::id() && $player->id != Auth::id())
-                        <div wire:click="kickPlayer({{$player->id}})" wire:loading.attr="disabled"
-                             class="text-md text-gray-500  pr-2">
-                            x
-                        </div>
-                    @endif
-                </div>
-            @endforeach
         </div>
     </div>
 
+    <div class="w-full">
+        <livewire:player-overview-component :group="$group"></livewire:player-overview-component>
+    </div>
+
     {{--  Auth Settings  --}}
-    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+    <div class="bg-white shadow-xl m-1 flex-grow">
         <div class="p-4 bg-gray-700">
             <h2 class="text-white text-lg font-semibold mb-4 text-center">
                 Settings
@@ -75,7 +63,7 @@
     </div>
 
     {{--  Games  --}}
-    <div class="bg-white overflow-hidden shadow-xl m-1 flex-grow">
+    <div class="bg-white shadow-xl m-1 flex-grow">
         <div class="p-4 bg-gray-700">
             <h2 class="text-white text-lg font-semibold mb-4 text-center">
                 Join a game

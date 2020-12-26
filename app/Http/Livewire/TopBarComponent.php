@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
-class StartGameComponent extends Component
+class TopBarComponent extends Component
 {
     public function render()
     {
-        return view('livewire.start-game-component');
+        return view('livewire.TopBarComponent');
     }
 
     public function newGroup()
@@ -29,7 +29,6 @@ class StartGameComponent extends Component
             'uuid'     => Str::uuid(),
             'user_id'  => Auth::id(),
             'name'     => Auth::user()->name,
-            'counter'  => 0,
             'group_id' => $group->id,
         ]);
         event(new PlayerCreated($player->id));

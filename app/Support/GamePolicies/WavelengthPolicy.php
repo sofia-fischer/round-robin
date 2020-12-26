@@ -75,6 +75,7 @@ class WavelengthPolicy
             }
 
             $move->player->counter += $reward;
+            $move->score = $reward;
             $move->player->save();
         });
 
