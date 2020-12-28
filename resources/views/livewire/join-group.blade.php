@@ -1,29 +1,32 @@
-<div class="w-full max-w-2xl mx-auto">
-    <div class="flex my-8 mx-4 w-full max-w-lg mx-auto">
-        <label class="self-center mr-4">Game Token:</label>
-        <input wire:model.defer='token' class=" border-b-2 border-pink-500 flex-grow">
+<div class="shadow-xl max-w-2xl mx-auto bg-white">
+    {{--  Token  --}}
+    <div class="p-4 bg-gray-700">
+        <h2 class="text-white text-lg font-semibold mb-4 text-center flex justify-center">
+            <label class="self-center mr-4">Group Token:</label>
+            <input wire:model.defer='token' class="border-b-2 border-pink-500 bg-gray-700 ">
+        </h2>
     </div>
 
     @if(!Auth::id())
         <div class="flex text-center">
             <div
-                class="p-2 flex-grow hover:bg-pink-200 bg-pink-{{ $tab == 'join' ? '300 text-pink-600 font-semibold' : '100 text-pink-400' }}"
+                class="p-2 flex-grow {{ $tab == 'join' ? 'bg-pink-200 text-pink-500 font-semibold' : 'hover:bg-pink-200 text-pink-400 ' }}"
                 wire:click="$set('tab', 'join')">
                 Just Play
             </div>
             <div
-                class="p-2 flex-grow hover:bg-pink-200 bg-pink-{{ $tab == 'login' ? '300 text-pink-600 font-semibold' : '100 text-pink-400' }}"
+                class="p-2 flex-grow {{ $tab == 'login' ? 'bg-pink-200 text-pink-500 font-semibold' : 'hover:bg-pink-200 text-pink-400 ' }}"
                 wire:click="$set('tab', 'login')">
                 Login
             </div>
             <div
-                class="p-2 flex-grow hover:bg-pink-200 bg-pink-{{ $tab == 'register' ? '300 text-pink-600 font-semibold' : '100 text-pink-400' }}"
+                class="p-2 flex-grow {{ $tab == 'register' ? 'bg-pink-200 text-pink-500 font-semibold' : 'hover:bg-pink-200 text-pink-400 ' }}"
                 wire:click="$set('tab', 'register')">
                 Register
             </div>
         </div>
 
-        <div class="w-full max-w-lg mx-auto">
+        <div class="w-full max-w-lg mx-auto bg-white">
             @if($tab == 'register')
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Name</label>
@@ -57,8 +60,9 @@
 
     <div class="flex content-center">
         <button wire:click="joinGame"
-                class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-pink-{{ $token && (Auth::id() || $name || ($email && $password)) ? '500' : '200' }}">
-            Play
+                {{ (Auth::id() && $token) || ($name && $token) || ($email && $password) ? '' : 'disabled'}}
+                class="mx-auto text-white rounded-full m-4 px-4 py-1 {{ (Auth::id() && $token) || ($name && $token) || ($email && $password) ? 'bg-pink-500' : 'bg-red-100'}}">
+            Join the Game
         </button>
     </div>
 </div>

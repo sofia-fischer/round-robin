@@ -78,9 +78,7 @@ class User extends Authenticatable
     {
         $input = [
             'name'     => $name,
-            'email'    => Str::uuid(),
             'password' => Hash::make(Str::uuid()),
-            'agent'    => true,
         ];
 
         $user = User::create($input);
@@ -111,7 +109,10 @@ class User extends Authenticatable
 
         $user = User::create($input);
         Auth::login($user, true);
+        $user = Auth::user();
+        $user->email_verified_at = now();
+        $user->save();
 
-        return Auth::user();
+        return $user;
     }
 }

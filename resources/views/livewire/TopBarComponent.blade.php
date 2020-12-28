@@ -76,7 +76,7 @@
                         New Round
                     </button>
 
-                    @foreach(\App\Models\Group::where('host_user_id', Auth::id())->get() as $group)
+                    @foreach(\App\Models\Group::whereHas('players', function ($playerQuery){ $playerQuery->where('user_id', Auth::id());})->get() as $group)
                         <a href="{{ url('/group/' . $group->uuid) }}">
                             <button
                                 class="rounded-full w-16 h-16 bg-opacity-25 mx-4 hover:bg-opacity-100  bg-{{$possibleColors[random_int(0,7)]}}-400 ">

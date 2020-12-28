@@ -59,7 +59,7 @@ class JoinGroup extends Component
     {
         $group = Group::where('token', $this->token)->firstOrFail();
 
-        $existingPlayer = $group->player()
+        $existingPlayer = $group->players()
             ->whereNotNull('user_id')
             ->where('user_id', Auth::id())
             ->first();

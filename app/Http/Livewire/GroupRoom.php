@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Game;
 use App\Models\Group;
+use App\Models\User;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\PlayerUpdated;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,10 @@ class GroupRoom extends Component
     {
         /** @var Game $game */
         $game = Game::findOrFail($this->gameId);
+
+        // clean up database
+        User::whereNull('email')->where('created_at', '<', now()->subWeek())->delete();
+        Group::where('created_at', '<', now()->subWeek())->delete();
 
         if ($game->started_at) {
             $this->redirect('\game\\' . $game->uuid);
