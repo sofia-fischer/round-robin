@@ -49,6 +49,6 @@ class WaveLengthComponent extends Component
         $this->value = 50;
         $this->clue = null;
 
-        $this->game->nextRound();
+        $this->game->endRound();
     }
 }

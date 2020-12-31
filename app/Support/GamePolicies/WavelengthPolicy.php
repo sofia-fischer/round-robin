@@ -8,7 +8,7 @@ use App\Models\Round;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class WavelengthPolicy
+class WavelengthPolicy extends Policy
 {
     public function startGame(Game $game)
     {
@@ -83,7 +83,7 @@ class WavelengthPolicy
         $round->save();
     }
 
-    public function nextRound(Round $round)
+    public function endRound(Round $round)
     {
         Round::create([
             'uuid'             => Str::uuid(),

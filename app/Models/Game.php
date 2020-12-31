@@ -165,13 +165,13 @@ class Game extends BaseModel
         event(new GameRoundAction($this->id));
     }
 
-    public function nextRound()
+    public function endRound()
     {
         $className = $this->logic->policy;
         $logic = app($className);
 
 
-        $logic->nextRound($this->currentRound);
+        $logic->endRound($this->currentRound);
         event(new GameEnded($this->id));
     }
 }
