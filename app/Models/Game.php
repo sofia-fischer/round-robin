@@ -155,11 +155,18 @@ class Game extends BaseModel
         event(new GameStarted($this->id));
     }
 
-    public function roundAction(array $options = null)
+    public function join(Player $player)
     {
         $className = $this->logic->policy;
         $logic = app($className);
 
+        $logic->playerJoined($player, $this);
+    }
+
+    public function roundAction(array $options = null)
+    {
+        $className = $this->logic->policy;
+        $logic = app($className);
 
         $logic->roundAction($this->currentRound, $options);
         event(new GameRoundAction($this->id));

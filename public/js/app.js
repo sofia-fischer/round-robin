@@ -31686,8 +31686,8 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/sofia/dev/private/roundrobin/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/sofia/dev/private/roundrobin/resources/css/app.css */"./resources/css/app.css");
+__webpack_require__(/*! /Users/chrystal/dev/private/round-robin/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/chrystal/dev/private/round-robin/resources/css/app.css */"./resources/css/app.css");
 
 
 /***/ })

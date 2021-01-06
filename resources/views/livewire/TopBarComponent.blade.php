@@ -1,60 +1,5 @@
 <nav x-data="{ open: false }" class="bg-white bg-gray-800">
     <!-- Primary Navigation Menu -->
-    <div class="flex text-white flex-grow abolute w-screen left-0 overflow-hidden z-10 ">
-
-        <?php
-        $possibleSize = [0, 2, 4, 8, 10, 12, 16, 20, 24, 32];
-        $possibleColors = ['orange', 'red', 'yellow', 'green', 'blue', 'purple', 'pink', 'gray'];
-        ?>
-
-        <div class="absolute overflow-hidden flex  h-16">
-            @foreach(array_fill(0, 5, null) as $bubble)
-                <div
-                    class="relative bg-{{$possibleColors[random_int(0,7)]}}-400 rounded-full w-16 h-16 bg-opacity-25
-                        ml-{{ array_rand($possibleSize) * 4 }}
-                        mr-{{ array_rand($possibleSize) * 4 }}
-                    {{ !!random_int(0,1) ? 'top' : 'bottom' }}-{{ array_rand($possibleSize) }}
-                        right-{{ array_rand($possibleSize) }}
-                        "></div>
-            @endforeach
-        </div>
-
-        <div class="absolute overflow-hidden flex  h-16">
-            @foreach(array_fill(0, 5, null) as $bubble)
-                <div
-                    class="relative bg-{{$possibleColors[random_int(0,7)]}}-400 rounded-full w-12 h-12 bg-opacity-25
-                        ml-{{ array_rand($possibleSize) * 4 }}
-                        mr-{{ array_rand($possibleSize) * 4 }}
-                    {{ !!random_int(0,1) ? 'top' : 'bottom' }}-{{ array_rand($possibleSize) }}
-                        right-{{ array_rand($possibleSize) }}
-                        "></div>
-            @endforeach
-        </div>
-
-        <div class="absolute overflow-hidden flex  h-16">
-            @foreach(array_fill(0, 5, null) as $bubble)
-                <div
-                    class="relative bg-{{$possibleColors[random_int(0,7)]}}-400 rounded-full w-8 h-8 bg-opacity-25
-                        ml-{{ array_rand($possibleSize) * 4 }}
-                        mr-{{ array_rand($possibleSize) * 4 }}
-                    {{ !!random_int(0,1) ? 'top' : 'bottom' }}-{{ array_rand($possibleSize) }}
-                        right-{{ array_rand($possibleSize) }}
-                        "></div>
-            @endforeach
-        </div>
-
-        <div class="absolute overflow-hidden flex  h-16">
-            @foreach(array_fill(0, 5, null) as $bubble)
-                <div
-                    class="relative bg-{{$possibleColors[random_int(0,7)]}}-400 rounded-full w-4 h-4 bg-opacity-25
-                        ml-{{ array_rand($possibleSize) * 4 }}
-                        mr-{{ array_rand($possibleSize) * 4 }}
-                    {{ !!random_int(0,1) ? 'top' : 'bottom' }}-{{ array_rand($possibleSize) }}
-                        right-{{ array_rand($possibleSize) }}
-                        "></div>
-            @endforeach
-        </div>
-    </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div class="flex justify-between h-16">
@@ -70,20 +15,19 @@
         @if(Auth::id())
 
             <!-- Group Selection -->
-                <div class="text-white text-xs z-20 overflow-hidden">
-                    <button class="bg-green-400 rounded-full w-16 h-16 bg-opacity-25 hover:bg-opacity-100 mx-4 p-2"
-                            wire:click="newGroup">
-                        New Round
-                    </button>
-
+                <div class="text-white text-xs z-20 overflow-hidden pt-4">
                     @foreach(\App\Models\Group::whereHas('players', function ($playerQuery){ $playerQuery->where('user_id', Auth::id());})->get() as $group)
                         <a href="{{ url('/group/' . $group->uuid) }}">
                             <button
-                                class="rounded-full w-16 h-16 bg-opacity-25 mx-4 hover:bg-opacity-100  bg-{{$possibleColors[random_int(0,7)]}}-400 ">
+                                class="rounded-full w-24 h-8 bg-opacity-25 mx-4 hover:bg-opacity-100 {{ Str::endsWith(Request::url(), '/group/' . $group->uuid) ? 'bg-pink-400 bg-opacity-50': 'bg-gray-400' }}">
                                 {{ $group->token }}
                             </button>
                         </a>
                     @endforeach
+                    <button class="rounded-full w-8 h-8 bg-opacity-25 mx-4 hover:bg-opacity-100  bg-green-400 "
+                            wire:click="newGroup">
+                        +
+                    </button>
                 </div>
 
 

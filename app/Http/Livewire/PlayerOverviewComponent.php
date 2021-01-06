@@ -11,15 +11,19 @@ use Livewire\Component;
 
 class PlayerOverviewComponent extends Component
 {
-    public ?Game  $game = null;
+    public ?Game $game = null;
 
-    public ?Group  $group = null;
+    public ?Group $group = null;
 
     public bool $showKickPlayerModal = false;
 
     public bool $surePlayerKick = false;
 
     public ?int $kickPlayerId = null;
+
+    public ?string $color = null;
+
+    public ?string $playerName = null;
 
     public function render()
     {
@@ -31,6 +35,9 @@ class PlayerOverviewComponent extends Component
         if (!$this->group) {
             $this->group = $this->game->group;
         }
+
+        $this->playerName = $this->group->authenticatedPlayer->name;
+        $this->color = $this->group->authenticatedPlayer->color;
     }
 
     /**
@@ -61,5 +68,14 @@ class PlayerOverviewComponent extends Component
         $this->surePlayerKick = false;
         $this->kickPlayerId = null;
         $this->showKickPlayerModal = false;
+    }
+
+    public function saveSettings()
+    {
+        $this->group->authenticatedPlayer->name = $this->playerName;
+        $this->group->authenticatedPlayer->color = $this->color;
+        $this->group->authenticatedPlayer->save();
+        $this->showKickPlayerModal = false;
+        event(new PlayerUpdated($this->group->authenticatedPlayer->id));
     }
 }

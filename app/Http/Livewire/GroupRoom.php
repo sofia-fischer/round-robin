@@ -15,12 +15,6 @@ class GroupRoom extends Component
 {
     public Group $group;
 
-    public ?string $color = null;
-
-    public ?string $playerName = null;
-
-    public ?int $gameId = null;
-
     /**
      * @return array
      */
@@ -31,7 +25,6 @@ class GroupRoom extends Component
         return [
             'echo:' . $channel . ',.' . PlayerCreated::class => '$refresh',
             'echo:' . $channel . ',.' . PlayerUpdated::class => '$refresh',
-            'refreshPage'                                    => '$refresh',
         ];
     }
 
@@ -41,24 +34,7 @@ class GroupRoom extends Component
             return $this->redirect('\welcome');
         }
 
-        $this->playerName = $this->group->authenticatedPlayer->name;
-        $this->color = $this->group->authenticatedPlayer->color;
-
         return view('livewire.group-room');
-    }
-
-    public function updateColor()
-    {
-        $this->group->authenticatedPlayer->color = $this->color;
-        $this->group->authenticatedPlayer->save();
-        event(new PlayerUpdated($this->group->authenticatedPlayer->id));
-    }
-
-    public function updatePlayerName()
-    {
-        $this->group->authenticatedPlayer->name = $this->playerName;
-        $this->group->authenticatedPlayer->save();
-        event(new PlayerUpdated($this->group->authenticatedPlayer->id));
     }
 
     public function startNewGame($logicId)
@@ -70,31 +46,18 @@ class GroupRoom extends Component
             'group_id'      => $this->group->id,
         ]);
 
-        $this->gameId = $game->id;
-
-        $this->emit('refreshPage');
+        $this->joinGame($game->id);
     }
 
-    public function joinGame()
+    public function joinGame($gameId)
     {
-        /** @var Game $game */
-        $game = Game::findOrFail($this->gameId);
-
         // clean up database
         User::whereNull('email')->where('created_at', '<', now()->subWeek())->delete();
         Group::where('created_at', '<', now()->subWeek())->delete();
 
-        if ($game->started_at) {
-            $this->redirect('\game\\' . $game->uuid);
-
-            return;
-        }
-
-        if ($this->group->host_user_id != Auth::id()) {
-            return;
-        }
-
-        $game->start();
+        /** @var Game $game */
+        $game = Game::findOrFail($gameId);
+        $game->join($this->group->authenticatedPlayer);
 
         $this->redirect('\game\\' . $game->uuid);
     }

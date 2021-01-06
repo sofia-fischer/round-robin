@@ -4,6 +4,7 @@ namespace App\Support\GamePolicies;
 
 use App\Models\Game;
 use App\Models\Move;
+use App\Models\Player;
 use App\Models\Round;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -23,7 +24,14 @@ class WavelengthPolicy extends Policy
         ]);
     }
 
-    public function roundAction(Round $round, array $options)
+    public function playerJoined(Player $player, Game $game)
+    {
+        if (!$game->started_at) {
+            $this->startGame($game);
+        }
+    }
+
+    public function roundAction(Round $round, array $options = [])
     {
         /** @var Move $move */
         $move = Move::updateOrCreate([

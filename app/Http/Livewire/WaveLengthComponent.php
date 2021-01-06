@@ -30,7 +30,6 @@ class WaveLengthComponent extends Component
         return [
             'echo:' . $channel . ',.' . GameEnded::class       => '$refresh',
             'echo:' . $channel . ',.' . GameRoundAction::class => '$refresh',
-            'refreshPage'                                      => '$refresh',
         ];
     }
 

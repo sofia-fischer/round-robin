@@ -3,6 +3,7 @@
 namespace App\Support\GamePolicies;
 
 use App\Models\Game;
+use App\Models\Player;
 use App\Models\Round;
 
 class Policy
@@ -11,11 +12,15 @@ class Policy
     {
     }
 
-    public function roundAction(Round $round, array $options = null)
+    public function roundAction(Round $round, array $options = [])
     {
     }
 
     public function endRound(Round $round)
+    {
+    }
+
+    public function playerJoined(Player $player, Game $game)
     {
     }
 

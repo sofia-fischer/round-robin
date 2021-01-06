@@ -2,96 +2,37 @@
 /* @var App\Models\Group $group */
 ?>
 
-<div class="max-w-7xl mt-4 mx-auto sm:px-6 lg:px-8 flex flex-wrap content-center justify-between">
-
-    {{--  Token  --}}
-    <div class="bg-white shadow-xl m-1 w-full">
-        <div class="p-4 bg-gray-700">
-            <h2 class="text-white text-lg font-semibold mb-4 text-center">
-                Group Token: <label class="text-pink-500">{{ $group->token }}</label>
-            </h2>
-        </div>
-    </div>
+<div class="max-w-7xl mt-4 mx-auto bg-white">
 
     <div class="w-full">
         <livewire:player-overview-component :group="$group"></livewire:player-overview-component>
     </div>
 
-    {{--  Auth Settings  --}}
-    <div class="bg-white shadow-xl m-1 flex-grow">
-        <div class="p-4 bg-gray-700">
-            <h2 class="text-white text-lg font-semibold mb-4 text-center">
-                Settings
-            </h2>
-        </div>
-
-        {{--  Game Settings  --}}
-        <div class="p-4">
-            @if($gameId || $group->host_user_id == Auth::id())
-                <div class="flex mb-8 mx-4">
-                    <button
-                        class="bg-pink-500 text-white rounded-full px-4 py-2 w-64 mx-auto"
-                        wire:click="joinGame">
-                        {{ $gameId ? 'Join ' : ' Start ' }}
-                    </button>
-                </div>
-            @endif
-
-            <div class="flex my-8 mx-4">
-                <label class="self-center mr-4">Name</label>
-                <input wire:model.defer='playerName'
-                       class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500 "
-                       wire:keydown.enter="updatePlayerName">
-            </div>
-
-            <div class="flex my-8 mx-4">
-                <label for='color' class="self-center mr-4">Color</label>
-                <select id="color" class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500"
-                        wire:change="updateColor"
-                        wire:model="color">
-                    <option value="orange">Orange</option>
-                    <option value="red">Red</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="green">Green</option>
-                    <option value="blue">Blue</option>
-                    <option value="purple">Purple</option>
-                    <option value="pink">Pink</option>
-                    <option value="gray">Gray</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
     {{--  Games  --}}
-    <div class="bg-white shadow-xl m-1 flex-grow">
-        <div class="p-4 bg-gray-700">
-            <h2 class="text-white text-lg font-semibold mb-4 text-center">
-                Join a game
-            </h2>
-        </div>
+    <div class="max-w-2xl mx-auto">
+        <p class="text-gray-500 p-4 text-center">
+            Join an active game. The Host of the round may start new games.
+        </p>
 
-        <div class="flex flex-col content-center">
+        <div class="flex flex-wrap justify-evenly p-4">
             @foreach($group->games as $game)
-                <button class="p-4 font-semibold w-full
-                        {{ $game->id == $gameId ? 'bg-gray-200 text-pink-500' : 'hover:bg-gray-100 text-gray-500 ' }}"
-                        wire:click="$set('gameId', {{ $game->id }})">
+                <button class="py-2 px-4 m-2 font-semibold rounded-full border border-gray-700 text-gray-700 hover:bg-gray-200"
+                    wire:click="joinGame({{ $game->id }})">
                     {{ $game->logic->name }}
-                    <label class="text-gray-500">
+                    <label class="text-gray-400 text-sm">
                         (Round {{ $game->rounds()->count() }})
                     </label>
                 </button>
             @endforeach
         </div>
 
-        <div class="p-4 bg-gray-700">
-            <h2 class="text-white text-lg font-semibold mb-4 text-center">
-                Start a new Game
-            </h2>
-        </div>
+        <p class="text-gray-500 p-4 text-center">
+            As Host you may start a new Game.
+        </p>
 
-        <div class="flex flex-col content-center">
+        <div class="flex flex-wrap justify-evenly p-4">
             @foreach(\App\Models\GameLogic::all() as $gameLogic)
-                <button class="p-4 hover:bg-pink-100 text-gray-500 font-semibold"
+                <button class="py-2 px-4 m-2 font-semibold rounded-full border border-green-700 text-green-700 hover:bg-green-300"
                         wire:click="startNewGame({{ $gameLogic->id }})">
                     {{ $gameLogic->name }}
                 </button>

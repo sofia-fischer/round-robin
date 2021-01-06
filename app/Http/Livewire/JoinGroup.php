@@ -12,7 +12,7 @@ use Livewire\Component;
 
 class JoinGroup extends Component
 {
-    public string $tab = 'login';
+    public string $tab = 'register';
 
     public ?string $token = null;
 
@@ -57,17 +57,6 @@ class JoinGroup extends Component
 
     public function joinGame()
     {
-        $group = Group::where('token', $this->token)->firstOrFail();
-
-        $existingPlayer = $group->players()
-            ->whereNotNull('user_id')
-            ->where('user_id', Auth::id())
-            ->first();
-
-        if ($existingPlayer) {
-            return $this->redirect('/group/' . $group->uuid);
-        }
-
         $user = Auth::user();
 
         if (!$user) {
@@ -82,6 +71,21 @@ class JoinGroup extends Component
                     $user = User::anonymLogin($this->name ?? collect($this->names)->random());
                     break;
             }
+        }
+
+        $group = Group::where('token', $this->token)->first();
+
+        if (!$group) {
+            return $this->redirect('/');
+        }
+
+        $existingPlayer = $group->players()
+            ->whereNotNull('user_id')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($existingPlayer) {
+            return $this->redirect('/group/' . $group->uuid);
         }
 
         $player = Player::create([
