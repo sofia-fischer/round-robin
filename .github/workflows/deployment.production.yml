@@ -62,4 +62,5 @@ jobs:
         script_stop: true
         script: |
           export HETZNER_SSH_PASSWORD=${{ secrets.HETZNER_SSH_PASSWORD }}
+          export HETZNER_SSH_USERNAME=${{ secrets.HETZNER_SSH_USERNAME }}
           bash /home/${{ secrets.HETZNER_SSH_USERNAME }}/dev/round-robin/deployment/scripts/deploy.production.sh
