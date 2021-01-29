@@ -54,6 +54,8 @@ jobs:
 
     - name: Execute Commands on Server
       uses: appleboy/ssh-action@master
+      env:
+        PASSWORD: ${{ secrets.HETZNER_SSH_PASSWORD }}
       with:
         host: ${{ secrets.HETZNER_SSH_HOST }}
         username: ${{ secrets.HETZNER_SSH_USERNAME }}
