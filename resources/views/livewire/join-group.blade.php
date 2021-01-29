@@ -3,7 +3,7 @@
     <div class="p-4 bg-gray-700">
         <h2 class="text-white text-lg font-semibold mb-4 text-center flex justify-center">
             <label class="self-center mr-4">Group Token:</label>
-            <input wire:model.lazy='token' class="border-b-2 border-pink-500 bg-gray-700 ">
+            <input wire:model.lazy='token' class="border-b-2 border-white bg-gray-700 ">
         </h2>
     </div>
 
@@ -30,43 +30,43 @@
             @if($tab == 'register')
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Name</label>
-                    <input wire:model.lazy='name' class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='name' class="flex-grow border-b-2 border-gray-700 ">
                 </div>
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Email</label>
-                    <input wire:model.lazy='email' type="email" class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='email' type="email" class="flex-grow border-b-2 border-gray-700 ">
                 </div>
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Password</label>
-                    <input wire:model.lazy='password' type="password" class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='password' type="password" class="flex-grow border-b-2 border-gray-700 ">
                 </div>
 
                 <button wire:click="joinGame" {{ ($email && $password) ? '' : 'disabled'}}
-                        class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-pink-500 disabled:opacity-50">
+                class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-gray-700 disabled:opacity-50">
                     Register {{ $token ? ' and play' : '' }}
                 </button>
             @elseif($tab == 'login')
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Email</label>
-                    <input wire:model.lazy='email' type="email" class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='email' type="email" class="flex-grow border-b-2 border-gray-700 ">
                 </div>
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Password</label>
-                    <input wire:model.lazy='password' type="password" class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='password' type="password" class="flex-grow border-b-2 border-gray-700 ">
                 </div>
 
                 <button wire:click="joinGame" {{ ($email && $password) ? '' : 'disabled'}}
-                        class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-pink-500 disabled:opacity-50">
+                class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-gray-700 disabled:opacity-50">
                     Login {{ $token ? ' and play' : '' }}
                 </button>
             @else()
                 <div class="flex my-8 mx-4">
                     <label class="self-center mr-4">Name</label>
-                    <input wire:model.lazy='name' class="flex-grow border-b-2 border-pink-500 ">
+                    <input wire:model.lazy='name' class="flex-grow border-b-2 border-gray-700 ">
                 </div>
 
                 <button wire:click="joinGame" {{ ($name && $token) ? '' : 'disabled'}}
-                        class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-pink-500 disabled:opacity-50">
+                class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-gray-700 disabled:opacity-50">
                     Join Group
                 </button>
             @endif
@@ -74,7 +74,7 @@
     @else
         <div class="flex content-center">
             <button wire:click="joinGame" {{ $token ? '' : 'disabled'}}
-                    class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-pink-500 disabled:opacity-50">
+            class="mx-auto text-white rounded-full m-4 px-4 py-1 bg-gray-700 disabled:opacity-50">
                 Join Group
             </button>
         </div>

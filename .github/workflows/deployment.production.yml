@@ -1,0 +1,65 @@
+name: Deployment to Production
+
+on:
+
+  push:
+    branches: [ master ]
+
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      run: composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
+
+    - name: Copy example .env for tests
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate App Key for tests
+      run: php artisan key:generate
+
+    - name: Run test suite
+      run: composer run-script test
+
+    - name: Save Build Number
+      run: |
+        echo "$(date '+%Y.%m%d').$GITHUB_RUN_ID.$(date '+%H%M').$GITHUB_RUN_NUMBER" > build.version
+
+    - name: Copy files to Server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HETZNER_SSH_HOST }}
+        username: ${{ secrets.HETZNER_SSH_USERNAME }}
+        port: ${{ secrets.HETZNER_SSH_PORT }}
+        password: ${{ secrets.HETZNER_SSH_PASSWORD }}
+        source: "app/,bootstrap/app.php,config/,database/,deployment/,public/assets/,public/css/,public/js/,public/.htaccess,public/index.php,public/mix-manifest.json,public/robots.txt,public/web.config,resources/,tests/,vendor/,build.version,composer.json,package-lock.json,.styleci.yml,server.php,phpunit.xml,README.md,webpack.mix.js,.gitignore,package.json,.gitattributes,artisan,tailwind.config.js,composer.lock,.editorconfig"
+        target: "/home/${{ secrets.HETZNER_SSH_USERNAME }}/dev/round-robin/"
+
+    - name: Execute Commands on Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HETZNER_SSH_HOST }}
+        username: ${{ secrets.HETZNER_SSH_USERNAME }}
+        port: ${{ secrets.HETZNER_SSH_PORT }}
+        password: ${{ secrets.HETZNER_SSH_PASSWORD }}
+        script: bash /home/${{ secrets.HETZNER_SSH_USERNAME }}/dev/round-robin/deployment/scripts/deploy.production.sh

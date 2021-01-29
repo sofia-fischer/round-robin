@@ -45,7 +45,8 @@ return [
     'asset_url'  => null,
 
     // https://laravel-livewire.com/docs/2.x/installation
-    'asset_base_url' => '/round-robin',
+//    'asset_base_url' => '/round-robin',
+    'asset_base_url' => '',
 
     /*
     |--------------------------------------------------------------------------
