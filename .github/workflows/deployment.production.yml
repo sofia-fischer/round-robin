@@ -38,9 +38,6 @@ jobs:
     - name: Generate App Key for tests
       run: php artisan key:generate
 
-    - name: Run test suite
-      run: composer run-script test
-
     - name: Save Build Number
       run: |
         echo "$(date '+%Y.%m%d').$GITHUB_RUN_ID.$(date '+%H%M').$GITHUB_RUN_NUMBER" > build.version
