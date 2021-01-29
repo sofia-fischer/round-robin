@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            @if( $group->host_user_id == $group->authenticatedPlayer->id)
+            @if( $group->host_user_id == ($group->authenticatedPlayer->id ?? false))
                 <div>
                     <h2 class="text-semibold text-pink-500">
                         Kick a Player
