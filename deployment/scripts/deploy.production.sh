@@ -1,6 +1,6 @@
-cp -r dev/round-robin/* /var/www/dev/html/round-robin/
+cp -r dev/round-robin/* /var/www/html/round-robin/
 
-cd /var/www/dev/html/round-robin/
+cd /var/www/html/round-robin/
 
 php artisan migrate --force
 
