@@ -1,4 +1,4 @@
-sudo cp -r dev/round-robin/* /var/www/dev/round-robin/
+cp -r dev/round-robin/* /var/www/dev/round-robin/
 
 cd /var/www/dev/round-robin/
 
