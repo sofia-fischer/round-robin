@@ -18,18 +18,20 @@
             <button class="h-full p-1" wire:click="$toggle('showKickPlayerModal')">⚙️</button>
         </div>
 
-        <div class="rounded-full flex w-full overflow-hidden text-center">
+        <div class="flex w-full text-center">
             @foreach($group->players as $player)
-                <div class="flex-grow p-2 px-4
-                    {{ 'bg-' . $player->passiveColor }}
-                {{ 'text-' . $player->activeColor }}
-                {{ $player->id == ($game->currentRound->active_player_id ?? null)
-                   ?  'text-gray-800 bg-gradient-to-r from-'. $player->activeColor.' via-' . $player->passiveColor.' to-' . $player->activeColor
-                   : 'text-' . $player->activeColor }}">
-                    <label>{{ $player->name }}</label>
-                    @if($game)
-                        <label class="text-opacity-25 text-sm"> {{ $player->scoreInGame($game->id) }} </label>
-                    @endif
+                <div class="flex flex-col m-4 relative
+                {{ $player->id == ($game->currentRound->active_player_id ?? null) ? ' mb-4' : '' }}
+                {{ 'text-' . $player->activeColor }}">
+                    <div class="rounded-full h-16 w-16 font-bold relative
+                    {{ $player->id == ($game->currentRound->active_player_id ?? null) ?  'bg-' . $player->passiveColor  : 'bg-' . $player->passiveColor  }}">
+                        <div class="absolute top-1/2 left-1/2">
+                            {{ $player->scoreInGame($game->id) }}
+                        </div>
+                    </div>
+                    <div>
+                        {{ $player->name }}
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -37,7 +39,7 @@
 
     <x-jet-dialog-modal wire:model="showKickPlayerModal">
         <x-slot name="title">
-            <h2 class="text-pink-500 text-center">
+            <h2 class="text-pink-500 text-center ">
                 Game Settings
             </h2>
         </x-slot>
@@ -73,32 +75,33 @@
                 </div>
             </div>
 
-            <div>
-                <h2 class="text-semibold text-pink-500">
-                    Kick a Player
-                </h2>
-                <div class="flex my-8 mx-4 flex-wrap">
-                    <select id="playerSelection" class="flex-grow border-b-2"
-                            wire:change="$set('kickPlayerId', {{ $player->id }})"
-                            wire:model="kickPlayerId">
+            @if( $group->host_user_id == $group->authenticatedPlayer->id)
+                <div>
+                    <h2 class="text-semibold text-pink-500">
+                        Kick a Player
+                    </h2>
+                    <div class="flex my-8 mx-4 flex-wrap">
+                        <select id="playerSelection" class="flex-grow border-b-2"
+                                wire:change="$set('kickPlayerId', {{ $player->id }})"
+                                wire:model="kickPlayerId">
 
-                        @foreach($group->players as $player)
-                            <option value="{{ $player->id }}"> {{ $player->name }}</option>
-                        @endforeach
-                    </select>
-                    <button
-                        class=" mx-2 rounded-full text-white px-4 py-1 bg-pink-{{ $surePlayerKick ? '200' : '500' }}"
-                        wire:click="$toggle('surePlayerKick')">
-                        Kick
-                    </button>
-                    <button
-                        class=" mx-2 rounded-full text-white px-4 py-1 {{ $surePlayerKick ? 'bg-pink-500' : 'hidden' }}"
-                        wire:click="kickPlayer({{$player->id}})">
-                        I am sure, Kick!
-                    </button>
+                            @foreach($group->players as $player)
+                                <option value="{{ $player->id }}"> {{ $player->name }}</option>
+                            @endforeach
+                        </select>
+                        <button
+                            class=" mx-2 rounded-full text-white px-4 py-1 bg-pink-{{ $surePlayerKick ? '200' : '500' }}"
+                            wire:click="$toggle('surePlayerKick')">
+                            Kick
+                        </button>
+                        <button
+                            class=" mx-2 rounded-full text-white px-4 py-1 {{ $surePlayerKick ? 'bg-pink-500' : 'hidden' }}"
+                            wire:click="kickPlayer({{$player->id}})">
+                            I am sure, Kick!
+                        </button>
+                    </div>
                 </div>
-            </div>
-
+            @endif
         </x-slot>
 
         <x-slot name="footer">

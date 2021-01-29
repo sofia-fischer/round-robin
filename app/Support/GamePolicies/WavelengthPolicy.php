@@ -71,19 +71,20 @@ class WavelengthPolicy extends Policy
             $reward = 0;
 
             switch (true) {
-                case $diffFromTarget <= 4:
+                case $diffFromTarget <= 5:
                     $reward = 10;
                     break;
                 case $diffFromTarget <= 10:
                     $reward = 3;
                     break;
-                case $diffFromTarget <= 18:
+                case $diffFromTarget <= 20:
                     $reward = 1;
                     break;
             }
 
             $move->player->counter += $reward;
             $move->score = $reward;
+            $move->save();
             $move->player->save();
         });
 
