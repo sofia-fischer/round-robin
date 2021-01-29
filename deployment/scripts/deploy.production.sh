@@ -1,4 +1,4 @@
-cp -r dev/round-robin/* /var/www/html/round-robin/
+echo $PASSWORD | sudo -kS cp -r dev/round-robin/* /var/www/html/round-robin/
 
 cd /var/www/html/round-robin/
 
