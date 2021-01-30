@@ -82,10 +82,8 @@ class WavelengthPolicy extends Policy
                     break;
             }
 
-            $move->player->counter += $reward;
             $move->score = $reward;
             $move->save();
-            $move->player->save();
         });
 
         $round->completed_at = now();
