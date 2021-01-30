@@ -10,6 +10,6 @@ php artisan config:cache
 
 php artisan route:clear
 
-php artisann route:cache
+php artisan route:cache
 
 echo $HETZNER_SSH_PASSWORD | sudo -kS chown -R www-data:www-data /var/www/html/round-robin
