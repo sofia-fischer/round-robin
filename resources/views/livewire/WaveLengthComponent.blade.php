@@ -3,10 +3,19 @@
     /* @var App\Models\Game $game */
     /* @var App\Models\Move $move */
     ?>
-    <div class="text-center p-4 text-gray-500 text-sm">
-        The active Player knows where the target is,
-        but can only give a clue on the spectrum between two opposing concepts.
-        After that, everyone has to guess where the target is.
+
+    <div class="text-center p-4 text-gray-500 text-sm flex">
+        <div class="h-6 w-6 mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div>
+            The active Player knows where the target is,
+            but can only give a clue on the spectrum between two opposing concepts.
+            After that, everyone has to guess where the target is.
+        </div>
     </div>
 
     <div class="flex mb-8 m-4 text-center content-center text-white font-semibold max-w-2xl mx-auto">

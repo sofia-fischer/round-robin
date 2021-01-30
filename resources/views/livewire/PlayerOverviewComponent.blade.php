@@ -5,114 +5,40 @@
 ?>
 <div>
     {{--  Token  --}}
-    <div class="p-6 bg-gray-700">
-        <div class="text-white text-lg font-semibold mb-4 text-center flex justify-evenly">
-            <div>
-                Token: <label class="text-pink-500">{{ $group->token }}</label>
-            </div>
-            @if($game)
-                <div class="font-semibold text-white flex-grow">
-                    {{ $game->logic->name }}
-                </div>
-            @endif
-            <button class="h-full p-1" wire:click="$toggle('showKickPlayerModal')">⚙️</button>
-        </div>
-
-        <div class="flex w-full text-center">
-            @foreach($group->players as $player)
-                <div class="flex flex-col m-4 relative
-                {{ $player->id == ($game->currentRound->active_player_id ?? null) ? ' mb-4' : '' }}
-                {{ 'text-' . $player->activeColor }}">
-                    <div class="rounded-full h-16 w-16 font-bold relative
-                    {{ $player->id == ($game->currentRound->active_player_id ?? null) ?  'bg-' . $player->passiveColor  : 'bg-' . $player->passiveColor  }}">
-                        <div class="absolute top-1/2 left-1/2">
-                            {{ $player->scoreInGame($game->id) }}
+    <div class="p-6 bg-gray-900">
+        <div class="flex w-full text-center px-4">
+            @foreach($group->players as $index => $player)
+                <div class="flex flex-col justify-end">
+                    <div class="rounded-xl mx-4 overflow-hidden {{ 'bg-' . $player->activeColor }}">
+                        <div class="p-1 text-white px-4">
+                            {{ $player->name }}
                         </div>
+                        @if($game)
+                            <svg viewBox="0 0 1440 320" class="opacity-50 ">
+                                <path fill="#FFFF" fill-opacity="1"
+                                      d="{{ [
+                                    'M0,224L80,240C160,256,320,288,480,298.7C640,309,800,299,960,261.3C1120,224,1280,160,1360,128L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z',
+                                    'M0,160L60,181.3C120,203,240,245,360,256C480,267,600,245,720,197.3C840,149,960,75,1080,74.7C1200,75,1320,149,1380,186.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z',
+                                    'M0,224L80,197.3C160,171,320,117,480,80C640,43,800,21,960,16C1120,11,1280,21,1360,26.7L1440,32L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z',
+                                    'M0,32L80,80C160,128,320,224,480,272C640,320,800,320,960,277.3C1120,235,1280,149,1360,106.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z'
+                                ][$index % 4] }}">
+
+                                </path>
+                            </svg>
+                            <div class="bg-white opacity-50 p-1">
+                                {{ $game ? $player->scoreInGame($game->id) : '' }}
+                            </div>
+                        @endif
                     </div>
-                    <div>
-                        {{ $player->name }}
-                    </div>
+
+                    @if($game && $player->id == ($game->currentRound->active_player_id ?? null))
+                        <div class="w-2 h-4"></div>
+                    @endif
                 </div>
             @endforeach
         </div>
     </div>
 
-    <x-jet-dialog-modal wire:model="showKickPlayerModal">
-        <x-slot name="title">
-            <h2 class="text-pink-500 text-center ">
-                Game Settings
-            </h2>
-        </x-slot>
-
-        <x-slot name="content">
-
-            <div>
-                <h2 class="text-semibold text-pink-500">
-                    Player Settings
-                </h2>
-                <div class="flex my-8 mx-4 flex-wrap justify-between">
-                    <div class="flex my-8 mx-4 flex-grow">
-                        <label class="self-center mr-4">Name</label>
-                        <input wire:model.defer='playerName'
-                               class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500 ">
-                    </div>
-
-                    <div class="flex my-8 mx-4 flex-grow">
-                        <label for='color' class="self-center mr-4">Color</label>
-                        <select id="color"
-                                class="flex-grow border-b-2 border-{{ $group->authenticatedPlayer->color }}-500"
-                                wire:model="color">
-                            <option value="orange">Orange</option>
-                            <option value="red">Red</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="purple">Purple</option>
-                            <option value="pink">Pink</option>
-                            <option value="gray">Gray</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            @if( $group->host_user_id == ($group->authenticatedPlayer->id ?? false))
-                <div>
-                    <h2 class="text-semibold text-pink-500">
-                        Kick a Player
-                    </h2>
-                    <div class="flex my-8 mx-4 flex-wrap">
-                        <select id="playerSelection" class="flex-grow border-b-2"
-                                wire:change="$set('kickPlayerId', {{ $player->id }})"
-                                wire:model="kickPlayerId">
-
-                            @foreach($group->players as $player)
-                                <option value="{{ $player->id }}"> {{ $player->name }}</option>
-                            @endforeach
-                        </select>
-                        <button
-                            class=" mx-2 rounded-full text-white px-4 py-1 bg-pink-{{ $surePlayerKick ? '200' : '500' }}"
-                            wire:click="$toggle('surePlayerKick')">
-                            Kick
-                        </button>
-                        <button
-                            class=" mx-2 rounded-full text-white px-4 py-1 {{ $surePlayerKick ? 'bg-pink-500' : 'hidden' }}"
-                            wire:click="kickPlayer({{$player->id}})">
-                            I am sure, Kick!
-                        </button>
-                    </div>
-                </div>
-            @endif
-        </x-slot>
-
-        <x-slot name="footer">
-            <x-jet-secondary-button wire:click="$set('showKickPlayerModal', false)">
-                {{ __('Close') }}
-            </x-jet-secondary-button>
-            <x-jet-button wire:click="saveSettings">
-                {{ __('Save') }}
-            </x-jet-button>
-        </x-slot>
-    </x-jet-dialog-modal>
 </div>
 
 

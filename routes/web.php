@@ -19,4 +19,4 @@ Route::get('/welcome', \App\View\Pages\WelcomePage::class);
 
 Route::get('/group/{group}', \App\View\Pages\GroupRoomPage::class)->middleware(['auth:sanctum']);
 
-Route::get('/game/{game}', \App\View\Pages\GamePage::class)->middleware(['auth:sanctum']);
+Route::get('/group/{group}/game/{game}', \App\View\Pages\GamePage::class)->middleware(['auth:sanctum']);

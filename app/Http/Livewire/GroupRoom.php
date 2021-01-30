@@ -39,6 +39,12 @@ class GroupRoom extends Component
 
     public function startNewGame($logicId)
     {
+        $this->group->touch();
+
+        // clean up database
+        User::whereNull('email')->where('created_at', '<', now()->subWeek())->delete();
+        Group::where('updated_at', '<', now()->subWeek())->delete();
+
         /** @var Game $game */
         $game = Game::create([
             'uuid'          => Str::uuid(),
@@ -51,14 +57,10 @@ class GroupRoom extends Component
 
     public function joinGame($gameId)
     {
-        // clean up database
-        User::whereNull('email')->where('created_at', '<', now()->subWeek())->delete();
-        Group::where('created_at', '<', now()->subWeek())->delete();
-
         /** @var Game $game */
         $game = Game::findOrFail($gameId);
         $game->join($this->group->authenticatedPlayer);
 
-        $this->redirect('\game\\' . $game->uuid);
+        $this->redirect('\group\\' . $this->group->uuid . '\game\\' . $game->uuid);
     }
 }

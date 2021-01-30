@@ -6,11 +6,30 @@ use App\Models\Group;
 use App\Models\Player;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
 class TopBarComponent extends Component
 {
+    public ?string $activeGroupUuid = null;
+
+    public bool $showSettings = false;
+
+    protected $listeners = [
+        'game-settings-close' => 'hideModal',
+    ];
+
+    public function mount()
+    {
+        $this->activeGroupUuid = (string) Str::of(Request::url())->after('/group/')->before('/');
+    }
+
+    public function hideModal()
+    {
+        $this->showSettings = false;
+    }
+
     public function render()
     {
         return view('livewire.TopBarComponent');
