@@ -49,7 +49,7 @@ jobs:
         username: ${{ secrets.HETZNER_SSH_USERNAME }}
         port: ${{ secrets.HETZNER_SSH_PORT }}
         password: ${{ secrets.HETZNER_SSH_PASSWORD }}
-        source: "app/,bootstrap/app.php,config/,database/,deployment/,public/assets/,public/css/,public/js/,public/.htaccess,public/index.php,public/mix-manifest.json,public/robots.txt,public/web.config,resources/,tests/,vendor/,build.version,composer.json,package-lock.json,.styleci.yml,server.php,phpunit.xml,README.md,webpack.mix.js,.gitignore,package.json,.gitattributes,artisan,tailwind.config.js,composer.lock,.editorconfig"
+        source: "app/,bootstrap/app.php,config/,database/,routes/,deployment/,public/assets/,public/css/,public/js/,public/.htaccess,public/index.php,public/mix-manifest.json,public/robots.txt,public/web.config,resources/,tests/,vendor/,build.version,composer.json,package-lock.json,.styleci.yml,server.php,phpunit.xml,README.md,webpack.mix.js,.gitignore,package.json,.gitattributes,artisan,tailwind.config.js,composer.lock,.editorconfig"
         target: "/home/${{ secrets.HETZNER_SSH_USERNAME }}/dev/round-robin/"
 
     - name: Execute Commands on Server
