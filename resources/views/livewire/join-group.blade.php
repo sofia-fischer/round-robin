@@ -91,6 +91,7 @@
                     <div class="flex my-8 mx-4">
                         <label class="self-center mr-4">Password</label>
                         <input wire:model.lazy='password' type="password"
+                               wire:keydown.enter="checkLogin"
                                class="flex-grow border-b-2 border-white bg-transparent">
                     </div>
                 </div>
@@ -114,7 +115,7 @@
                 <div class="sm:mt-6 text-xs max-w-sm">
                     <div class="flex my-8 mx-4">
                         <label class="self-center mr-4">Name</label>
-                        <input wire:model.lazy='name' class="flex-grow border-b-2 border-white bg-transparent">
+                        <input wire:model.lazy='name'  wire:keydown.enter="checkAnonymousPlay" class="flex-grow border-b-2 border-white bg-transparent">
                     </div>
                 </div>
                 <div class="text-xs">
@@ -150,6 +151,7 @@
                     <div class="flex my-8 mx-4">
                         <label class="self-center mr-4">Password</label>
                         <input wire:model.lazy='password' type="password"
+                               wire:keydown.enter="checkRegister"
                                class="flex-grow border-b-2 border-white bg-transparent">
                     </div>
                 </div>

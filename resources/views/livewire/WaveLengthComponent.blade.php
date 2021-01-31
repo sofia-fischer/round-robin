@@ -77,7 +77,8 @@
     <div class="flex flex-col content-center w-full text-center">
         @if($game->authenticatedPlayerIsActive)
             @if($step == 'start')
-                <input wire:model.defer='clue' class="flex-grow border-b-2 border-gray-700 max-w-xl mx-auto">
+                <input wire:model.defer='clue' wire:keydown.enter="giveClue"
+                       class="flex-grow border-b-2 border-gray-700 max-w-xl mx-auto">
                 <label class="self-center mr-4">A word that fits conceptually the Spectrum value</label>
 
                 <button wire:click="giveClue" class="bg-gray-700 text-white rounded-full my-4 mx-auto py-1 px-4">
