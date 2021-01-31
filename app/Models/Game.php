@@ -37,6 +37,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @property Player currentPlayer
  * @property Player nextPlayer
+ * @property bool authenticatedPlayerIsActive
  *
  * @package app/Database/Models
  */
@@ -131,6 +132,10 @@ class Game extends BaseModel
             ->first();
     }
 
+    protected function getAuthenticatedPlayerIsActiveAttribute()
+    {
+        return $this->currentRound->activePlayer->user_id == Auth::id();
+    }
     /*
     |--------------------------------------------------------------------------
     | Scopes
@@ -148,10 +153,7 @@ class Game extends BaseModel
         $className = $this->logic->policy;
         $logic = app($className);
 
-
         $logic->startGame($this);
-        $this->started_at = now();
-        $this->save();
         event(new GameStarted($this->id));
     }
 

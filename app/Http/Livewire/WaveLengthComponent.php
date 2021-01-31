@@ -5,6 +5,9 @@ namespace App\Http\Livewire;
 use App\Models\Game;
 use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameRoundAction;
+use App\Queue\Events\PlayerKicked;
+use App\Queue\Events\PlayerUpdated;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class WaveLengthComponent extends Component
@@ -17,7 +20,21 @@ class WaveLengthComponent extends Component
 
     public function render()
     {
-        return view('livewire.WaveLengthComponent');
+        $step = 'start';
+        switch (true) {
+            case !!($this->game->currentRound->completed_at):
+                $step = 'completed';
+                break;
+            case !!($this->game->currentRound->payload['clue'] ?? false):
+                $step = 'clue-given';
+                break;
+        }
+
+        return view('livewire.WaveLengthComponent', [
+            'step'     => $step,
+            'antonym1' => Str::title(array_key_first($this->game->currentRound->payload['antonyms'])),
+            'antonym2' => Str::title($this->game->currentRound->payload['antonyms'][array_key_first($this->game->currentRound->payload['antonyms'])]),
+        ]);
     }
 
     /**
@@ -25,12 +42,19 @@ class WaveLengthComponent extends Component
      */
     public function getListeners() : array
     {
-        $channel = 'Game.' . $this->game->uuid;
-
         return [
-            'echo:' . $channel . ',.' . GameEnded::class       => '$refresh',
-            'echo:' . $channel . ',.' . GameRoundAction::class => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class             => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class       => '$refresh',
+            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
+            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'handlePlayerKick',
         ];
+    }
+
+    public function handlePlayerKick($playerKicked)
+    {
+        if ($playerKicked['player_id'] == $this->game->currentRound->active_player_id) {
+            $this->nextRound();
+        }
     }
 
     public function giveClue()

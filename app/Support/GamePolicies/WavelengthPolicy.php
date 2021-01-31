@@ -13,6 +13,9 @@ class WavelengthPolicy extends Policy
 {
     public function startGame(Game $game)
     {
+        $game->started_at = now();
+        $game->save();
+
         Round::create([
             'uuid'             => Str::uuid(),
             'game_id'          => $game->id,
@@ -157,6 +160,7 @@ class WavelengthPolicy extends Policy
         ['low quality' => 'high quality'],
         ['normal greeting' => 'weird greeting'],
         ['bad advice' => 'good advice'],
+        ['possible during Corona' => 'not possible during Corona'],
         ['😇' => '😏'],
     ];
 }

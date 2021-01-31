@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\Group;
 use App\Models\User;
 use App\Queue\Events\PlayerCreated;
+use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -25,13 +26,14 @@ class GroupRoom extends Component
         return [
             'echo:' . $channel . ',.' . PlayerCreated::class => '$refresh',
             'echo:' . $channel . ',.' . PlayerUpdated::class => '$refresh',
+            'echo:' . $channel . ',.' . PlayerKicked::class => '$refresh',
         ];
     }
 
     public function render()
     {
         if (!$this->group->authenticatedPlayer) {
-            return $this->redirect('\welcome');
+            return $this->redirect('/welcome');
         }
 
         return view('livewire.group-room');
@@ -40,10 +42,6 @@ class GroupRoom extends Component
     public function startNewGame($logicId)
     {
         $this->group->touch();
-
-        // clean up database
-        User::whereNull('email')->where('created_at', '<', now()->subWeek())->delete();
-        Group::where('updated_at', '<', now()->subWeek())->delete();
 
         /** @var Game $game */
         $game = Game::create([

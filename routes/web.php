@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\View\Pages\WelcomePage::class);
 
-Route::get('/welcome', \App\View\Pages\WelcomePage::class);
+Route::get('/welcome', \App\View\Pages\WelcomePage::class)->name('WelcomePage');
 
 
 Route::get('/game/{game}', function (Game $game) {

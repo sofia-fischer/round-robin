@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\Group;
 use App\Models\Player;
 use App\Queue\Events\GameRoundAction;
+use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
 use Livewire\Component;
 
@@ -34,6 +35,7 @@ class PlayerOverviewComponent extends Component
         return [
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
             'echo:' . 'Group.' . $this->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
+            'echo:' . 'Group.' . $this->group->uuid . ',.' . PlayerKicked::class  => '$refresh',
         ];
     }
 }

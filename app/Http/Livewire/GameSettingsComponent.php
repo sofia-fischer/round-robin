@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Group;
 use App\Models\Player;
+use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
 use Livewire\Component;
 
@@ -36,9 +37,29 @@ class GameSettingsComponent extends Component
 
     public function kickPlayer()
     {
+        /** @var Group $group */
+        $group = Group::where('uuid', $this->groupUuid)->firstOrFail();
+        if ($group->host_user_id == $this->kickPlayerId) {
+            $newHost = $group->players()->where('id', '!=', $this->kickPlayerId)->first();
+            if (!$newHost) {
+                $group->delete();
+
+                return $this->redirect('/welcome');
+            }
+
+            $group->host_user_id = $newHost;
+        }
+
         Player::find($this->kickPlayerId)->delete();
-        event(new PlayerUpdated($this->kickPlayerId));
+
+        event(new PlayerKicked($this->kickPlayerId));
+
+        if (!$group->authenticatedPlayer) {
+            return $this->redirect('/welcome');
+        }
+
         $this->kickPlayerId = null;
+        $this->emit('game-settings-close');
     }
 
     public function saveSettings()
