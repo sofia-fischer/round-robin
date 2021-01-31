@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 ">
+<nav x-data="{ open: false }" class="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-400">
     <!-- Primary Navigation Menu -->
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">

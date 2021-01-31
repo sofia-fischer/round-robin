@@ -84,7 +84,7 @@ class JoinGroup extends Component
         $group = Group::where('token', $this->token)->first();
 
         if (!$group) {
-            $this->errorMessage = 'This token does not belong to a group';
+            $this->errorMessage = 'This is not the group you are looking for... ';
 
             return;
         }
