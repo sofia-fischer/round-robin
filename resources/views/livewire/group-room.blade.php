@@ -2,14 +2,12 @@
 /* @var App\Models\Group $group */
 ?>
 
-<div class="max-w-7xl mt-4 mx-auto">
+<div class="max-w-7xl mt-4 mx-auto flex">
 
-    <div class="w-full">
-        <livewire:player-overview-component :group="$group"></livewire:player-overview-component>
-    </div>
+    <livewire:player-overview-component :group="$group"></livewire:player-overview-component>
 
     {{--  Games  --}}
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-2xl mx-auto flex-grow">
         <div class="flex flex-wrap justify-evenly p-4">
             @foreach($group->games as $game)
                 <button
@@ -19,7 +17,8 @@
                         {{ $game->logic->name }}
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="opacity-50">
-                        <path fill="#FFFFFF" fill-opacity="1" d="M0,224L80,202.7C160,181,320,139,480,144C640,149,800,203,960,240C1120,277,1280,299,1360,309.3L1440,320L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+                        <path fill="#FFFFFF" fill-opacity="1"
+                              d="M0,224L80,202.7C160,181,320,139,480,144C640,149,800,203,960,240C1120,277,1280,299,1360,309.3L1440,320L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
                     </svg>
                     <div class="text-black text-sm bg-white opacity-50 p-4 text-left">
                         <div class="flex mb-4">
@@ -48,8 +47,10 @@
                         </div>
                         <div class="flex mb-4">
                             <div class="h-5 w-5 mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                             <div>
