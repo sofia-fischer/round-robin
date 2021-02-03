@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-400">
     <!-- Primary Navigation Menu -->
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20 fixed w-full">
         <div class="flex justify-between h-16">
             <!-- Navigation Links -->
             <a href="{{ url('/welcome') }}">
@@ -95,7 +95,7 @@
         </div>
     </div>
 
-    <div class="relative -mt-12 w-full pt-8 sm:pt-0 h-24 w-full">
+    <div class="relative w-full pt-8 sm:pt-0 h-24 w-full">
         <svg viewBox="0 0 1428 174" preserveAspectRatio="none" style="height: 100%; width: 100%;">
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g transform="translate(-2.000000, 44.000000)" fill="#151E2D" fill-rule="nonzero">
