@@ -137,9 +137,10 @@ class JoinGroup extends Component
         }
 
         if ($this->token) {
-
             return $this->redirectToGroupRoom();
         }
+
+        return $this->redirect('/welcome');
     }
 
     public function checkAnonymousPlay()

@@ -52,9 +52,7 @@ class WaveLengthComponent extends Component
 
     public function handlePlayerKick($playerKicked)
     {
-        if ($playerKicked['player_id'] == $this->game->currentRound->active_player_id) {
-            $this->nextRound();
-        }
+        $this->nextRound();
     }
 
     public function giveClue()

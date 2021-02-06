@@ -6,8 +6,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto mt-4 sm:px-6 lg:px-8 flex">
 
-        <livewire:player-overview-component :game="$game" :group="$group"></livewire:player-overview-component>
-
         <div class="w-full">
             <div class="relative">
                 <div style="height: 30px; overflow: hidden;">

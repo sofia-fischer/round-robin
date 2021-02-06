@@ -45,8 +45,8 @@
                 </div>
 
                 <div class="px-6 py-3 flex justify-center">
-                    @if($group->authenticatedPlayer->id != $kickPlayerId)
-                        <button wire:click="$set('kickPlayerId', {{ $group->authenticatedPlayer->id }})"
+                    @if(($group->authenticatedPlayer->id ?? false) != $kickPlayerId)
+                        <button wire:click="$set('kickPlayerId', {{ $group->authenticatedPlayer->id ?? null}})"
                                 class="bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-md text-gray-200 rounded-full px-4 py-1">
                             Leave
                         </button>
@@ -75,7 +75,7 @@
                                     @if($player->user_id == $group->host_user_id)
                                     @elseif($player->id != $kickPlayerId)
                                         <button wire:click="$set('kickPlayerId', {{ $player->id }})"
-                                                class="rounded-full font-bold m-2 px-2 text-white {{ 'bg-' . $player->activeColor }}">
+                                                class="rounded-full font-bold m-2 px-2 text-white {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
                                             {{ $player->name }}
                                         </button>
                                     @else

@@ -8,7 +8,7 @@
         @foreach($group->players as $index => $player)
             <div class="flex flex-row justify-start mb-2  {{ $game && $player->id == ($game->currentRound->active_player_id ?? null) ? 'pl-4' : '' }}">
                 <div class="flex overflow-hidden justify-between rounded-xl w-7 h-7 sm:w-36
-                        {{ 'bg-' . $player->activeColor }}">
+                        {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
                     <div class="pt-1 text-white px-2 ">
                         {{ $player->name }}
                     </div>
@@ -26,11 +26,9 @@
         @foreach($group->players as $index => $player)
             <div class="flex flex-row justify-start mb-2  {{ $game && $player->id == ($game->currentRound->active_player_id ?? null) ? 'pl-4' : '' }}">
                 <div class="flex overflow-hidden justify-between rounded-full w-7 h-7 sm:w-36
-                     {{ 'bg-' . $player->activeColor }}">
+                     {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
                 </div>
             </div>
         @endforeach
     </div>
 </div>
-
-

@@ -2,6 +2,7 @@
     <?php
     /* @var App\Models\Game $game */
     /* @var App\Models\Move $move */
+    /* @var App\Models\Player $player */
     ?>
 
     <div class="flex justify-between max-w-xl mx-auto">
@@ -41,9 +42,9 @@
                         <div class="w-6 h-0  relative overflow-visible"
                              style="margin-left: {{ $move->payload['guess'] }}%">
                             <div
-                                class="bg-{{ $move->player->activeColor }} w-4 hover:w-16 h-4 absolute bottom-2 right-2 rounded-b-lg rounded-r-lg hover-trigger">
+                                class="bg-{{ $move->player->activeColor ?? 'pink-500' }} w-4 hover:w-16 h-4 absolute bottom-2 right-2 rounded-b-lg rounded-r-lg hover-trigger">
                                 <div
-                                    class="absolute bg-{{ $move->player->activeColor }} border border-grey-100 px-4 hover-target rounded-b-lg rounded-r-lg">
+                                    class="absolute bg-{{ $move->player->activeColor ?? 'pink-500' }} border border-grey-100 px-4 hover-target rounded-b-lg rounded-r-lg">
                                     {{ $move->player->name }}
                                 </div>
                                 <style>
@@ -62,7 +63,7 @@
             @else
                 <div class="bg-gray-700  text-white font-semibold h-8 p-2">
                     <input type="range" min="1" max="100"
-                           class="w-full text-pink"
+                           class="w-full text-pink text-center"
                            {{ $game->currentRound->authenticatedPlayerMove ? 'disabled' : '' }}
                            wire:model.defer="value">
                 </div>
@@ -106,4 +107,28 @@
             </div>
         @endif
     </div>
+
+    <div class="flex flex-wrap w-full text-center px-4 invisible pt-16 sm:visible">
+        @foreach($game->players as $index => $player)
+            <div class="flex flex-row justify-start m-2">
+                <div class="flex overflow-hidden justify-between rounded-xl w-7 h-7 sm:w-36
+                        {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
+                    <div class="pt-1 text-white px-2 flex-grow text-left">
+                        {{ $player->name }}
+                    </div>
+                    <div class="text-white w-6 h-4">
+                        @if($game->currentRound->moves->firstWhere('player_id', $player->id))
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        @endif
+                    </div>
+                    <div class="text-sm bg-white opacity-50 m-1 rounded-full px-2">
+                        {{ $game ? $player->scoreInGame($game->id) : '' }}
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
 </div>

@@ -45,9 +45,9 @@
                     </div>
                 </div>
                 @if(!Auth::id())
-                    <button class="hover:text-yellow-300 text-sm mt-16 sm:mt-24" wire:click="continueWithoutToken">
+                    <div class="hover:text-yellow-300 text-sm mt-16 sm:mt-24" wire:click="continueWithoutToken">
                         Continue without token
-                    </button>
+                    </div>
                 @endif
             @elseif($step == 1)
                 <div class="text-lg mt-auto p-8 font-semibold">
@@ -75,9 +75,9 @@
                     </script>
 
                 </div>
-                <button class="hover:text-yellow-300 text-lg mt-12 sm:mt-20" wire:click="$set('step', 2)">
+                <div class="hover:text-yellow-300 text-lg mt-12 sm:mt-20" wire:click="$set('step', 2)">
                     Accept
-                </button>
+                </div>
 
             @elseif($step == 2 && $stepTwo == 'login')
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
@@ -109,9 +109,9 @@
                 <div class="text-xs">
                     {{ $errorMessage }}
                 </div>
-                <button class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkLogin">
+                <div class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkLogin">
                     Login
-                </button>
+                </div>
             @elseif($step == 2 && $stepTwo == 'anonym')
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
                 <div>
@@ -133,9 +133,9 @@
                 <div class="text-xs">
                     {{ $errorMessage }}
                 </div>
-                <button class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkAnonymousPlay">
+                <div class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkAnonymousPlay">
                     Play
-                </button>
+                </div>
             @else
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
                 <div>
@@ -170,9 +170,9 @@
                 <div class="text-xs">
                     {{ $errorMessage }}
                 </div>
-                <button class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkRegister">
+                <div class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkRegister">
                     Register
-                </button>
+                </div>
             @endif
         </div>
     </div>

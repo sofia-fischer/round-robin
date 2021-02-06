@@ -89,6 +89,10 @@ class WavelengthPolicy extends Policy
             $move->save();
         });
 
+        // reward active player
+        $activePlayerMove = $round->moves()->where('player_id', $round->active_player_id)->first();
+        $activePlayerMove->score = ceil($round->moves()->where('player_id', '!=', $round->active_player_id)->average('score'));
+
         $round->completed_at = now();
         $round->save();
     }
