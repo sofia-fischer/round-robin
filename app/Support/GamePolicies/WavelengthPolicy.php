@@ -6,6 +6,8 @@ use App\Models\Game;
 use App\Models\Move;
 use App\Models\Player;
 use App\Models\Round;
+use App\Queue\Events\GameRoundAction;
+use App\Queue\Events\GameStarted;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -13,8 +15,10 @@ class WavelengthPolicy extends Policy
 {
     public function startGame(Game $game)
     {
-        $game->started_at = now();
-        $game->save();
+        if (!$game->started_at) {
+            $game->started_at = now();
+            $game->save();
+        }
 
         Round::create([
             'uuid'             => Str::uuid(),
@@ -25,6 +29,7 @@ class WavelengthPolicy extends Policy
                 'antonyms'   => collect($this->antonyms)->random(),
             ],
         ]);
+        event(new GameStarted($game->id));
     }
 
     public function playerJoined(Player $player, Game $game)
@@ -58,6 +63,7 @@ class WavelengthPolicy extends Policy
         $move->save();
 
         $this->checkForEndOfRound($round);
+        event(new GameRoundAction($round->game_id));
     }
 
     private function checkForEndOfRound(Round $round)
@@ -100,15 +106,7 @@ class WavelengthPolicy extends Policy
 
     public function endRound(Round $round)
     {
-        Round::create([
-            'uuid'             => Str::uuid(),
-            'game_id'          => $round->game_id,
-            'active_player_id' => $round->game->nextPlayer->id,
-            'payload'          => [
-                'waveLength' => random_int(0, 100),
-                'antonyms'   => collect($this->antonyms)->random(),
-            ],
-        ]);
+        $this->startGame($round->game);
     }
 
     public $antonyms = [

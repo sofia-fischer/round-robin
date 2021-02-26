@@ -232,6 +232,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        // custom added
+        'WerewolfRoleEnum' => \App\Support\Enums\WerewolfRoleEnum::class,
     ],
 
 ];

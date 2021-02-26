@@ -3,8 +3,8 @@
 namespace App\Http\Livewire;
 
 use App\Models\Game;
-use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameRoundAction;
+use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
 use Illuminate\Support\Str;
@@ -43,7 +43,7 @@ class WaveLengthComponent extends Component
     public function getListeners() : array
     {
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class             => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class           => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class       => '$refresh',
             'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
             'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'handlePlayerKick',

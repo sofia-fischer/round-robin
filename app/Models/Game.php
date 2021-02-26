@@ -38,6 +38,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property Player currentPlayer
  * @property Player nextPlayer
  * @property bool authenticatedPlayerIsActive
+ * @property Move authenticatedPlayerMove
  *
  * @package app/Database/Models
  */
@@ -136,6 +137,11 @@ class Game extends BaseModel
     {
         return $this->currentRound->activePlayer->user_id == Auth::id();
     }
+
+    protected function getAuthenticatedPlayerMoveAttribute()
+    {
+        return $this->currentRound ? $this->currentRound->authenticatedPlayerMove : null;
+    }
     /*
     |--------------------------------------------------------------------------
     | Scopes
@@ -154,7 +160,6 @@ class Game extends BaseModel
         $logic = app($className);
 
         $logic->startGame($this);
-        event(new GameStarted($this->id));
     }
 
     public function join(Player $player)
@@ -171,7 +176,6 @@ class Game extends BaseModel
         $logic = app($className);
 
         $logic->roundAction($this->currentRound, $options);
-        event(new GameRoundAction($this->id));
     }
 
     public function endRound()
@@ -181,6 +185,5 @@ class Game extends BaseModel
 
 
         $logic->endRound($this->currentRound);
-        event(new GameEnded($this->id));
     }
 }
