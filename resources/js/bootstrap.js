@@ -19,7 +19,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
-console.log('init echo started')
 
 window.Echo = new Echo({
     broadcaster: 'pusher',

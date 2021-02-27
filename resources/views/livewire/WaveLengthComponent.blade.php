@@ -64,7 +64,7 @@
                 <div class="bg-gray-700  text-white font-semibold h-8 p-2">
                     <input type="range" min="1" max="100"
                            class="w-full text-pink text-center"
-                           {{ $game->currentRound->authenticatedPlayerMove ? 'disabled' : '' }}
+                           {{ $game->authenticatedPlayerMove ? 'disabled' : '' }}
                            wire:model.defer="value">
                 </div>
             @endif
@@ -91,7 +91,7 @@
                 </button>
             @endif
         @else
-            @if($step == 'clue-given' && !$game->currentRound->authenticatedPlayerMove)
+            @if($step == 'clue-given' && !$game->authenticatedPlayerMove)
                 <button wire:click="setGuess" class="bg-gray-700 text-white rounded-full my-4 mx-auto py-1 px-4">
                     Set Guess
                 </button>
@@ -108,10 +108,10 @@
         @endif
     </div>
 
-    <div class="flex flex-wrap w-full text-center px-4 invisible pt-16 sm:visible">
+    <div class="flex flex-wrap w-full text-center px-4 pt-16">
         @foreach($game->players as $index => $player)
             <div class="flex flex-row justify-start m-2">
-                <div class="flex overflow-hidden justify-between rounded-xl w-7 h-7 sm:w-36
+                <div class="flex overflow-hidden justify-between rounded-xl h-7 w-36
                         {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
                     <div class="pt-1 text-white px-2 flex-grow text-left">
                         {{ $player->name }}

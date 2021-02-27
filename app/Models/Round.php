@@ -25,7 +25,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @property Game game
  * @property Player activePlayer
- * @property Player authenticatedPlayerMove
+ * @property Move authenticatedPlayerMove
  * @property \Illuminate\Support\Collection moves
  *
  * Attributes

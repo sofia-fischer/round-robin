@@ -124,6 +124,7 @@
       <path value="$PROJECT_DIR$/vendor/pusher/pusher-php-server" />
       <path value="$PROJECT_DIR$/vendor/rollbar/rollbar" />
       <path value="$PROJECT_DIR$/vendor/rollbar/rollbar-laravel" />
+      <path value="$PROJECT_DIR$/vendor/predis/predis" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

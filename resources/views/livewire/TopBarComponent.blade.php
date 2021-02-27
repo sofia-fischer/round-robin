@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-400">
     <!-- Primary Navigation Menu -->
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20 fixed w-full">
+    <div class="px-4 sm:px-6 lg:px-8 z-20 fixed w-full">
         <div class="flex justify-between h-16">
             <!-- Navigation Links -->
             <a href="{{ url('/welcome') }}">
