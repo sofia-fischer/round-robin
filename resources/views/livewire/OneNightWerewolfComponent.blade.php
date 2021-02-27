@@ -25,8 +25,7 @@
 
     @if($step != 'start')
         {{--    Timer    --}}
-        <div class="flex mt-4 sm:rounded-t-full overflow-hidden"
-             wire:click="checkTimeOuts">
+        <div class="flex mt-4 sm:rounded-t-full overflow-hidden">
             <div class="w-6 h-4 {{ $step == 'start' ? 'bg-white text-indigo-900' : 'bg-indigo-900 text-white'}} pl-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
@@ -451,10 +450,6 @@
                     <button wire:click="startGame" class="rounded-lg bg-gradient-to-br from-purple-600 to-orange-400 text-white  px-4">
                         Start Game
                     </button>@break
-                    @case('night')
-                    <button wire:click="makeDawn" class="rounded-lg bg-green-500 px-4">Make Day</button>@break
-                    @case('day')
-                    <button wire:click="makeNight" class="rounded-lg bg-green-500 px-4">End Game</button>@break
                     @case('end')
                     <button wire:click="nextRound" class="rounded-lg bg-green-500 px-4">Restart</button>@break
                 @endswitch

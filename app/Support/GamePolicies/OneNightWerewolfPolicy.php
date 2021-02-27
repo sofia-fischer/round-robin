@@ -2,6 +2,7 @@
 
 namespace App\Support\GamePolicies;
 
+use App\Jobs\OneNightWerewolfDayJob;
 use App\Jobs\OneNightWerewolfNightJob;
 use App\Models\Game;
 use App\Models\Move;
@@ -40,7 +41,7 @@ class OneNightWerewolfPolicy extends Policy
         ]);
         event(new GameStarted($game->id));
 
-//        OneNightWerewolfNightJob::dispatch($game->id)->delay(now()->addSeconds(WerewolfRoleEnum::NIGHT_DURATION));
+        OneNightWerewolfNightJob::dispatch($game->id)->onConnection('redis')->delay(now()->addSeconds(WerewolfRoleEnum::NIGHT_DURATION));
     }
 
     private function getRoles(int $playerCount, $currentRoles = [])
@@ -170,8 +171,9 @@ class OneNightWerewolfPolicy extends Policy
             'extraRoles'     => $extraRoles,
         ];
         $round->save();
+
         event(new GameRoundAction($round->game_id));
-        OneNightWerewolfNightJob::dispatch($round->game_id)->delay(now()->addSeconds(WerewolfRoleEnum::DAY_DURATION));
+        OneNightWerewolfDayJob::dispatch($round->game_id)->onConnection('redis')->delay(now()->addSeconds(WerewolfRoleEnum::DAY_DURATION));
     }
 
     static function calculateResults(Round $round)
@@ -252,7 +254,7 @@ class OneNightWerewolfPolicy extends Policy
         $round->payload = $payload;
         $round->completed_at = now();
         $round->save();
-        event(new GameRoundAction($round->game_id));
+        event(new GameEnded($round->game_id));
     }
 
     public function endRound(Round $round)

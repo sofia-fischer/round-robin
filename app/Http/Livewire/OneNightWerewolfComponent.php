@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Jobs\OneNightWerewolfNightJob;
 use App\Models\Game;
 use App\Models\Player;
 use App\Queue\Events\GameEnded;
@@ -10,11 +9,6 @@ use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
-use App\Support\Enums\WerewolfRoleEnum;
-use App\Support\GamePolicies\OneNightWerewolfPolicy;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Livewire\Component;
 
 class OneNightWerewolfComponent extends Component
@@ -76,61 +70,15 @@ class OneNightWerewolfComponent extends Component
         ]);
     }
 
-    /**
-     * @return array
-     */
     public function getListeners() : array
     {
         return [
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class           => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class       => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class             => '$refresh',
             'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
-            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'handlePlayerKick',
-
-            'nightTimeEnd' => 'checkTimeOuts',
-            'dayTimeEnd'   => 'checkTimeOuts',
+            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'nextRound',
         ];
-    }
-
-    public function handlePlayerKick($playerKicked)
-    {
-        $this->nextRound();
-    }
-
-    public function checkTimeOuts()
-    {
-        if ($this->game->group->host_user_id != Auth::id()) {
-            sleep(1);
-        }
-
-        if (!$this->game->currentRound) {
-            return;
-        }
-
-        if ($this->game->currentRound->completed_at) {
-            return;
-        }
-
-        $step = $this->game->currentRound->payload['state'];
-        $gameDuration = $this->game->currentRound->created_at->diffInSeconds(now());
-
-        if ($step == 'night' && ($gameDuration >= WerewolfRoleEnum::NIGHT_DURATION)) {
-            OneNightWerewolfPolicy::calculateSunrise($this->game->currentRound);
-            event(new GameRoundAction($this->game->id));
-
-            return;
-        }
-
-        if ($step == 'day' && ($gameDuration >= (WerewolfRoleEnum::DAY_DURATION + WerewolfRoleEnum::NIGHT_DURATION))) {
-            OneNightWerewolfPolicy::calculateResults($this->game->currentRound);
-            event(new GameRoundAction($this->game->id));
-        }
-    }
-
-    public function testEvent()
-    {
-        Log::info('dipatch OneNightWerewolfNightJob ');
-        OneNightWerewolfNightJob::dispatch($this->game->id)->onConnection('redis')->delay(now()->addSeconds(5));
     }
 
     public function startGame()
@@ -146,17 +94,5 @@ class OneNightWerewolfComponent extends Component
     public function nextRound()
     {
         $this->game->endRound();
-    }
-
-    public function makeDawn()
-    {
-        OneNightWerewolfPolicy::calculateSunrise($this->game->currentRound);
-        event(new GameRoundAction($this->game->id));
-    }
-
-    public function makeNight()
-    {
-        OneNightWerewolfPolicy::calculateResults($this->game->currentRound);
-        event(new GameRoundAction($this->game->id));
     }
 }
