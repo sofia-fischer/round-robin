@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\Move;
 use App\Models\Player;
 use App\Models\Round;
+use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\GameStarted;
 use Illuminate\Support\Facades\Auth;
@@ -102,6 +103,7 @@ class WavelengthPolicy extends Policy
 
         $round->completed_at = now();
         $round->save();
+        event(new GameEnded($round->game_id));
     }
 
     public function endRound(Round $round)
