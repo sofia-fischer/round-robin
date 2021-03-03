@@ -450,6 +450,10 @@
                     <button wire:click="startGame" class="rounded-lg bg-gradient-to-br from-purple-600 to-orange-400 text-white  px-4">
                         Start Game
                     </button>@break
+                    @case('night')
+                    <button wire:click="makeDawn" class="rounded-lg bg-green-500 px-4">Make Day</button>@break
+                    @case('day')
+                    <button wire:click="makeNight" class="rounded-lg bg-green-500 px-4">End Game</button>@break
                     @case('end')
                     <button wire:click="nextRound" class="rounded-lg bg-green-500 px-4">Restart</button>@break
                 @endswitch

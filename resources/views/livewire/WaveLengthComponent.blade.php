@@ -15,7 +15,7 @@
         </div>
 
         <div class="text-sm {{ $step == 'completed' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentPlayer->name }} starts next round
+            {{ $game->currentRound->activePlayer->name }} starts next round
         </div>
     </div>
 

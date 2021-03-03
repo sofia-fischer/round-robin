@@ -9,6 +9,7 @@ use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
+use App\Support\GamePolicies\OneNightWerewolfPolicy;
 use Livewire\Component;
 
 class OneNightWerewolfComponent extends Component
@@ -94,5 +95,17 @@ class OneNightWerewolfComponent extends Component
     public function nextRound()
     {
         $this->game->endRound();
+    }
+
+    public function makeDawn()
+    {
+        OneNightWerewolfPolicy::calculateSunrise($this->game->currentRound);
+//        event(new GameRoundAction($this->game->id));
+    }
+
+    public function makeNight()
+    {
+        OneNightWerewolfPolicy::calculateResults($this->game->currentRound);
+//        event(new GameRoundAction($this->game->id));
     }
 }
