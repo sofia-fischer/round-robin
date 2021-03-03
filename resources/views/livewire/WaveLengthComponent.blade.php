@@ -7,7 +7,7 @@
 
     <div class="flex justify-between max-w-xl mx-auto">
         <div class="text-sm {{ $step == 'start' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentPlayer->name }} gives a clue
+            {{ $game->currentRound->activePlayer->name }} gives a clue
         </div>
 
         <div class="text-sm {{ $step == 'clue-given' ? 'text-purple-600' : 'text-gray-400' }}">
