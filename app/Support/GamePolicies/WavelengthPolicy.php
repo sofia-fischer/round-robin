@@ -56,6 +56,7 @@ class WavelengthPolicy extends Policy
             $payload['clue'] = $options['clue'];
             $round->payload = $payload;
             $round->save();
+            event(new GameRoundAction($round->game_id));
 
             return;
         }
