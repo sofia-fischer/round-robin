@@ -16,7 +16,7 @@ php artisan storage:link
 
 php artisan game:seed-logics
 
-echo $HETZNER_SSH_PASSWORD | sudo -kS cp /var/www/html/round-robin/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/philodev-workers-redis-production.conf
+echo $HETZNER_SSH_PASSWORD | sudo -kS cp /var/www/html/round-robin/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/round-robin-workers-redis-production.conf
 
 echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl reread
 echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl update
