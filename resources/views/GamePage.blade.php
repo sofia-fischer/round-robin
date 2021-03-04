@@ -35,6 +35,8 @@
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
                 @elseif($game->game_logic_id == 2)
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
+                @elseif($game->game_logic_id == 3)
+                    <livewire:just-one-component :game="$game"></livewire:just-one-component>
                 @endif
             </div>
         </div>
@@ -52,7 +54,7 @@
         class="bg-white text-small invisible rounded-lg shadow-lg max-w-xl top-32 w-full left-0 right-0 mx-auto p-4 text-center absolute"
         id="modal">
         <h2 class="text-center text-purple-600 pb-2">
-            {{ $game->game_logic_id == 1 ? 'Wave Length' : 'Werewolf' }}
+            {{ $game->logic->name }}
         </h2>
 
         {{ $game->game_logic_id == 1 ? 'The active Player knows where the target on a spectrum between two opposing concepts is,

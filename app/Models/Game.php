@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\GameStarted;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;

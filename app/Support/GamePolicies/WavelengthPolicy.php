@@ -167,6 +167,7 @@ class WavelengthPolicy extends Policy
         ['normal greeting' => 'weird greeting'],
         ['bad advice' => 'good advice'],
         ['possible during Corona' => 'not possible during Corona'],
+        ['Log Level: Debug' => 'Log Level: Critical'],
         ['😇' => '😏'],
     ];
 }
