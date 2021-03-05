@@ -35,6 +35,8 @@
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
                 @elseif($game->game_logic_id == 2)
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
+                @elseif($game->game_logic_id == 3)
+                    <livewire:just-one-component :game="$game"></livewire:just-one-component>
                 @endif
             </div>
         </div>
@@ -52,12 +54,20 @@
         class="bg-white text-small invisible rounded-lg shadow-lg max-w-xl top-32 w-full left-0 right-0 mx-auto p-4 text-center absolute"
         id="modal">
         <h2 class="text-center text-purple-600 pb-2">
-            {{ $game->game_logic_id == 1 ? 'Wave Length' : 'Werewolf' }}
+            {{ $game->logic->name }}
         </h2>
 
-        {{ $game->game_logic_id == 1 ? 'The active Player knows where the target on a spectrum between two opposing concepts is,
-        but can only give a verbal clue to the other players, who only see the opposing concepts.
-        With that clue, the other players have to guess where the target is.' : WerewolfRoleEnum::GAME_INFO}}
+        @switch($game->game_logic_id)
+            @case(1)
+            {{ config('wavelength.info') }}
+            @break
+            @case(2)
+            {{ WerewolfRoleEnum::GAME_INFO }}
+            @break
+            @case(3)
+            {{ config('just_one.info') }}
+            @break
+        @endswitch
     </div>
 
     <script>
