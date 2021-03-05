@@ -40,22 +40,22 @@ class JustOnePolicy extends Policy
 
     public function roundAction(Round $round, array $options = [])
     {
+    }
+
+    static function giveClue(Round $round, string $clue)
+    {
         /** @var Move $move */
         $move = Move::updateOrCreate([
             'round_id'  => $round->id,
             'player_id' => $round->game->authenticatedPlayer->id,
         ], [
             'user_id' => Auth::id(),
-            'payload' => $options,
+            'payload' => ['clue' => $clue],
         ]);
 
-        $this->checkForEndOfRound($round);
         event(new GameRoundAction($round->game_id));
-    }
 
-    private function checkForEndOfRound(Round $round)
-    {
-        if ($round->moves()->count() < $round->game->players()->count()) {
+        if ($round->moves()->count() < ($round->game->players()->count() - 1)) {
             return;
         }
 
@@ -89,26 +89,55 @@ class JustOnePolicy extends Policy
                 return false;
             });
 
-            $move->payload['visible'] = $similarWords->count() > 1 ? false : true;
+            $movePayload = $move->payload ?? [];
+            $movePayload['visible'] = $similarWords->count() > 1 ? false : true;
+            $move->payload = $movePayload;
             $move->save();
         });
 
-        $roundPayload = $round->payload;
+        $roundPayload = $round->payload ?? [];
         $roundPayload['clues_calculated'] = true;
         $round->payload = $roundPayload;
         $round->save();
+
         event(new GameRoundAction($round->game_id));
     }
 
     public function endRound(Round $round)
     {
-        $guessedWord = Str::lower($round->authenticatedPlayerMove);
+    }
+
+    static function nextRound(Round $round)
+    {
+        Round::create([
+            'uuid'             => Str::uuid(),
+            'game_id'          => $round->game->id,
+            'active_player_id' => $round->game->currentPlayer->id,
+            'payload'          => [
+                'word' => collect(config('just_one.words'))->random(),
+            ],
+        ]);
+        event(new GameStarted($round->game->id));
+    }
+
+    static function giveGuess(Round $round, string $guessedWord)
+    {
+        /** @var Move $move */
+        $move = Move::updateOrCreate([
+            'round_id'  => $round->id,
+            'player_id' => $round->game->authenticatedPlayer->id,
+        ], [
+            'user_id' => Auth::id(),
+            'payload' => ['guess' => $guessedWord],
+        ]);
+
         $word = Str::lower($round->payload['word']);
 
         if ($guessedWord == $word || Str::contains($guessedWord, $word)) {
-            $round->moves()->update(['score', 1]);
+            $round->moves()->update(['score' => 1]);
         }
 
-        $this->startGame($round->game);
+        $round->completed_at = now();
+        $round->save();
     }
 }

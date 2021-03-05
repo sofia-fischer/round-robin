@@ -57,9 +57,17 @@
             {{ $game->logic->name }}
         </h2>
 
-        {{ $game->game_logic_id == 1 ? 'The active Player knows where the target on a spectrum between two opposing concepts is,
-        but can only give a verbal clue to the other players, who only see the opposing concepts.
-        With that clue, the other players have to guess where the target is.' : WerewolfRoleEnum::GAME_INFO}}
+        @switch($game->game_logic_id)
+            @case(1)
+            {{ config('wavelength.info') }}
+            @break
+            @case(2)
+            {{ WerewolfRoleEnum::GAME_INFO }}
+            @break
+            @case(3)
+            {{ config('just_one.info') }}
+            @break
+        @endswitch
     </div>
 
     <script>

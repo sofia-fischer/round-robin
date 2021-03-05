@@ -3,11 +3,11 @@
 namespace App\Http\Livewire;
 
 use App\Models\Game;
-use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
+use App\Support\GamePolicies\JustOnePolicy;
 use Livewire\Component;
 
 class JustOneComponent extends Component
@@ -30,6 +30,11 @@ class JustOneComponent extends Component
             $step = 'completed';
         }
 
+        if ($this->game->authenticatedPlayerMove) {
+            $this->clue = $this->game->authenticatedPlayerMove->payload['clue'] ?? null;
+            $this->value = $this->game->authenticatedPlayerMove->payload['guess'] ?? null;
+        }
+
         return view('livewire.JustOneComponent', [
             'step' => $step,
         ]);
@@ -43,7 +48,6 @@ class JustOneComponent extends Component
         return [
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class           => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class       => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class             => '$refresh',
             'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
             'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'nextRound',
         ];
@@ -51,12 +55,12 @@ class JustOneComponent extends Component
 
     public function giveClue()
     {
-        $this->game->roundAction(['clue' => $this->clue]);
+        JustOnePolicy::giveClue($this->game->currentRound, $this->clue);
     }
 
     public function giveGuess()
     {
-        $this->game->roundAction(['guess' => $this->value]);
+        JustOnePolicy::giveGuess($this->game->currentRound, $this->value);
     }
 
     public function nextRound()
@@ -64,6 +68,6 @@ class JustOneComponent extends Component
         $this->value = null;
         $this->clue = null;
 
-        $this->game->endRound();
+        JustOnePolicy::nextRound($this->game->currentRound);
     }
 }
