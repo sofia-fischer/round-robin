@@ -9,6 +9,9 @@ use App\Queue\Events\PlayerKicked;
 use App\Queue\Events\PlayerUpdated;
 use App\Support\GamePolicies\JustOnePolicy;
 use Livewire\Component;
+use Livewire\Livewire;
+
+Livewire::component('just-one-component', JustOneComponent::class);
 
 class JustOneComponent extends Component
 {
