@@ -82,7 +82,7 @@
             @elseif($step == 2 && $stepTwo == 'login')
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
                 <div>
-                    @if($token)
+                    @if($token || $game)
                         <button class="hover:text-yellow-300 text-xs sm:mt-5" wire:click="$set('stepTwo', 'anonym')">
                             Play Anonymous?
                         </button>
@@ -110,7 +110,7 @@
                     {{ $errorMessage }}
                 </div>
                 <div class="hover:text-yellow-300 text-lg mt-2 sm:mt-5" wire:click="checkLogin">
-                    Login
+            Login
                 </div>
             @elseif($step == 2 && $stepTwo == 'anonym')
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
@@ -139,7 +139,7 @@
             @else
                 <div class="text-lg mt-auto p-4 font-semibold">Who are you?</div>
                 <div>
-                    @if($token)
+                    @if($token || $game)
                         <button class="hover:text-yellow-300 text-xs sm:mt-5" wire:click="$set('stepTwo', 'anonym')">
                             Play Anonymous?
                         </button>

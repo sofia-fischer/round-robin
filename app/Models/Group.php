@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 /**
  * Class Group
@@ -30,33 +30,17 @@ use Illuminate\Support\Str;
  */
 class Group extends BaseModel
 {
-    /*
-    |--------------------------------------------------------------------------
-    | General Table Information
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'id',
-        'uuid',
-        'host_user_id',
-        'token',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'id'           => 'int',
+        'host_user_id' => 'int',
+        'created_at'   => 'dateTime',
+        'updated_at'   => 'dateTime',
+        'deleted_at'   => 'dateTime',
     ];
 
     /*

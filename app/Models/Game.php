@@ -41,35 +41,20 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  */
 class Game extends BaseModel
 {
-    /*
-    |--------------------------------------------------------------------------
-    | General Table Information
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'id',
-        'uuid',
-        'game_logic_id',
-        'group_id',
-        'started_at',
-        'ended_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'id'            => 'int',
+        'game_logic_id' => 'int',
+        'group_id'      => 'int',
+        'started_at'    => 'dateTime',
+        'ended_at'      => 'dateTime',
+        'created_at'    => 'dateTime',
+        'updated_at'    => 'dateTime',
+        'deleted_at'    => 'dateTime',
     ];
 
     /*
@@ -179,7 +164,6 @@ class Game extends BaseModel
     {
         $className = $this->logic->policy;
         $logic = app($className);
-
 
         $logic->endRound($this->currentRound);
     }

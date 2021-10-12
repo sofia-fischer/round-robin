@@ -9,8 +9,8 @@ class GamePage
 {
     public function __invoke(Group $group, Game $game)
     {
-        if (!$game->authenticatedPlayer) {
-            return redirect()->route('WelcomePage');
+        if (! $game->authenticatedPlayer) {
+            return redirect()->route('WelcomePage', ['game' => $game->uuid]);
         }
 
         return view('GamePage', [

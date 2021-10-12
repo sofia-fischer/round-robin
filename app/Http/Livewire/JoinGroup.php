@@ -2,16 +2,19 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Game;
+use App\Models\User;
 use App\Models\Group;
 use App\Models\Player;
-use App\Models\User;
+use Livewire\Component;
+use Illuminate\Support\Str;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Livewire\Component;
 
 class JoinGroup extends Component
 {
+    public ?Game $game = null;
+
     public string $tab = 'register';
 
     public ?string $token = null;
@@ -76,6 +79,11 @@ class JoinGroup extends Component
 
     public function render()
     {
+        if (request()->get('game')) {
+            $this->game = Game::where('uuid', request()->get('game'))->first();
+            $this->step = 2;
+        }
+
         return view('livewire.join-group');
     }
 
@@ -83,7 +91,7 @@ class JoinGroup extends Component
     {
         $group = Group::where('token', $this->token)->first();
 
-        if (!$group) {
+        if (! $group) {
             $this->errorMessage = 'This is not the group you are looking for... ';
 
             return;
@@ -105,13 +113,13 @@ class JoinGroup extends Component
 
     public function checkRegister()
     {
-        if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $this->errorMessage = 'That is not a valid email address... ';
 
             return;
         }
 
-        if (!$this->password) {
+        if (! $this->password) {
             $this->errorMessage = 'Empty password is not an option... ';
 
             return;
@@ -130,7 +138,7 @@ class JoinGroup extends Component
     {
         $user = User::login($this->email, $this->password);
 
-        if (!$user) {
+        if (! $user) {
             $this->errorMessage = 'Oh, that did not work... Can you try again?';
 
             return;
@@ -151,14 +159,17 @@ class JoinGroup extends Component
 
     public function redirectToGroupRoom(Group $group = null)
     {
-        $group = $group ?: Group::where('token', $this->token)->first();
+        $group = $group ?? $this->game->group ?? Group::where('token', $this->token)->first();
+
         $existingPlayer = $group->players()
             ->whereNotNull('user_id')
             ->where('user_id', Auth::id())
             ->first();
 
         if ($existingPlayer) {
-            return $this->redirect('/group/' . $group->uuid);
+            return $this->game
+                ? $this->redirect('/game/' . $this->game->uuid)
+                : $this->redirect('/group/' . $group->uuid);
         }
 
         $player = Player::create([
@@ -170,6 +181,8 @@ class JoinGroup extends Component
 
         event(new PlayerCreated($player->id));
 
-        return $this->redirect('/group/' . $group->uuid);
+        return $this->game
+            ? $this->redirect('/game/' . $this->game->uuid)
+            : $this->redirect('/group/' . $group->uuid);
     }
 }

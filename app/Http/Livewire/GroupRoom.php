@@ -4,13 +4,11 @@ namespace App\Http\Livewire;
 
 use App\Models\Game;
 use App\Models\Group;
-use App\Models\User;
-use App\Queue\Events\PlayerCreated;
-use App\Queue\Events\PlayerKicked;
-use App\Queue\Events\PlayerUpdated;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Livewire\Component;
+use Illuminate\Support\Str;
+use App\Queue\Events\PlayerKicked;
+use App\Queue\Events\PlayerCreated;
+use App\Queue\Events\PlayerUpdated;
 
 class GroupRoom extends Component
 {
@@ -19,20 +17,20 @@ class GroupRoom extends Component
     /**
      * @return array
      */
-    public function getListeners() : array
+    public function getListeners(): array
     {
         $channel = 'Group.' . $this->group->uuid;
 
         return [
             'echo:' . $channel . ',.' . PlayerCreated::class => '$refresh',
             'echo:' . $channel . ',.' . PlayerUpdated::class => '$refresh',
-            'echo:' . $channel . ',.' . PlayerKicked::class => '$refresh',
+            'echo:' . $channel . ',.' . PlayerKicked::class  => '$refresh',
         ];
     }
 
     public function render()
     {
-        if (!$this->group->authenticatedPlayer) {
+        if (! $this->group->authenticatedPlayer) {
             return $this->redirect('/welcome');
         }
 
@@ -57,8 +55,10 @@ class GroupRoom extends Component
     {
         /** @var Game $game */
         $game = Game::findOrFail($gameId);
+
+
         $game->join($this->group->authenticatedPlayer);
 
-        $this->redirect('\group\\' . $this->group->uuid . '\game\\' . $game->uuid);
+        $this->redirect('\game\\' . $game->uuid);
     }
 }

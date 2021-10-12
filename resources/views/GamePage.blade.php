@@ -31,11 +31,11 @@
             </div>
 
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg sm:p-4">
-                @if($game->game_logic_id == 1)
+                @if($game->logic->name == 'Wavelength')
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
-                @elseif($game->game_logic_id == 2)
+                @elseif($game->logic->name == 'OneNightWerewolf')
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
-                @elseif($game->game_logic_id == 3)
+                @elseif($game->logic->name == 'JustOne')
                     <livewire:just-one-component :game="$game"></livewire:just-one-component>
                 @endif
             </div>
