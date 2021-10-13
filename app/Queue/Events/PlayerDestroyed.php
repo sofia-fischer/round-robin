@@ -5,18 +5,13 @@ namespace App\Queue\Events;
 use App\Models\Player;
 use Illuminate\Broadcasting\Channel;
 
-/**
- * Class PlayerUpdated
- *
- * @package App\Queue\Events
- */
-class PlayerUpdated extends BaseEvent
+class PlayerDestroyed extends BaseEvent
 {
     public Player $player;
 
     public function __construct($player_id)
     {
-        $this->player = Player::find($player_id);
+        $this->player = Player::withTrashed()->find($player_id);
     }
 
     public function broadcastOn()

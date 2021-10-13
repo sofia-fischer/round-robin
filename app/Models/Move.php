@@ -46,16 +46,12 @@ class Move extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'id',
         'uuid',
         'round_id',
         'player_id',
         'user_id',
         'score',
         'payload',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     /**
@@ -64,7 +60,16 @@ class Move extends BaseModel
      * @var array
      */
     protected $casts = [
-        'payload' => 'array',
+        'id'         => 'int',
+        'uuid'       => 'string',
+        'round_id'   => 'int',
+        'player_id'  => 'int',
+        'user_id'    => 'int',
+        'score'      => 'int',
+        'payload'    => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /*

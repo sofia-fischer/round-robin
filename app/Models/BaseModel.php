@@ -2,23 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class BaseModel extends Model
 {
     use SoftDeletes;
 
-    /**
-     *  Setup model event hooks
-     */
-    public static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
-        self::creating(function ($model) {
-            if (in_array('uuid', $model->getFillable()) && (!isset($model->attributes['uuid']) || empty($model->attributes['uuid']))) {
+        self::creating(function ($model): void {
+            if (in_array('uuid', $model->getFillable()) && (! isset($model->attributes['uuid']) || empty($model->attributes['uuid']))) {
                 $model->uuid = Str::uuid();
             }
         });

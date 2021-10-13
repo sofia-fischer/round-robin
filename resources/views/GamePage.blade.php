@@ -17,7 +17,7 @@
                 <div
                     class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
                     <div>
-                        {{ $game->logic->name }}
+                        {{ $game->logic::title() }}
                     </div>
 
                     <div class="pl-2" id="btn-modal">
@@ -31,13 +31,17 @@
             </div>
 
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg sm:p-4">
-                @if($game->logic->name == 'Wavelength')
+                @if($game->logic_identifier ===  App\Support\GameLogics\WavelengthLogic::class)
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
-                @elseif($game->logic->name == 'OneNightWerewolf')
+                @elseif($game->logic_identifier ===  App\Support\GameLogics\OneNightWerewolfLogic::class)
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
-                @elseif($game->logic->name == 'JustOne')
+                @elseif($game->logic_identifier ===  App\Support\GameLogics\JustOneLogic::class)
                     <livewire:just-one-component :game="$game"></livewire:just-one-component>
                 @endif
+            </div>
+
+            <div>
+                <livewire:player-overview-component :game="$game"></livewire:player-overview-component>
             </div>
         </div>
     </div>
@@ -54,20 +58,12 @@
         class="bg-white text-small invisible rounded-lg shadow-lg max-w-xl top-32 w-full left-0 right-0 mx-auto p-4 text-center absolute"
         id="modal">
         <h2 class="text-center text-purple-600 pb-2">
-            {{ $game->logic->name }}
+            {{ $game->logic::title() }}
         </h2>
 
-        @switch($game->game_logic_id)
-            @case(1)
-            {{ config('wavelength.info') }}
-            @break
-            @case(2)
-            {{ WerewolfRoleEnum::GAME_INFO }}
-            @break
-            @case(3)
-            {{ config('just_one.info') }}
-            @break
-        @endswitch
+        <p>
+            {{ $game->logic::description() }}
+        </p>
     </div>
 
     <script>

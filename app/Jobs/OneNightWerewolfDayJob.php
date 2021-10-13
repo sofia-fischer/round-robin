@@ -3,14 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Game;
-use App\Support\GamePolicies\OneNightWerewolfPolicy;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Support\GameLogics\OneNightWerewolfLogic;
 
 class OneNightWerewolfDayJob implements ShouldQueue
 {
@@ -39,6 +38,6 @@ class OneNightWerewolfDayJob implements ShouldQueue
         /** @var Game $game */
         $game = Game::findOrFail($this->gameId);
 
-        OneNightWerewolfPolicy::calculateResults($game->currentRound);
+        OneNightWerewolfLogic::calculateResults($game->currentRound);
     }
 }

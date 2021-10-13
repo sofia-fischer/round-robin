@@ -3,13 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Models\Game;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\GameStarted;
-use App\Queue\Events\PlayerKicked;
-use App\Queue\Events\PlayerUpdated;
-use App\Support\GamePolicies\JustOnePolicy;
-use Livewire\Component;
 use Livewire\Livewire;
+use Livewire\Component;
+use App\Queue\Events\GameStarted;
+use App\Queue\Events\PlayerUpdated;
+use App\Queue\Events\PlayerDestroyed;
+use App\Queue\Events\GameRoundAction;
+use App\Support\GameLogics\JustOneLogic;
 
 Livewire::component('just-one-component', JustOneComponent::class);
 
@@ -46,24 +46,24 @@ class JustOneComponent extends Component
     /**
      * @return array
      */
-    public function getListeners() : array
+    public function getListeners(): array
     {
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class           => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class       => '$refresh',
-            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
-            'echo:' . 'Group.' . $this->game->group->uuid . ',.' . PlayerKicked::class  => 'nextRound',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class     => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => 'nextRound',
         ];
     }
 
     public function giveClue()
     {
-        JustOnePolicy::giveClue($this->game->currentRound, $this->clue);
+        JustOneLogic::giveClue($this->game->currentRound, $this->clue);
     }
 
     public function giveGuess()
     {
-        JustOnePolicy::giveGuess($this->game->currentRound, $this->value);
+        JustOneLogic::giveGuess($this->game->currentRound, $this->value);
     }
 
     public function nextRound()
@@ -71,6 +71,6 @@ class JustOneComponent extends Component
         $this->value = null;
         $this->clue = null;
 
-        JustOnePolicy::nextRound($this->game->currentRound);
+        JustOneLogic::nextRound($this->game->currentRound);
     }
 }

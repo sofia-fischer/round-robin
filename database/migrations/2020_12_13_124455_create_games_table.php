@@ -16,8 +16,9 @@ class CreateGamesTable extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->unsignedInteger('game_logic_id')->nullable();
-            $table->unsignedInteger('group_id')->nullable();
+            $table->string('logic_identifier');
+            $table->string('token');
+            $table->unsignedInteger('host_user_id')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();

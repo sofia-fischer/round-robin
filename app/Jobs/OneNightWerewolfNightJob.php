@@ -3,12 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\Game;
-use App\Support\GamePolicies\OneNightWerewolfPolicy;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Support\GameLogics\OneNightWerewolfLogic;
 
 class OneNightWerewolfNightJob implements ShouldQueue
 {
@@ -36,6 +36,6 @@ class OneNightWerewolfNightJob implements ShouldQueue
         /** @var Game $game */
         $game = Game::findOrFail($this->gameId);
 
-        OneNightWerewolfPolicy::calculateSunrise($game->currentRound);
+        OneNightWerewolfLogic::calculateSunrise($game->currentRound);
     }
 }

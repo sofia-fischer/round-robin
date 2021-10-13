@@ -1,22 +1,27 @@
 <?php
 
-namespace App\Support\GamePolicies;
+namespace App\Support\GameLogics;
 
 use App\Models\Game;
 use App\Models\Move;
-use App\Models\Player;
 use App\Models\Round;
-use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\GameStarted;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Player;
 use Illuminate\Support\Str;
+use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameStarted;
+use App\Support\Interfaces\Logic;
+use Illuminate\Support\Facades\Auth;
+use App\Queue\Events\GameRoundAction;
 
-class WavelengthPolicy extends Policy
+use function now;
+use function event;
+use function collect;
+
+class WavelengthLogic implements Logic
 {
     public function startGame(Game $game)
     {
-        if (!$game->started_at) {
+        if (! $game->started_at) {
             $game->started_at = now();
             $game->save();
         }
@@ -35,7 +40,7 @@ class WavelengthPolicy extends Policy
 
     public function playerJoined(Player $player, Game $game)
     {
-        if (!$game->started_at) {
+        if (! $game->started_at) {
             $this->startGame($game);
         }
     }
@@ -170,4 +175,16 @@ class WavelengthPolicy extends Policy
         ['Log Level: Debug' => 'Log Level: Critical'],
         ['😇' => '😏'],
     ];
+
+    static function title(): string
+    {
+        return 'Wavelength';
+    }
+
+    static function description(): string
+    {
+        return 'The active Player knows where the target on a spectrum between two opposing concepts is,
+            but can only give a verbal clue to the other players, who only see the opposing concepts.
+            With that clue, the other players have to guess where the target is.';
+    }
 }

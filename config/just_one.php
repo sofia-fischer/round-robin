@@ -1,11 +1,6 @@
 <?php
 
 return [
-    'info' => 'All players but the active player see the same word.
-    Without communicating with each other each player but the active player gives a one worded clue.
-    After all players made their clue, all clues which are a substring of the original word or duplicated words are hidden.
-    The active player then has to guess the word using the visible clues. ',
-
     'words' => [
         'account',
         'act',

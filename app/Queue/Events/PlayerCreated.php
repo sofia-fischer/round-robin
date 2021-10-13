@@ -2,37 +2,20 @@
 
 namespace App\Queue\Events;
 
-use App\Models\Group;
+use App\Models\Player;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
-/**
- * Class PlayerCreated
- *
- * @package App\Queue\Events
- */
-class PlayerCreated implements ShouldBroadcast
+class PlayerCreated extends BaseEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    public Player $player;
 
-    public $player_id;
-
-    public function __construct($player)
+    public function __construct($player_id)
     {
-        $this->player_id = $player;
+        $this->player = Player::find($player_id);
     }
 
     public function broadcastOn()
     {
-        $group = Group::query()
-            ->whereHas('players', function ($players) {
-                $players->where('id', $this->player_id);
-            })
-            ->firstOrFail();
-
-        return new Channel('Group.' . $group->uuid);
+        return new Channel('Game.' . $this->player->game->uuid);
     }
 }

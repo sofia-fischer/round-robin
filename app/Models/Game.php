@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
+use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
+use App\Queue\Events\PlayerDestroyed;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
@@ -13,8 +15,9 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @property  int id
  * @property  string uuid
- * @property  int game_logic_id
- * @property  int group_id
+ * @property  string token
+ * @property  string logic_identifier
+ * @property  int host_user_id
  * @property  Carbon started_at
  * @property  Carbon ended_at
  * @property  Carbon created_at
@@ -26,9 +29,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property \Illuminate\Support\Collection rounds
  * @property Round currentRound
  * @property \Illuminate\Support\Collection players
- * @property GameLogic logic
  * @property Player authenticatedPlayer
- * @property Group group
  *
  * Attributes
  *
@@ -37,24 +38,39 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property bool authenticatedPlayerIsActive
  * @property Move authenticatedPlayerMove
  *
+ * @property \App\Support\Interfaces\Logic $logic
+ * @see \App\Models\Game::getLogicAttribute()
+ *
  * @package app/Database/Models
  */
 class Game extends BaseModel
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'uuid',
+        'token',
+        'logic_identifier',
+        'host_user_id',
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
-        'id'            => 'int',
-        'game_logic_id' => 'int',
-        'group_id'      => 'int',
-        'started_at'    => 'dateTime',
-        'ended_at'      => 'dateTime',
-        'created_at'    => 'dateTime',
-        'updated_at'    => 'dateTime',
-        'deleted_at'    => 'dateTime',
+        'id'           => 'int',
+        'uuid'         => 'string',
+        'host_user_id' => 'int',
+        'started_at'   => 'datetime',
+        'ended_at'     => 'datetime',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
+        'deleted_at'   => 'datetime',
     ];
 
     /*
@@ -75,22 +91,12 @@ class Game extends BaseModel
 
     public function players()
     {
-        return $this->hasMany(Player::class, 'group_id', 'group_id');
+        return $this->hasMany(Player::class);
     }
 
     public function authenticatedPlayer()
     {
-        return $this->hasOne(Player::class, 'group_id', 'group_id')->where('user_id', Auth::id());
-    }
-
-    public function logic()
-    {
-        return $this->belongsTo(GameLogic::class, 'game_logic_id');
-    }
-
-    public function group()
-    {
-        return $this->belongsTo(Group::class, 'group_id');
+        return $this->hasOne(Player::class)->where('user_id', Auth::id());
     }
 
     /*
@@ -124,6 +130,11 @@ class Game extends BaseModel
     {
         return $this->currentRound ? $this->currentRound->authenticatedPlayerMove : null;
     }
+
+    protected function getLogicAttribute()
+    {
+        return app($this->logic_identifier);
+    }
     /*
     |--------------------------------------------------------------------------
     | Scopes
@@ -138,33 +149,49 @@ class Game extends BaseModel
 
     public function start()
     {
-        $className = $this->logic->policy;
-        $logic = app($className);
-
-        $logic->startGame($this);
+        $this->logic->startGame($this);
     }
 
-    public function join(Player $player)
+    public function join(): Player
     {
-        $className = $this->logic->policy;
-        $logic = app($className);
+        /** @var Player $player */
+        $player = $this->players()->create(['user_id' => Auth::id()]);
+        event(new PlayerCreated($player->id));
+        $this->logic->playerJoined($player, $this);
 
-        $logic->playerJoined($player, $this);
+        return $player;
+    }
+
+    public function destroyPlayer(Player $player): bool
+    {
+        $player->delete();
+        event(new PlayerDestroyed($player->id));
+
+        $this->logic->playerJoined($player, $this);
+
+        return true;
     }
 
     public function roundAction(array $options = null)
     {
-        $className = $this->logic->policy;
-        $logic = app($className);
-
-        $logic->roundAction($this->currentRound, $options);
+        $this->logic->roundAction($this->currentRound, $options);
     }
 
     public function endRound()
     {
-        $className = $this->logic->policy;
-        $logic = app($className);
+        $this->logic->endRound($this->currentRound);
+    }
 
-        $logic->endRound($this->currentRound);
+    /**
+     *  Setup model event hooks
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function (Game $game) {
+            $game->players()->delete();
+            $game->rounds()->delete();
+        });
     }
 }

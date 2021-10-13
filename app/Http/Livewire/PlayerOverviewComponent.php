@@ -3,18 +3,14 @@
 namespace App\Http\Livewire;
 
 use App\Models\Game;
-use App\Models\Group;
-use App\Models\Player;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\PlayerKicked;
-use App\Queue\Events\PlayerUpdated;
 use Livewire\Component;
+use App\Queue\Events\PlayerDestroyed;
+use App\Queue\Events\PlayerUpdated;
+use App\Queue\Events\GameRoundAction;
 
 class PlayerOverviewComponent extends Component
 {
     public ?Game $game = null;
-
-    public ?Group $group = null;
 
     public function render()
     {
@@ -24,18 +20,12 @@ class PlayerOverviewComponent extends Component
     /**
      * @return array
      */
-    public function getListeners() : array
+    public function getListeners(): array
     {
-        if (!$this->game) {
-            return [
-                'echo:' . 'Group.' . $this->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
-            ];
-        }
-
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
-            'echo:' . 'Group.' . $this->group->uuid . ',.' . PlayerUpdated::class => '$refresh',
-            'echo:' . 'Group.' . $this->group->uuid . ',.' . PlayerKicked::class  => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class  => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',
         ];
     }
 }

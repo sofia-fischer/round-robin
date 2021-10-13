@@ -4,11 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Game;
 use App\Models\User;
-use App\Models\Group;
-use App\Models\Player;
 use Livewire\Component;
-use Illuminate\Support\Str;
-use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
 
 class JoinGroup extends Component
@@ -89,16 +85,16 @@ class JoinGroup extends Component
 
     public function checkToken()
     {
-        $group = Group::where('token', $this->token)->first();
+        $this->game = $this->game ?? Game::query()->where('token', $this->token)->first();
 
-        if (! $group) {
-            $this->errorMessage = 'This is not the group you are looking for... ';
+        if (! $this->game) {
+            $this->errorMessage = 'This is not the game you are looking for... ';
 
             return;
         }
 
         if (Auth::user()) {
-            $this->redirectToGroupRoom($group);
+            return $this->continueWithRedirect();
         }
 
         $this->errorMessage = null;
@@ -125,64 +121,41 @@ class JoinGroup extends Component
             return;
         }
 
-        $user = User::registerNew($this->name ?? collect($this->names)->random(), $this->email, $this->password);
+        User::registerNew($this->name ?? collect($this->names)->random(), $this->email, $this->password);
 
-        if ($this->token) {
-            return $this->redirectToGroupRoom();
-        }
-
-        return $this->redirect('/welcome');
+        return $this->continueWithRedirect();
     }
 
     public function checkLogin()
     {
-        $user = User::login($this->email, $this->password);
+        User::login($this->email, $this->password);
 
-        if (! $user) {
-            $this->errorMessage = 'Oh, that did not work... Can you try again?';
-
-            return;
-        }
-
-        if ($this->token) {
-            return $this->redirectToGroupRoom();
-        }
-
-        return $this->redirect('/welcome');
+        return $this->continueWithRedirect();
     }
 
     public function checkAnonymousPlay()
     {
         User::anonymLogin($this->name ?? collect($this->names)->random());
-        $this->redirectToGroupRoom();
+
+        return $this->continueWithRedirect();
     }
 
-    public function redirectToGroupRoom(Group $group = null)
+    private function continueWithRedirect()
     {
-        $group = $group ?? $this->game->group ?? Group::where('token', $this->token)->first();
+        if (! Auth::check()) {
+            $this->errorMessage = 'Oh, that did not work... Can you try again?';
 
-        $existingPlayer = $group->players()
-            ->whereNotNull('user_id')
-            ->where('user_id', Auth::id())
-            ->first();
-
-        if ($existingPlayer) {
-            return $this->game
-                ? $this->redirect('/game/' . $this->game->uuid)
-                : $this->redirect('/group/' . $group->uuid);
+            return;
         }
 
-        $player = Player::create([
-            'uuid'     => Str::uuid(),
-            'user_id'  => Auth::user()->id,
-            'group_id' => $group->id,
-            'name'     => Auth::user()->name,
-        ]);
+        if (! $this->game) {
+            return $this->redirect('/welcome');
+        }
 
-        event(new PlayerCreated($player->id));
+        if (! $this->game->authenticatedPlayer) {
+            $this->game->join();
+        }
 
-        return $this->game
-            ? $this->redirect('/game/' . $this->game->uuid)
-            : $this->redirect('/group/' . $group->uuid);
+        return $this->redirect('/game/' . $this->game->uuid);
     }
 }

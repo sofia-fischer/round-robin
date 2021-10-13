@@ -1,26 +1,31 @@
 <?php
 
-namespace App\Support\GamePolicies;
+namespace App\Support\GameLogics;
 
-use App\Jobs\OneNightWerewolfDayJob;
-use App\Jobs\OneNightWerewolfNightJob;
 use App\Models\Game;
 use App\Models\Move;
-use App\Models\Player;
 use App\Models\Round;
-use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\GameStarted;
-use App\Support\Enums\WerewolfRoleEnum;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Player;
 use Illuminate\Support\Str;
+use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameStarted;
+use App\Support\Interfaces\Logic;
+use Illuminate\Support\Collection;
+use App\Jobs\OneNightWerewolfDayJob;
+use Illuminate\Support\Facades\Auth;
+use App\Queue\Events\GameRoundAction;
+use App\Jobs\OneNightWerewolfNightJob;
+use App\Support\Enums\WerewolfRoleEnum;
 
-class OneNightWerewolfPolicy extends Policy
+use function now;
+use function event;
+use function collect;
+
+class OneNightWerewolfLogic implements Logic
 {
     public function startGame(Game $game)
     {
-        if (!$game->started_at) {
+        if (! $game->started_at) {
             $game->started_at = now();
             $game->save();
         }
@@ -52,7 +57,7 @@ class OneNightWerewolfPolicy extends Policy
             return $currentRoles;
         }
 
-        if (!$currentRoles->contains(WerewolfRoleEnum::WEREWOLF)) {
+        if (! $currentRoles->contains(WerewolfRoleEnum::WEREWOLF)) {
             $currentRoles->push(WerewolfRoleEnum::WEREWOLF);
             $currentRoles->push(WerewolfRoleEnum::VILLAGER);
             $currentRoles->push(WerewolfRoleEnum::SEER);
@@ -128,7 +133,7 @@ class OneNightWerewolfPolicy extends Policy
 
         $round->moves()->orderBy('created_at', 'DESC')->get()
             ->map(function (Move $move) use (&$newPlayerRoles, &$extraRoles) {
-                if (!$move->payload) {
+                if (! $move->payload) {
                     return;
                 }
 
@@ -183,7 +188,7 @@ class OneNightWerewolfPolicy extends Policy
 
             /** @var Move $move */
             $move = $round->moves->firstWhere('player_id', $player->id);
-            if (!$move) {
+            if (! $move) {
                 $move = Move::create([
                     'round_id'  => $round->id,
                     'player_id' => $player->id,
@@ -194,7 +199,7 @@ class OneNightWerewolfPolicy extends Policy
                 ]);
             }
 
-            if (!($move->payload['vote'] ?? false)) {
+            if (! ($move->payload['vote'] ?? false)) {
                 $payload = $move->payload;
                 $payload['vote'] = null;
                 $move->payload = $payload;
@@ -212,7 +217,7 @@ class OneNightWerewolfPolicy extends Policy
 
         $win = null;
 
-        if (!$killedPlayer) {
+        if (! $killedPlayer) {
             $livingWerewolf = $villagersWin = $players->filter(function (Player $player) {
                 return $player->role != WerewolfRoleEnum::WEREWOLF;
             })->isNotEmpty();
@@ -220,7 +225,8 @@ class OneNightWerewolfPolicy extends Policy
         } elseif ($killedPlayer->role == WerewolfRoleEnum::TANNER) {
             $win = WerewolfRoleEnum::TANNER;
         } else {
-            $win = $killedPlayer->role == WerewolfRoleEnum::WEREWOLF ? WerewolfRoleEnum::VILLAGER : WerewolfRoleEnum::WEREWOLF;
+            $win = $killedPlayer->role == WerewolfRoleEnum::WEREWOLF ? WerewolfRoleEnum::VILLAGER
+                : WerewolfRoleEnum::WEREWOLF;
         }
 
         $round->moves()->get()->map(function (Move $move) use ($players, $win) {
@@ -260,5 +266,22 @@ class OneNightWerewolfPolicy extends Policy
     public function endRound(Round $round)
     {
         $this->startGame($round->game);
+    }
+
+    static function title(): string
+    {
+        return 'One Night Werewolf';
+    }
+
+    static function description(): string
+    {
+        return 'Each player takes on the role of a Villager, a Werewolf, or a special character.
+          It is your job to figure out who the Werewolves are and to kill at least one of them in order to win
+          ....unless you have become a Werewolf yourself.
+          You wiII need to figure out what team you are on
+          (because your role card might have been switched with another role card),
+          and then figure out what teams the other players are on.
+          At the end of each game you will vote for a player who is not on your team;
+          the player that receives the most votes is "killed".';
     }
 }

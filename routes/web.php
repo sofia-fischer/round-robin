@@ -1,10 +1,8 @@
 <?php
 
-use App\View\Pages\GamePage;
 use App\View\Pages\WelcomePage;
-use App\View\Pages\GroupRoomPage;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MoveStoreController;
+use App\Http\Controllers\GameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +19,12 @@ Route::get('/', WelcomePage::class);
 
 Route::get('/welcome', WelcomePage::class)->name('WelcomePage');
 
-Route::get('/game/{game}', GamePage::class)->middleware(['auth:sanctum'])->name('game.show');
+Route::get('/login', WelcomePage::class)->name('login');
 
-Route::get('/group/{group}/game/{game}', GamePage::class)->middleware(['auth:sanctum'])->name('GamePage');
-
-Route::get('/group/{group}', GroupRoomPage::class)->middleware(['auth:sanctum']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/game/', [GameController::class, 'index'])->name('game.index');
+    Route::get('/game/{game}', [GameController::class, 'show'])->name('game.show');
+    Route::post('/game', [GameController::class, 'create'])->name('game.create');
+    Route::patch('/game/{game}', [GameController::class, 'update'])->name('game.update');
+    Route::delete('/game/{game}', [GameController::class, 'destroy'])->name('game.destroy');
+});

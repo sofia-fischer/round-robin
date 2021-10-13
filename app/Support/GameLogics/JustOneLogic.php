@@ -1,21 +1,26 @@
 <?php
 
-namespace App\Support\GamePolicies;
+namespace App\Support\GameLogics;
 
 use App\Models\Game;
 use App\Models\Move;
-use App\Models\Player;
 use App\Models\Round;
-use App\Queue\Events\GameRoundAction;
-use App\Queue\Events\GameStarted;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Player;
 use Illuminate\Support\Str;
+use App\Queue\Events\GameStarted;
+use App\Support\Interfaces\Logic;
+use Illuminate\Support\Facades\Auth;
+use App\Queue\Events\GameRoundAction;
 
-class JustOnePolicy extends Policy
+use function now;
+use function event;
+use function collect;
+
+class JustOneLogic implements Logic
 {
     public function startGame(Game $game)
     {
-        if (!$game->started_at) {
+        if (! $game->started_at) {
             $game->started_at = now();
             $game->save();
         }
@@ -33,7 +38,7 @@ class JustOnePolicy extends Policy
 
     public function playerJoined(Player $player, Game $game)
     {
-        if (!$game->started_at) {
+        if (! $game->started_at) {
             $this->startGame($game);
         }
     }
@@ -139,5 +144,18 @@ class JustOnePolicy extends Policy
 
         $round->completed_at = now();
         $round->save();
+    }
+
+    static function title(): string
+    {
+        return 'Just One';
+    }
+
+    static function description(): string
+    {
+        return 'All players but the active player see the same word.
+            Without communicating with each other each player but the active player gives a one worded clue.
+            After all players made their clue, all clues which are a substring of the original word or duplicated words are hidden.
+            The active player then has to guess the word using the visible clues.';
     }
 }

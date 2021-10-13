@@ -8,7 +8,7 @@
     <div class="flex flex-wrap mb-8 m-4 text-center justify-evenly text-gray-500">
         @foreach($roles as $role => $count)
             <div class="flex items-center rounded-full border border-gray-600 m-2"
-                 wire:click="$toggle('show{{ $role }}')">
+                wire:click="$toggle('show{{ $role }}')">
                 <div class="w-6 h-6 m-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
@@ -32,8 +32,8 @@
                 </svg>
             </div>
             <div class="flex-grow h-4 bg-indigo-900 {{ $step == 'night' ? 'timer' : ''}}"
-                 id="night-timer"
-                 style="--duration: {{ WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()) }} ">
+                id="night-timer"
+                style="--duration: {{ WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()) }} ">
                 <div class=" w-full h-4 {{ $step == 'night' ? 'bg-white' : 'bg-indigo-900'}}"></div>
             </div>
             <div class="w-4 h-4 pt-2 overflow-hidden {{ $step == 'day' || $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
@@ -42,8 +42,8 @@
                 </svg>
             </div>
             <div class="flex-grow h-4 {{ $step == 'day' ? 'timer bg-indigo-900' : 'bg-white'}}"
-                 id="day-timer"
-                 style="--duration: {{ WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()) - WerewolfRoleEnum::NIGHT_DURATION) }} ">
+                id="day-timer"
+                style="--duration: {{ WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()) - WerewolfRoleEnum::NIGHT_DURATION) }} ">
                 <div class=" w-full h-4 {{ $step == 'end' ? 'bg-indigo-900' : 'bg-white'}}"></div>
             </div>
             <div class="w-6 h-4 pr-2 {{ $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
@@ -168,7 +168,7 @@
                             @foreach($game->players as $player)
                                 <div class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
                                 {{ ($game->authenticatedPlayerMove->payload['see'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
-                                     wire:click="performAction('see', {{ $player->id }})">
+                                    wire:click="performAction('see', {{ $player->id }})">
                                     {{ $player->name }}
                                 </div>
                             @endforeach
@@ -297,7 +297,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['sawAnonymous']] ?? '' }}"/>
+                                    d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['sawAnonymous']] ?? '' }}"/>
                             </svg>
                         </div>
                     @endif()
@@ -316,7 +316,7 @@
                             <div class="w-6 h-6 pl-2 pt-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['saw']] ?? '' }}"/>
+                                        d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['saw']] ?? '' }}"/>
                                 </svg>
                             </div>
                         </div>
@@ -391,7 +391,7 @@
                 @endforeach
                 <div class="text-center text-white rounded-xl h-7 w-36 bg-indigo-700
                         {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == 0 ? 'shadow-white' : ''}}"
-                     wire:click="performAction('vote', null)">
+                    wire:click="performAction('vote', null)">
                     Nobody
                 </div>
             </div>
@@ -424,7 +424,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="{{ WerewolfRoleEnum::ICON[$game->currentRound->payload['newPlayerRoles'][$player->id] ?? null] ?? '' }}"/>
+                                    d="{{ WerewolfRoleEnum::ICON[$game->currentRound->payload['newPlayerRoles'][$player->id] ?? null] ?? '' }}"/>
                             </svg>
                         </div>
                     </div>
@@ -435,7 +435,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
+                                    d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
                             </svg>
                         </div>
                     </div>
@@ -443,7 +443,7 @@
             </div>
         @endif
 
-        @if($game->group->host_user_id == \Illuminate\Support\Facades\Auth::id())
+        @if($game->host_user_id == \Illuminate\Support\Facades\Auth::id())
             <div class="text-white text-center mx-auto">
                 @switch($step)
                     @case('start')
@@ -468,15 +468,4 @@
             box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 1);
         }
     </style>
-
-    <div class="flex flex-wrap w-full text-center px-4 pt-16">
-        @foreach($game->players as $player)
-            <div class="flex overflow-hidden justify-between rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                <div class="pt-1 text-white px-2 flex-grow text-left">{{ $player->name }}</div>
-                <div class="text-sm bg-white opacity-50 m-1 rounded-full px-2">
-                    {{ $game ? $player->scoreInGame($game->id) : '' }}
-                </div>
-            </div>
-        @endforeach
-    </div>
 </div>

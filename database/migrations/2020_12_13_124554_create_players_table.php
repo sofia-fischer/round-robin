@@ -16,11 +16,8 @@ class CreatePlayersTable extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->string('agent')->nullable();
-            $table->unsignedInteger('group_id')->nullable();
+            $table->unsignedInteger('game_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
-            $table->string('name')->nullable();
-            $table->string('color')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

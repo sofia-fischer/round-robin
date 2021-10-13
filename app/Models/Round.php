@@ -48,15 +48,11 @@ class Round extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'id',
         'uuid',
         'game_id',
         'active_player_id',
         'payload',
         'completed_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     /**
@@ -65,7 +61,15 @@ class Round extends BaseModel
      * @var array
      */
     protected $casts = [
-        'payload' => 'array',
+        'id'               => 'int',
+        'uuid'             => 'string',
+        'game_id'          => 'int',
+        'active_player_id' => 'int',
+        'payload'          => 'array',
+        'completed_at'     => 'datetime',
+        'created_at'       => 'datetime',
+        'updated_at'       => 'datetime',
+        'deleted_at'       => 'datetime',
     ];
 
     /*

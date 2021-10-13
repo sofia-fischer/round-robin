@@ -4,20 +4,14 @@ namespace App\Queue\Events;
 
 use App\Models\Game;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
 /**
  * Class GameRoundAction
  *
  * @package App\Queue\Events
  */
-class GameRoundAction implements ShouldBroadcast
+class GameRoundAction extends BaseEvent
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
     public $gameId;
 
     public function __construct($gameId)

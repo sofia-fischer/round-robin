@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
@@ -13,7 +12,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  *
  * @property  int id
  * @property  string uuid
- * @property  int group_id
+ * @property  int game_id
  * @property  int user_id
  * @property  string name
  * @property  string color
@@ -21,36 +20,29 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property  Carbon updated_at
  * @property  Carbon deleted_at
  *
+ * Relationships
+ * @property \Illuminate\Support\Collection moves
+ * @property \App\Models\Game game
+ * @property \App\Models\User user
+ *
  * Attributes
  * @property string activeColor
  * @property string passiveColor
+ * @property int score
  *
  * @package app/Database/Models
  */
 class Player extends BaseModel
 {
-    /*
-    |--------------------------------------------------------------------------
-    | General Table Information
-    |--------------------------------------------------------------------------
-    */
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'id',
         'uuid',
-        'agent',
-        'group_id',
+        'game_id',
         'user_id',
-        'name',
-        'color',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     /**
@@ -59,6 +51,13 @@ class Player extends BaseModel
      * @var array
      */
     protected $casts = [
+        'id'         => 'int',
+        'uuid'       => 'string',
+        'game_id'    => 'int',
+        'user_id'    => 'int',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /*
@@ -67,14 +66,19 @@ class Player extends BaseModel
     |--------------------------------------------------------------------------
     */
 
-    public function group()
-    {
-        return $this->belongsTo(Group::class);
-    }
-
     public function moves()
     {
         return $this->hasMany(Move::class);
+    }
+
+    public function game()
+    {
+        return $this->belongsTo(Game::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /*
@@ -85,34 +89,21 @@ class Player extends BaseModel
 
     protected function getActiveColorAttribute()
     {
-        return ($this->color ?? 'pink') . '-500';
+        return ($this->user->color ?? 'pink') . '-500';
     }
 
     protected function getPassiveColorAttribute()
     {
-        return ($this->color ?? 'pink') . '-100';
+        return ($this->user->color ?? 'pink') . '-100';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Capabilities
-    |--------------------------------------------------------------------------
-    */
-
-    public function scoreInGame($game)
+    protected function getNameAttribute()
     {
-        $gameIds = Collection::wrap(is_numeric($game) ? $game : ($game->id ?? $game));
+        return $this->user->name;
+    }
 
-        return $this->moves()
-            ->whereHas('round', function ($roundQuery) use ($gameIds) {
-                return $roundQuery->whereIn('game_id', $gameIds);
-            })
-            ->sum('score');
+    protected function getScoreAttribute()
+    {
+        return $this->moves()->sum('score');
     }
 }
