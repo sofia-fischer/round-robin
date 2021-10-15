@@ -18,7 +18,7 @@ class GameController
     public function show(Game $game)
     {
         if (! $game->authenticatedPlayer) {
-            $game->authenticatedPlayer()->create();
+            $game->authenticatedPlayer()->create(['user_id' => Auth::id()]);
         }
 
         return view('GamePage', [
