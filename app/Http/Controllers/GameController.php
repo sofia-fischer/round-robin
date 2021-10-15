@@ -18,7 +18,7 @@ class GameController
     public function show(Game $game)
     {
         if (! $game->authenticatedPlayer) {
-            return redirect()->route('login', ['game' => $game]);
+            $game->authenticatedPlayer()->create();
         }
 
         return view('GamePage', [

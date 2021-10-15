@@ -109,7 +109,7 @@ class Game extends BaseModel
     {
         return $this->players()
             ->latest()
-            ->skip($this->rounds()->count() % $this->players()->count())
+            ->skip($this->rounds()->count() % ($this->players()->count() - 1))
             ->first();
     }
 

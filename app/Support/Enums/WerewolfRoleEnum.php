@@ -4,11 +4,6 @@ namespace App\Support\Enums;
 
 class WerewolfRoleEnum
 {
-    public const GAME_INFO = 'Each player takes on the role of a Villager, a Werewolf, or a special character.
-    It is your job to figure out who the Werewolves are and to kill at least one of them in order to win....unless you have become a Werewolf yourself.
-    You wiII need to figure out what team you are on (because your role card might have been switched with another role card), and then figure out what teams the other players are on.
-    At the end of each game you will vote for a player who is not on your team; the player that receives the most votes is "killed".';
-
     public const NIGHT_DURATION = 100;
     public const DAY_DURATION = 200;
 

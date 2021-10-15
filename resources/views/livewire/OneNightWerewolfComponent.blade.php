@@ -11,13 +11,13 @@
                 wire:click="$toggle('show{{ $role }}')">
                 <div class="w-6 h-6 m-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
                     </svg>
                 </div>
                 <div class="text-xs p-1">{{ $count }}</div>
                 <div class="p-2 text-sm {{ ! ${'show'.$role} ? 'hidden' : 'block' }}">
                     {{ Str::title($role) }}
-                    <div class="text-xs">{{ WerewolfRoleEnum::INFO[$role] ?? '' }}</div>
+                    <div class="text-xs">{{ \App\Support\Enums\WerewolfRoleEnum::INFO[$role] ?? '' }}</div>
                 </div>
             </div>
         @endforeach
@@ -33,7 +33,7 @@
             </div>
             <div class="flex-grow h-4 bg-indigo-900 {{ $step == 'night' ? 'timer' : ''}}"
                 id="night-timer"
-                style="--duration: {{ WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()) }} ">
+                style="--duration: {{ \App\Support\Enums\WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) }} ">
                 <div class=" w-full h-4 {{ $step == 'night' ? 'bg-white' : 'bg-indigo-900'}}"></div>
             </div>
             <div class="w-4 h-4 pt-2 overflow-hidden {{ $step == 'day' || $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
@@ -43,7 +43,7 @@
             </div>
             <div class="flex-grow h-4 {{ $step == 'day' ? 'timer bg-indigo-900' : 'bg-white'}}"
                 id="day-timer"
-                style="--duration: {{ WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()) - WerewolfRoleEnum::NIGHT_DURATION) }} ">
+                style="--duration: {{ \App\Support\Enums\WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) - \App\Support\Enums\WerewolfRoleEnum::NIGHT_DURATION) }} ">
                 <div class=" w-full h-4 {{ $step == 'end' ? 'bg-indigo-900' : 'bg-white'}}"></div>
             </div>
             <div class="w-6 h-4 pr-2 {{ $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
@@ -83,12 +83,13 @@
             <div class="flex items-center w-full justify-between text-center text-indigo-900 bg-white bg-opacity-50 rounded-full px-2 my-4">
                 <div class="font-semibold px-2"> You are a {{ Str::title($playerRole) }}</div>
                 <div>
-                    <div class=" px-2">Who {{ WerewolfRoleEnum::INFO[$playerRole] ?? '' }}</div>
-                    <div class="text-xs px-2">You win {{ WerewolfRoleEnum::WIN[$playerRole] ?? '' }}</div>
+                    <div class=" px-2">Who {{ \App\Support\Enums\WerewolfRoleEnum::INFO[$playerRole] ?? '' }}</div>
+                    <div class="text-xs px-2">You
+                                              win {{ \App\Support\Enums\WerewolfRoleEnum::WIN[$playerRole] ?? '' }}</div>
                 </div>
                 <div class="mr-2 w-8 h-8">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON[$playerRole] ?? '' }}"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$playerRole] ?? '' }}"/>
                     </svg>
                 </div>
             </div>
@@ -116,21 +117,21 @@
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('seeAnonymous', 1)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                                 <div
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('seeAnonymous', 2)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                                 <div
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('seeAnonymous', 3)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                             </div>
@@ -184,21 +185,21 @@
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('anonymous', 1)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                                 <div
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('anonymous', 2)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                                 <div
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
                                     wire:click="performAction('anonymous', 3)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                             @endforeach
@@ -222,7 +223,7 @@
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['switch1'] ?? 0) == ('anonymous-' . ($index + 1)) ? 'shadow-white' : ''}}"
                                     wire:click="performAction('switch1', '{{ 'anonymous-' . ($index + 1) }}')">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                             @endforeach
@@ -242,7 +243,7 @@
                                     class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['switch2'] ?? 0) == ('anonymous-' . ($index + 1)) ? 'shadow-white' : ''}}"
                                     wire:click="performAction('switch2', '{{ 'anonymous-' . ($index + 1) }}')">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                     </svg>
                                 </div>
                             @endforeach
@@ -257,21 +258,21 @@
                                 class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
                                 wire:click="performAction('anonymous', 1)">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                 </svg>
                             </div>
                             <div
                                 class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
                                 wire:click="performAction('anonymous', 2)">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                 </svg>
                             </div>
                             <div
                                 class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
                                 wire:click="performAction('anonymous', 3)">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON['anonymous'] }}"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
                                 </svg>
                             </div>
                         </div>
@@ -297,7 +298,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['sawAnonymous']] ?? '' }}"/>
+                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['sawAnonymous']] ?? '' }}"/>
                             </svg>
                         </div>
                     @endif()
@@ -316,7 +317,7 @@
                             <div class="w-6 h-6 pl-2 pt-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="{{ WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['saw']] ?? '' }}"/>
+                                        d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['saw']] ?? '' }}"/>
                                 </svg>
                             </div>
                         </div>
@@ -332,12 +333,12 @@
                                 . Action
                             </div>
                         </div>
-                        @if($playerRole == WerewolfRoleEnum::DRUNK)
+                        @if($playerRole == \App\Support\Enums\WerewolfRoleEnum::DRUNK)
                             <div>something else...</div>
                         @else
                             <div class="w-6 h-6 m-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON[$newPlayerRole] ?? '' }}"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$newPlayerRole] ?? '' }}"/>
                                 </svg>
                             </div>
                         @endif
@@ -384,13 +385,13 @@
                 @foreach($game->players as $player)
                     <div
                         class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
-                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
+                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == $player->id ? 'border-solid border-4 border-black' : ''}}"
                         wire:click="performAction('vote', {{ $player->id }})">
                         {{ $player->name }}
                     </div>
                 @endforeach
                 <div class="text-center text-white rounded-xl h-7 w-36 bg-indigo-700
-                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == 0 ? 'shadow-white' : ''}}"
+                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == 0 ? 'border-solid border-4 border-black' : ''}}"
                     wire:click="performAction('vote', null)">
                     Nobody
                 </div>
@@ -408,9 +409,9 @@
             </div>
 
             <div>
-                {{ ($game->currentRound->payload['win'] ?? null) == WerewolfRoleEnum::WEREWOLF
+                {{ ($game->currentRound->payload['win'] ?? null) == \App\Support\Enums\WerewolfRoleEnum::WEREWOLF
                     ? 'The night prevailed'
-                    : (($game->currentRound->payload['win'] ?? null) == WerewolfRoleEnum::TANNER
+                    : (($game->currentRound->payload['win'] ?? null) == \App\Support\Enums\WerewolfRoleEnum::TANNER
                         ? 'You have underestimated the power of one person'
                         : 'The good is winning')  }}
             </div>
@@ -424,7 +425,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ WerewolfRoleEnum::ICON[$game->currentRound->payload['newPlayerRoles'][$player->id] ?? null] ?? '' }}"/>
+                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->currentRound->payload['newPlayerRoles'][$player->id] ?? null] ?? '' }}"/>
                             </svg>
                         </div>
                     </div>
@@ -435,7 +436,7 @@
                         <div class="w-6 h-6 m-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
+                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
                             </svg>
                         </div>
                     </div>

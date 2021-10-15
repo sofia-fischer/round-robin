@@ -118,7 +118,7 @@ class OneNightWerewolfLogic implements Logic
         $insomniacPlayers = Player::findMany($insomniacIds)->map(function (Player $player) use ($round) {
             $move = Move::updateOrCreate([
                 'round_id'  => $round->id,
-                'player_id' => $round->game->authenticatedPlayer->id,
+                'player_id' => $player->id,
                 'user_id'   => $player->user_id,
             ], [
                 'payload' => [
