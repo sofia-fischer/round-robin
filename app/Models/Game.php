@@ -107,17 +107,11 @@ class Game extends BaseModel
 
     protected function getCurrentPlayerAttribute()
     {
-        return $this->players()
-            ->latest()
-            ->skip($this->rounds()->count() % ($this->players()->count() - 1))
-            ->first();
-    }
+        $playersCount = $this->players()->count();
 
-    protected function getNextPlayerAttribute()
-    {
         return $this->players()
             ->latest()
-            ->skip(($this->rounds()->count() + 1) % $this->players()->count())
+            ->skip($playersCount > 1 ? $this->rounds()->count() % ($playersCount - 1) : 0)
             ->first();
     }
 
@@ -135,11 +129,6 @@ class Game extends BaseModel
     {
         return app($this->logic_identifier);
     }
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
 
     /*
     |--------------------------------------------------------------------------
