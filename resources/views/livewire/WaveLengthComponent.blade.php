@@ -1,6 +1,6 @@
 <div class="w-full">
     <?php
-    /* @var App\Models\Game $game */
+    /* @var App\Models\WaveLengthGame $game */
     /* @var App\Models\Move $move */
     /* @var App\Models\Player $player */
     ?>
@@ -27,7 +27,7 @@
                 <div class="h-8 flex bg-red-400">
                     @if($game->authenticatedPlayerIsActive || $game->currentRound->completed_at)
                         <div class="bg-red-400"
-                            style="width: {{ $game->currentRound->payload['waveLength'] - 16 }}%"></div>
+                            style="width: {{ $game->currentRound->payloadAttribute('waveLength') - 16 }}%"></div>
                         <div class="bg-gradient-to-r from-red-400 to-orange-400 w-1/12"></div>
                         <div class="bg-gradient-to-r from-orange-400 to-yellow-300" style="width: 6%"></div>
                         <div class="bg-gradient-to-r from-yellow-300 via-white to-yellow-300" style="width: 4%"></div>
@@ -38,7 +38,7 @@
                 <div class="pt-7">
                     @foreach($game->currentRound->moves()->where('player_id', '!=', $game->currentRound->active_player_id)->get() as $move)
                         <div class="w-6 h-0  relative overflow-visible"
-                            style="margin-left: {{ $move->payload['guess'] }}%">
+                            style="margin-left: {{ $move->payloadAttribute('guess') }}%">
                             <div
                                 class="bg-{{ $move->player->activeColor ?? 'pink-500' }} w-4 hover:w-16 h-4 absolute bottom-2 right-2 rounded-b-lg rounded-r-lg hover-trigger">
                                 <div
@@ -97,7 +97,7 @@
         @if($step != 'start')
             <div class="text-gray-500">
                 The given clue is
-                <h2 class="text-lg text-gray-700">{{ $game->currentRound->payload['clue'] }}</h2>
+                <h2 class="text-lg text-gray-700">{{ $game->currentRound->payloadAttribute('clue') }}</h2>
             </div>
         @endif
     </div>

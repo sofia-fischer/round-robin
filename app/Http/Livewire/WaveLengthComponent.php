@@ -2,9 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Game;
 use Livewire\Component;
 use Illuminate\Support\Str;
+use App\Models\WaveLengthGame;
 use App\Queue\Events\GameEnded;
 use App\Queue\Events\PlayerUpdated;
 use App\Queue\Events\PlayerDestroyed;
@@ -12,7 +12,7 @@ use App\Queue\Events\GameRoundAction;
 
 class WaveLengthComponent extends Component
 {
-    public Game $game;
+    public WaveLengthGame $game;
 
     public int $value = 50;
 
@@ -69,6 +69,6 @@ class WaveLengthComponent extends Component
         $this->value = 50;
         $this->clue = null;
 
-        $this->game->endRound();
+        $this->game->start();
     }
 }

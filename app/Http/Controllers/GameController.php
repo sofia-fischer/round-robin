@@ -5,20 +5,22 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Game;
-use App\Models\GameLogic;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Models\WaveLengthGame;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Http\Requests\GameCreateRequest;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController
 {
     public function show(Game $game)
     {
-        if (! $game->authenticatedPlayer) {
-            $game->authenticatedPlayer()->create(['user_id' => Auth::id()]);
+        $game->join();
+
+        switch ($game->logic_identifier) {
+            case WaveLengthGame::$logic_identifier:
+                $game = WaveLengthGame::find($game->id);
+                break;
         }
 
         return view('GamePage', [
@@ -29,12 +31,22 @@ class GameController
     public function index()
     {
         return view('GameIndexPage', [
-            'games'      => Game::query()->whereHas('authenticatedPlayer')->get(),
-            'gameLogics' => GameLogic::get(),
+            'waveLengthGames' => WaveLengthGame::query()
+                ->withCount(['players', 'rounds'])
+                ->whereHas('authenticatedPlayer')
+                ->get(),
+            'werewolfGames'   => WaveLengthGame::query()
+                ->withCount(['players', 'rounds'])
+                ->whereHas('authenticatedPlayer')
+                ->get(),
+            'justOneGames'    => WaveLengthGame::query()
+                ->withCount(['players', 'rounds'])
+                ->whereHas('authenticatedPlayer')
+                ->get(),
         ]);
     }
 
-    public function create(Request $request)
+    public function create(GameCreateRequest $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -43,24 +55,14 @@ class GameController
             throw new UnauthorizedHttpException();
         }
 
-        $validator = Validator::make($request->all(), [
-            'logic' => 'required|in:' . GameLogic::validationString(),
-        ]);
-
-        if ($validator->fails()) {
-            throw new NotFoundHttpException();
-        }
-
         /** @var Game $game */
         $game = Game::create([
-            'token'            => Str::random(5),
+            'token'            => Str::upper(Str::random(5)),
             'logic_identifier' => $request->input('logic'),
             'host_user_id'     => $user->id,
         ]);
 
-        $game->join();
-
-        return redirect()->route('game.show', ['game' => $game]);
+        return redirect(route('game.show', ['game' => $game,]));
     }
 
     public function destroy(Game $game)
@@ -71,6 +73,6 @@ class GameController
 
         $game->delete();
 
-        return redirect()->route('game.index');
+        return redirect(route('game.index'));
     }
 }

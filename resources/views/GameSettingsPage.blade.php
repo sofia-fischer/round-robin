@@ -14,10 +14,9 @@
                               style="stroke: none; fill: #ffffff;"></path>
                     </svg>
                 </div>
-                <div
-                    class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
+                <div class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
                     <div>
-                        {{ $game->logic->name }}
+                        {{ $game->logic::title() }}
                     </div>
 
                     <div class="pl-2" id="btn-modal">

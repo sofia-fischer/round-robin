@@ -127,6 +127,9 @@ class JustOneLogic implements Logic
 
     static function giveGuess(Round $round, string $guessedWord)
     {
+        $word = Str::lower($round->payload['word']);
+        $guessedWord = Str::lower($guessedWord);
+
         /** @var Move $move */
         $move = Move::updateOrCreate([
             'round_id'  => $round->id,
@@ -135,8 +138,6 @@ class JustOneLogic implements Logic
             'user_id' => Auth::id(),
             'payload' => ['guess' => $guessedWord],
         ]);
-
-        $word = Str::lower($round->payload['word']);
 
         if ($guessedWord == $word || Str::contains($guessedWord, $word)) {
             $round->moves()->update(['score' => 1]);

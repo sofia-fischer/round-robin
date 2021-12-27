@@ -29,8 +29,7 @@ class OneNightWerewolfLogic implements Logic
             $game->started_at = now();
             $game->save();
         }
-
-        $roles = collect($this->getRoles($game->players()->count()))->shuffle();
+        $roles       = collect($this->getRoles($game->players()->count()))->shuffle();
         $playerRoles = $game->players()->pluck('id')->mapWithKeys(function ($id, $index) use ($roles) {
             return [$id => $roles[$index]];
         });
@@ -111,7 +110,7 @@ class OneNightWerewolfLogic implements Logic
     static function calculateSunrise(Round $round)
     {
         // insomniac
-        $insomniacIds = collect($round->payload['playerRoles'])->filter(function ($role) {
+        $insomniacIds     = collect($round->payload['playerRoles'])->filter(function ($role) {
             return $role == WerewolfRoleEnum::INSOMNIAC;
         })->keys();
 
@@ -126,11 +125,9 @@ class OneNightWerewolfLogic implements Logic
                 ],
             ]);
         });
-
-        $oldPlayerRoles = $round->payload['playerRoles'];
-        $newPlayerRoles = $round->payload['playerRoles'];
-        $extraRoles = $round->payload['extraRoles'];
-
+        $oldPlayerRoles   = $round->payload['playerRoles'];
+        $newPlayerRoles   = $round->payload['playerRoles'];
+        $extraRoles       = $round->payload['extraRoles'];
         $round->moves()->orderBy('created_at', 'DESC')->get()
             ->map(function (Move $move) use (&$newPlayerRoles, &$extraRoles) {
                 if (! $move->payload) {
@@ -140,9 +137,9 @@ class OneNightWerewolfLogic implements Logic
                 $movePayload = $move->payload;
 
                 if ($movePayload['anonymous'] ?? false) {
-                    $playerRole = $newPlayerRoles[$move->player_id];
-                    $anonymousRole = $extraRoles[$movePayload['anonymous'] - 1];
-                    $newPlayerRoles[$move->player_id] = $anonymousRole;
+                    $playerRole                                = $newPlayerRoles[$move->player_id];
+                    $anonymousRole                             = $extraRoles[$movePayload['anonymous'] - 1];
+                    $newPlayerRoles[$move->player_id]          = $anonymousRole;
                     $extraRoles[$movePayload['anonymous'] - 1] = $playerRole;
                 }
 
@@ -155,10 +152,10 @@ class OneNightWerewolfLogic implements Logic
                 }
 
                 if ($movePayload['switch1'] ?? false && $movePayload['switch2'] ?? false) {
-                    $roleOne = Str::startsWith($movePayload['switch1'], 'anonymous-')
+                    $roleOne                                 = Str::startsWith($movePayload['switch1'], 'anonymous-')
                         ? $extraRoles[(int) Str::replaceFirst('anonymous-', '', $movePayload['switch1'])]
                         : $newPlayerRoles[$movePayload['switch1']];
-                    $roleTwo = Str::startsWith($movePayload['switch2'], 'anonymous-')
+                    $roleTwo                                 = Str::startsWith($movePayload['switch2'], 'anonymous-')
                         ? $extraRoles[(int) Str::replaceFirst('anonymous-', '', $movePayload['switch2'])]
                         : $newPlayerRoles[$movePayload['switch2']];
                     $newPlayerRoles[$movePayload['switch1']] = $roleTwo;
@@ -200,9 +197,9 @@ class OneNightWerewolfLogic implements Logic
             }
 
             if (! ($move->payload['vote'] ?? false)) {
-                $payload = $move->payload;
+                $payload         = $move->payload;
                 $payload['vote'] = null;
-                $move->payload = $payload;
+                $move->payload   = $payload;
                 $move->save();
             }
 
@@ -213,7 +210,7 @@ class OneNightWerewolfLogic implements Logic
 
 
         $votedPlayerId = $players->countBy('vote')->sortDesc()->keys()->first();
-        $killedPlayer = $players->find($votedPlayerId);
+        $killedPlayer  = $players->find($votedPlayerId);
 
         $win = null;
 

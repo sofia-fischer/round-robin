@@ -87,4 +87,15 @@ class Move extends BaseModel
     {
         return $this->belongsTo(Player::class, 'player_id');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capabilities
+    |--------------------------------------------------------------------------
+    */
+
+    public function payloadAttribute(string $key, $default = null)
+    {
+        return $this->payload[$key] ?? $default;
+    }
 }

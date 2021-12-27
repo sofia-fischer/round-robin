@@ -58,8 +58,8 @@ class OneNightWerewolfComponent extends Component
         return view('livewire.OneNightWerewolfComponent', [
             'step'           => $step,
             'roles'          => collect($roundInfos['playerRoles'] ?? [])->merge($roundInfos['extraRoles'] ?? [])->values()->countBy()->toArray(),
-            'playerRole'     => $roundInfos['playerRoles'][$this->game->authenticatedPlayer->id] ?? 'watcher',
-            'newPlayerRole'  => $roundInfos['newPlayerRoles'][$this->game->authenticatedPlayer->id] ?? 'watcher',
+            'playerRole'     => $roundInfos['playerRoles'][$this->game->authenticatedPlayer->id ?? null] ?? 'watcher',
+            'newPlayerRole'  => $roundInfos['newPlayerRoles'][$this->game->authenticatedPlayer->id ?? null] ?? 'watcher',
             'playerByRoles'  => $playerByRoles,
             'playerRoles'    => $roundInfos['playerRoles'] ?? [],
             'newPlayerRoles' => $roundInfos['newPlayerRoles'] ?? [],

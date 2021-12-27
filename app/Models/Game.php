@@ -30,6 +30,7 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property Round currentRound
  * @property \Illuminate\Support\Collection players
  * @property Player authenticatedPlayer
+ * @property Player hostPlayer
  *
  * Attributes
  *
@@ -81,22 +82,27 @@ class Game extends BaseModel
 
     public function rounds()
     {
-        return $this->hasMany(Round::class);
+        return $this->hasMany(Round::class, 'game_id');
     }
 
     public function currentRound()
     {
-        return $this->hasOne(Round::class)->latest();
+        return $this->hasOne(Round::class, 'game_id')->latest();
     }
 
     public function players()
     {
-        return $this->hasMany(Player::class);
+        return $this->hasMany(Player::class, 'game_id');
+    }
+
+    public function hostPlayer()
+    {
+        return $this->hasOne(Player::class, 'game_id')->where('user_id', $this->host_user_id);
     }
 
     public function authenticatedPlayer()
     {
-        return $this->hasOne(Player::class)->where('user_id', Auth::id());
+        return $this->hasOne(Player::class, 'game_id')->where('user_id', Auth::id());
     }
 
     /*
@@ -107,12 +113,17 @@ class Game extends BaseModel
 
     protected function getCurrentPlayerAttribute()
     {
-        $playersCount = $this->players()->count();
+        $this->loadCount(['players', 'rounds'])->load(['hostPlayer', 'currentRound']);
 
-        return $this->players()
-            ->latest()
-            ->skip($playersCount > 1 ? $this->rounds()->count() % ($playersCount - 1) : 0)
+        if ($this->players_count === 1 || ! $this->rounds_count) {
+            return $this->hostPlayer;
+        }
+
+        $nextPlayer = $this->players()
+            ->where('id', '>', $this->currentRound->active_player_id)
             ->first();
+
+        return $nextPlayer ?? $this->hostPlayer;
     }
 
     protected function getAuthenticatedPlayerIsActiveAttribute()
@@ -143,6 +154,10 @@ class Game extends BaseModel
 
     public function join(): Player
     {
+        if ($this->authenticatedPlayer) {
+           return $this->authenticatedPlayer;
+        }
+
         /** @var Player $player */
         $player = $this->players()->create(['user_id' => Auth::id()]);
         event(new PlayerCreated($player->id));
@@ -161,7 +176,7 @@ class Game extends BaseModel
         return true;
     }
 
-    public function roundAction(array $options = null)
+    public function roundAction(array $options = [])
     {
         $this->logic->roundAction($this->currentRound, $options);
     }

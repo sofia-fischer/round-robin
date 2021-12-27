@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Game;
 use App\Models\User;
 use Livewire\Component;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class JoinGroup extends Component
@@ -85,7 +86,7 @@ class JoinGroup extends Component
 
     public function checkToken()
     {
-        $this->game = $this->game ?? Game::query()->where('token', $this->token)->first();
+        $this->game = $this->game ?? Game::query()->where('token', Str::upper($this->token))->first();
 
         if (! $this->game) {
             $this->errorMessage = 'This is not the game you are looking for... ';
