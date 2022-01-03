@@ -6,8 +6,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Player;
+use App\Queue\Events\PlayerUpdated;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Queue\Events\PlayerDestroyed;
+use App\Http\Requests\PlayerUpdateRequest;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class PlayerController
 {
@@ -21,18 +24,21 @@ class PlayerController
 
     public function destroy(Player $player)
     {
-        if ($player->game->host_user_id === Auth::id()) {
-            $player->game->destroyPlayer($player);
+        throw_unless($player->game->host_user_id === Auth::id() || $player->user_id === Auth::id(), AuthorizationException::class);
 
-            return redirect()->route('game.show', ['game' => $player->game]);
-        }
+        $player->delete();
+        event(new PlayerDestroyed($player->id));
 
-        if ($player->id === Auth::id()) {
-            $player->game->destroyPlayer($player);
+        return redirect()->route('game.settings', ['game' => $player->game]);
+    }
 
-            return redirect()->route('game.index');
-        }
+    public function update(PlayerUpdateRequest $request, Player $player)
+    {
+        throw_unless($player->user_id === Auth::id(), AuthorizationException::class);
 
-        throw new UnauthorizedHttpException();
+        $player->update($request->data());
+        event(new PlayerUpdated($player->id));
+
+        return redirect()->route('game.settings', ['game' => $player->game]);
     }
 }

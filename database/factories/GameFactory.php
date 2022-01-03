@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use App\Models\Game;
 use Illuminate\Support\Str;
+use App\Models\WaveLengthGame;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GameFactory extends Factory
@@ -26,10 +26,24 @@ class GameFactory extends Factory
         return [
             'uuid'             => Str::uuid(),
             'token'            => Str::upper(Str::random(5)),
-            'logic_identifier' => App\Support\GameLogics\WavelengthLogic::class,
-            'host_user_id'     => User::factory(),
+            'logic_identifier' => WaveLengthGame::$logic_identifier,
+            'host_user_id'     => null,
             'started_at'       => null,
             'ended_at'         => null,
         ];
+    }
+
+    public function wavelength(): self
+    {
+        return $this->state([
+            'logic_identifier' => WaveLengthGame::$logic_identifier,
+        ]);
+    }
+
+    public function started(): self
+    {
+        return $this->state([
+            'started_at' => now(),
+        ]);
     }
 }

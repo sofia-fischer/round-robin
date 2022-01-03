@@ -16,71 +16,41 @@
             </a>
 
         @if(Auth::id())
-            <!-- Game Selection -->
-                <div class="text-white text-xs z-20 overflow-hidden pt-4 flex">
-                    <?php
-                    /* @var App\Models\Game $game */
-                    ?>
-                    @foreach(\App\Models\Game::whereHas('authenticatedPlayer')->get() as $game)
-                        @if(request()->route()->parameter('game') == $game->uuid)
-                            <div class="mx-4 border-b-2 border-white flex h-8">
+            <!-- Settings Dropdown -->
+                <div>
+                    <x-jet-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="p-4 text-white">{{ Auth::user()->name }}</button>
+                        </x-slot>
 
-                                <div class="font-semibold py-1">{{ $game->token }}</div>
+                        <x-slot name="content">
+                            <!-- Game Index -->
+                            <x-jet-dropdown-link href="{{ route('game.index') }}">
+                                {{ __('Games') }}
+                            </x-jet-dropdown-link>
 
-                                <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
-                                    <button class="ml-4 mt-1 px-2 h-5 bg-white bg-opacity-25 rounded-full">
-                                        <svg class="text-white h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                                        </svg>
-                                    </button>
-                                </a>
-                            </div>
-                        @else
-                            <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
-                                <button class="rounded-full w-24 h-8 bg-opacity-25 mx-4 hover:border-b-2 hover:border-white">
-                                    {{ $game->token }}
-                                </button>
-                            </a>
+                        @if(Auth::user()->email ?? false)
+                        <!-- Account Management -->
+                            <x-jet-dropdown-link href="{{ route('profile.show') }}">
+                                {{ __('Profile') }}
+                            </x-jet-dropdown-link>
                         @endif
-                    @endforeach
-                </div>
-            @if(Auth::user()->email ?? false)
-                <!-- Settings Dropdown -->
-                    <div>
-                        <x-jet-dropdown align="right" width="48">
-                            <x-slot name="trigger">
-                                <button class="p-4 text-white">
-                                    {{ Auth::user()->name }}
-                                </button>
-                            </x-slot>
 
-                            <x-slot name="content">
-                                <!-- Game Index -->
-                                <x-jet-dropdown-link href="{{ route('game.index') }}">
-                                    {{ __('Games') }}
-                                </x-jet-dropdown-link>
+                            <div class="border-t border-gray-100"></div>
 
-                                <!-- Account Management -->
-                                <x-jet-dropdown-link href="{{ route('profile.show') }}">
-                                    {{ __('Profile') }}
-                                </x-jet-dropdown-link>
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
 
-                                <div class="border-t border-gray-100"></div>
-
-                                <!-- Authentication -->
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-
-                                    <x-jet-dropdown-link href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
+                                <x-jet-dropdown-link href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                                        {{ __('Logout') }}
-                                    </x-jet-dropdown-link>
-                                </form>
-                            </x-slot>
-                        </x-jet-dropdown>
-                    </div>
-                @endif
+                                    {{ __('Logout') }}
+                                </x-jet-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-jet-dropdown>
+                </div>
             @endif
         </div>
     </div>

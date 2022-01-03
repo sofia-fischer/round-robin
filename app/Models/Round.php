@@ -28,10 +28,6 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property Move authenticatedPlayerMove
  * @property \Illuminate\Support\Collection moves
  *
- * Attributes
- *
- * @property bool authenticatedPlayerIsActive
- *
  * @package app/Database/Models
  */
 class Round extends BaseModel
@@ -100,23 +96,22 @@ class Round extends BaseModel
 
     /*
     |--------------------------------------------------------------------------
-    | Attributes
-    |--------------------------------------------------------------------------
-    */
-
-    protected function getAuthenticatedPlayerIsActiveAttribute()
-    {
-        return $this->activePlayer->user_id == Auth::id();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
     | Capabilities
     |--------------------------------------------------------------------------
     */
 
-    public function payloadAttribute(string $key, $default = null)
+    public function payloadAttribute(string $key, $default = null): mixed
     {
         return $this->payload[$key] ?? $default;
+    }
+
+    public function addPayloadAttribute(string $key, mixed $value): array
+    {
+        $payload       = $this->payload ?? [];
+        $payload[$key] = $value;
+        $this->payload = $payload;
+        $this->save();
+
+        return $this->payload;
     }
 }

@@ -106,7 +106,7 @@
                             <div class="flex justify-evenly text-center text-white">
                                 @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::WEREWOLF]) as $player)
                                     <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                        {{ $player->name }}
+                                        {{ $player->user->name }}
                                     </div>
                                 @endforeach
                             </div>
@@ -144,7 +144,7 @@
                         <div class="flex justify-evenly text-center text-white">
                             @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::WEREWOLF]) as $player)
                                 <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                    {{ $player->name }}
+                                    {{ $player->user->name }}
                                 </div>
                             @endforeach
                         </div>
@@ -156,7 +156,7 @@
                         <div class="flex justify-evenly text-center text-white">
                             @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::MASON] ?? []) as $player)
                                 <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                    {{ $player->name }}
+                                    {{ $player->user->name }}
                                 </div>
                             @endforeach
                         </div>
@@ -170,7 +170,7 @@
                                 <div class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
                                 {{ ($game->authenticatedPlayerMove->payload['see'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
                                     wire:click="performAction('see', {{ $player->id }})">
-                                    {{ $player->name }}
+                                    {{ $player->user->name }}
                                 </div>
                             @endforeach
                         </div>
@@ -215,7 +215,7 @@
                                     class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
                                     {{ ($game->authenticatedPlayerMove->payload['switch1'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
                                     wire:click="performAction('switch1', {{ $player->id }})">
-                                    {{ $player->name }}
+                                    {{ $player->user->name }}
                                 </div>
                             @endforeach
                             @foreach($extraRoles as $index => $role)
@@ -235,7 +235,7 @@
                                     class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
                                     {{ ($game->authenticatedPlayerMove->payload['switch2'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
                                     wire:click="performAction('switch2', {{ $player->id }})">
-                                    {{ $player->name }}
+                                    {{ $player->user->name }}
                                 </div>
                             @endforeach
                             @foreach($extraRoles as $index => $role)
@@ -387,7 +387,7 @@
                         class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
                         {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == $player->id ? 'border-solid border-4 border-black' : ''}}"
                         wire:click="performAction('vote', {{ $player->id }})">
-                        {{ $player->name }}
+                        {{ $player->user->name }}
                     </div>
                 @endforeach
                 <div class="text-center text-white rounded-xl h-7 w-36 bg-indigo-700

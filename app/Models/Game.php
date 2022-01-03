@@ -27,17 +27,26 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * Relationships
  *
  * @property \Illuminate\Support\Collection rounds
+ * @see \App\Models\Game::rounds()
  * @property Round currentRound
+ * @see \App\Models\Game::currentRound()
  * @property \Illuminate\Support\Collection players
+ * @see \App\Models\Game::players()
  * @property Player authenticatedPlayer
+ * @see \App\Models\Game::authenticatedPlayer()
  * @property Player hostPlayer
+ * @see \App\Models\Game::hostPlayer()
  *
  * Attributes
  *
  * @property Player currentPlayer
+ * @see \App\Models\Game::getCurrentPlayerAttribute()
  * @property Player nextPlayer
+ * @see \App\Models\Game::getNextPlayerAttribute()
  * @property bool authenticatedPlayerIsActive
+ * @see \App\Models\Game::getAuthenticatedPlayerIsActiveAttribute()
  * @property Move authenticatedPlayerMove
+ * @see \App\Models\Game::getAuthenticatedPlayerMoveAttribute()
  *
  * @property \App\Support\Interfaces\Logic $logic
  * @see \App\Models\Game::getLogicAttribute()
@@ -85,6 +94,11 @@ class Game extends BaseModel
         return $this->hasMany(Round::class, 'game_id');
     }
 
+    public function moves()
+    {
+        return $this->hasManyThrough(Move::class, Round::class);
+    }
+
     public function currentRound()
     {
         return $this->hasOne(Round::class, 'game_id')->latest();
@@ -113,9 +127,16 @@ class Game extends BaseModel
 
     protected function getCurrentPlayerAttribute()
     {
-        $this->loadCount(['players', 'rounds'])->load(['hostPlayer', 'currentRound']);
+        if (! $this->currentRound) {
+            return $this->hostPlayer;
+        }
 
-        if ($this->players_count === 1 || ! $this->rounds_count) {
+        return $this->currentRound->activePlayer;
+    }
+
+    protected function getNextPlayerAttribute()
+    {
+        if (! $this->currentRound) {
             return $this->hostPlayer;
         }
 
@@ -128,7 +149,7 @@ class Game extends BaseModel
 
     protected function getAuthenticatedPlayerIsActiveAttribute()
     {
-        return $this->currentRound->activePlayer->user_id == Auth::id();
+        return $this->currentPlayer->user_id == Auth::id();
     }
 
     protected function getAuthenticatedPlayerMoveAttribute()
@@ -155,7 +176,7 @@ class Game extends BaseModel
     public function join(): Player
     {
         if ($this->authenticatedPlayer) {
-           return $this->authenticatedPlayer;
+            return $this->authenticatedPlayer;
         }
 
         /** @var Player $player */
@@ -197,5 +218,20 @@ class Game extends BaseModel
             $game->players()->delete();
             $game->rounds()->delete();
         });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capabilities
+    |--------------------------------------------------------------------------
+    */
+
+    public function currentPayloadAttribute(string $key, $default = null)
+    {
+        if (! $this->currentRound) {
+            return $default;
+        }
+
+        return $this->currentRound->payloadAttribute($key, $default);
     }
 }

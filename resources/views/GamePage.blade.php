@@ -1,5 +1,5 @@
 <?php
-/* @var App\Models\Game $game */
+/* @var App\Models\Game|\App\Models\WaveLengthGame $game */
 
 /* @var App\Models\Player $player */
 ?>
@@ -15,13 +15,10 @@
                             style="stroke: none; fill: #ffffff;"></path>
                     </svg>
                 </div>
-                <div
-                    class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
-                    <div>
-                        {{ $game->logic::title() }}
-                    </div>
+                <div class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
+                    <div>{{ $game->title }}</div>
 
-                    <div class="pl-2" id="btn-modal">
+                    <div class="px-2" id="btn-modal">
                         <svg class="w-6 h-6 text-gray-300 relative" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -58,11 +55,11 @@
         class="bg-white text-small invisible rounded-lg shadow-lg max-w-xl top-32 w-full left-0 right-0 mx-auto p-4 text-center absolute"
         id="modal">
         <h2 class="text-center text-purple-600 pb-2">
-            {{ $game->logic::title() }}
+            {{ $game->title }}
         </h2>
 
         <p>
-            {{ $game->logic::description() }}
+            {{ $game::$description }}
         </p>
     </div>
 

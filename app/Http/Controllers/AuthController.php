@@ -20,7 +20,11 @@ class AuthController
 
     public function show(string $view = 'anonymous-login')
     {
-        return view('LoginPage', ['view' => $view]);
+        if (Auth::check()) {
+            return redirect(route('game.index'));
+        }
+
+        return view('LoginPage', ['view' => $view, 'token' => request()->query('token')]);
     }
 
     public function register(RegisterRequest $request)
@@ -59,7 +63,6 @@ class AuthController
             return redirect(route('game.index'));
         }
 
-        dd('lol');
         /** @var Game $game */
         $game = Game::query()
             ->where('token', $token)

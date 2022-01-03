@@ -8,7 +8,7 @@ use App\Queue\Events\PlayerDestroyed;
 use App\Queue\Events\PlayerUpdated;
 use App\Queue\Events\GameRoundAction;
 
-class PlayerOverviewComponent extends Component
+class   PlayerOverviewComponent extends Component
 {
     public ?Game $game = null;
 

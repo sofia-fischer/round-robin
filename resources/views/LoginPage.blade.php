@@ -44,17 +44,17 @@
                         <div class="flex text-lg mt-auto p-8 font-semibold max-w-xl flex-wrap justify-center">
                             <div>
                                 <a class="m-4 {{ $view === 'login' ? '' : 'opacity-50' }}"
-                                    href="{{ route('auth.show', ['view' => 'login']) }}">
+                                    href="{{ route('auth.show', ['view' => 'login', 'token' => $token]) }}">
                                     Have an account? </a>
                             </div>
                             <div>
                                 <a class="m-4 {{ $view === 'register' ? '' : 'opacity-50' }}"
-                                    href="{{ route('auth.show', ['view' => 'register']) }}">
+                                    href="{{ route('auth.show', ['view' => 'register', 'token' => $token]) }}">
                                     Want an account? </a>
                             </div>
                             <div>
                                 <a class="m-4 {{ $view === 'anonymous' ? '' : 'opacity-50' }}"
-                                    href="{{ route('auth.show', ['view' => 'anonymous']) }}">
+                                    href="{{ route('auth.show', ['view' => 'anonymous', 'token' => $token]) }}">
                                     Play anonymous? </a>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                         <input id="token"
                                             class="border-b-2 border-white bg-transparent"
                                             name="token"
-                                            :value="old('token')"
+                                            value="{{ old('token') ?? $token }}"
                                             autofocus
                                         />
                                         <label for="register-token"> Game Token (optional)</label>
@@ -128,7 +128,7 @@
                                         <input id="token"
                                             class="border-b-2 border-white bg-transparent"
                                             name="token"
-                                            :value="old('token')"
+                                            value="{{ old('token') ?? $token }}"
                                             autofocus
                                         />
                                         <label for="register-token"> Game Token (optional)</label>
@@ -176,7 +176,7 @@
                                         <input id="token"
                                             class="border-b-2 border-white bg-transparent"
                                             name="token"
-                                            :value="old('token')"
+                                            value="{{ old('token') ?? $token }}"
                                             autofocus
                                             required
                                         />

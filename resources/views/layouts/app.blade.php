@@ -54,7 +54,7 @@
         <div>
             Sofia Fischer
             <br>
-            sofia.k.christ@gmail.com
+            sofia@philodev.one
             <br><br>
             This is a page for the private usage of me and my friends and not used for any kind of commercial interests.
         </div>

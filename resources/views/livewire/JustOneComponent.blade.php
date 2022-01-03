@@ -11,11 +11,11 @@
         </div>
 
         <div class="text-sm {{ $step == 'clue-given' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->name }} guesses
+            {{ $game->currentRound->activePlayer->user->name }} guesses
         </div>
 
         <div class="text-sm {{ $step == 'completed' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->name }} starts next round
+            {{ $game->currentRound->activePlayer->user->name }} starts next round
         </div>
     </div>
 
@@ -55,7 +55,7 @@
                     <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor ?? 'pink-500' }}">
                         {{ ($move->payload['visible'] ?? false) ? Str::upper($move->payload['clue']) : '???' }}
                         <div class="text-xs">
-                            {{ $move->player->name }}
+                            {{ $move->player->user->name }}
                         </div>
                     </div>
                 @endforeach
@@ -73,7 +73,7 @@
                 </button>
             @else
                 <div>
-                    The word {{ $game->currentRound->activePlayer->name }} must guess is
+                    The word {{ $game->currentRound->activePlayer->user->name }} must guess is
                     <div class="my-8">
                         {{ Str::upper($game->currentRound->payload['word']) }}
                     </div>
@@ -96,7 +96,7 @@
                             {{ Str::upper($game->currentRound->moves()->where('player_id', $game->currentRound->active_player_id)->first()->payload['guess'] ?? '') }}
                         </div>
                         <div class="text-xs text-gray-500">
-                            {{ $game->currentRound->activePlayer->name }}'s guess
+                            {{ $game->currentRound->activePlayer->user->name }}'s guess
                         </div>
                     </div>
                     <div class="text-white w-8 h-8  rounded-full p-1 {{ ($game->authenticatedPlayerMove->score ?? false) ? 'bg-green-700' : 'bg-red-700' }}">
@@ -118,7 +118,7 @@
                     <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor ?? 'pink-500' }}">
                         {{ ($move->payload['visible'] ?? false) ? Str::upper($move->payload['clue']) : '???' }}
                         <div class="text-xs">
-                            {{ $move->player->name }}
+                            {{ $move->player->user->name }}
                         </div>
                     </div>
                 @endforeach

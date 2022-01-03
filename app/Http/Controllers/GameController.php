@@ -5,27 +5,38 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Game;
+use App\Models\Player;
 use Illuminate\Support\Str;
 use App\Models\WaveLengthGame;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\GameCreateRequest;
+use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController
 {
     public function show(Game $game)
     {
-        $game->join();
-
-        switch ($game->logic_identifier) {
-            case WaveLengthGame::$logic_identifier:
-                $game = WaveLengthGame::find($game->id);
-                break;
+        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
+            return redirect(route('wavelength.join', ['game' => $game->uuid]));
         }
 
-        return view('GamePage', [
-            'game' => $game,
-        ]);
+        $game->join();
+
+        return view('GamePage', ['game' => $game]);
+    }
+
+    public function join(JoinGameRequest $request)
+    {
+        /** @var Game $game */
+        $game = Game::query()->where('token', $request->input('token'))->firstOrFail();
+
+        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
+            return redirect(route('wavelength.join', ['game' => $game->uuid]));
+        }
+
+        return redirect(route('game.show', ['game' => $game,]));
     }
 
     public function index()
@@ -67,12 +78,15 @@ class GameController
 
     public function destroy(Game $game)
     {
-        if (! $game->host_user_id !== Auth::id()) {
-            throw new UnauthorizedHttpException();
-        }
+        throw_unless($game->host_user_id === Auth::id(), AuthorizationException::class);
 
         $game->delete();
 
         return redirect(route('game.index'));
+    }
+
+    public function settings(Game $game)
+    {
+        return view('GameSettingsPage', ['game' => $game]);
     }
 }

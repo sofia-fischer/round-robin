@@ -98,4 +98,14 @@ class Move extends BaseModel
     {
         return $this->payload[$key] ?? $default;
     }
+
+    public function addPayloadAttribute(string $key, mixed $value): array
+    {
+        $payload       = $this->payload ?? [];
+        $payload[$key] = $value;
+        $this->payload = $payload;
+        $this->save();
+
+        return $this->payload;
+    }
 }
