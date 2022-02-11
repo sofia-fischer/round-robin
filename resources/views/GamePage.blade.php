@@ -1,5 +1,6 @@
 <?php
 /* @var App\Models\Game|\App\Models\WaveLengthGame $game */
+/* @var App\Models\Game|\App\Models\JustOneGame $game */
 
 /* @var App\Models\Player $player */
 ?>
@@ -32,7 +33,7 @@
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
                 @elseif($game->logic_identifier ===  App\Support\GameLogics\OneNightWerewolfLogic::class)
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
-                @elseif($game->logic_identifier ===  App\Support\GameLogics\JustOneLogic::class)
+                @elseif(get_class($game) === \App\Models\JustOneGame::class)
                     <livewire:just-one-component :game="$game"></livewire:just-one-component>
                 @endif
             </div>

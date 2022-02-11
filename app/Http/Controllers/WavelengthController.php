@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Move;
 use App\Models\Round;
-use App\Models\Player;
 use Illuminate\Support\Str;
 use App\Models\WaveLengthGame;
 use App\Queue\Events\GameEnded;
@@ -21,8 +20,8 @@ class WavelengthController
 {
     public function move(WavelengthMoveCreateRequest $request, WaveLengthGame $game)
     {
-        throw_if($game->authenticatedPlayerIsActive && ! $request->input('clue'), AuthorizationException::class);
-        throw_if(! $game->authenticatedPlayerIsActive && ! $request->input('guess'), AuthorizationException::class);
+        throw_if($game->authenticatedPlayerIsActive && ! $request->clue(), AuthorizationException::class);
+        throw_if(! $game->authenticatedPlayerIsActive && ! $request->guess(), AuthorizationException::class);
 
         /** @var Move $move */
         $move = Move::updateOrCreate([
@@ -34,12 +33,12 @@ class WavelengthController
         ]);
 
         $game->authenticatedPlayerIsActive
-            ? $game->currentRound->addPayloadAttribute('clue', $request->input('clue'))
-            : $move->addPayloadAttribute('guess', $request->input('guess'));
+            ? $game->currentRound->addPayloadAttribute('clue', $request->clue())
+            : $move->addPayloadAttribute('guess', $request->guess());
 
         // If current Round does not end
         if ($game->currentRound->moves()->count() < $game->players()->count()) {
-            event(new GameRoundAction($game->id));
+            event(new GameRoundAction($game));
 
             return view('GamePage', ['game' => $game]);
         }
@@ -91,7 +90,7 @@ class WavelengthController
             'uuid'    => Str::uuid(),
             'user_id' => Auth::id(),
         ]);
-        event(new PlayerCreated($player->id));
+        event(new PlayerCreated($player));
 
         if (! $game->started_at) {
             return $this->round($game);
@@ -102,8 +101,6 @@ class WavelengthController
 
     public function round(WaveLengthGame $game)
     {
-        throw_unless($game->authenticatedPlayerIsActive, AuthorizationException::class);
-
         if ($game->currentRound && ! $game->currentRound->completed_at) {
             $game->currentRound->completed_at = now();
             $game->currentRound->save();
@@ -127,7 +124,7 @@ class WavelengthController
             event(new GameStarted($game->id));
         }
 
-        event(new GameRoundAction($game->id));
+        event(new GameRoundAction($game));
         $game->refresh();
 
         return view('GamePage', ['game' => $game]);

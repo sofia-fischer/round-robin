@@ -8,3 +8,8 @@ RoundRobin is a platform for round based games
 
 Starting the Docker Container `$ ./vendor/bin/sail up -d`
 Visit in Brwoser: `http://localhost/`
+
+### currently open
+
+- Player Destroyed for Wavelength and Just one test
+- Settings Tests

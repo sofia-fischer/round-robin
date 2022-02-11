@@ -23,6 +23,12 @@ class WaveLengthGame extends Game
     protected $table = 'games';
     static $logic_identifier = 'wavelength';
 
+    static $title = 'Wavelength';
+
+    static $description = 'The active Player knows where the target on a spectrum between two opposing concepts is,
+            but can only give a verbal clue to the other players, who only see the opposing concepts.
+            With that clue, the other players have to guess where the target is.';
+
     public static function query(): Builder
     {
         return parent::query()->where('logic_identifier', self::$logic_identifier);
@@ -101,10 +107,4 @@ class WaveLengthGame extends Game
         ['Log Level: Debug' => 'Log Level: Critical'],
         ['😇' => '😏'],
     ];
-
-    public $title = 'Wavelength';
-
-    static $description = 'The active Player knows where the target on a spectrum between two opposing concepts is,
-            but can only give a verbal clue to the other players, who only see the opposing concepts.
-            With that clue, the other players have to guess where the target is.';
 }

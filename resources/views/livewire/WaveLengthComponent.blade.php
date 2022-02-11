@@ -85,7 +85,7 @@
                             :value="old('clue')"
                             autofocus
                         />
-                        <label for="register-token" class="text-pink-700 text-sm">
+                        <label for="clue" class="text-pink-700 text-sm">
                             One word that fits conceptually the Spectrum value
                         </label>
                         @error('clue')<p class="input-error">{{ $message }}</p>@enderror

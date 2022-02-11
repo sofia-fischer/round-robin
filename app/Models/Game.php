@@ -127,11 +127,7 @@ class Game extends BaseModel
 
     protected function getCurrentPlayerAttribute()
     {
-        if (! $this->currentRound) {
-            return $this->hostPlayer;
-        }
-
-        return $this->currentRound->activePlayer;
+        return $this->currentRound?->activePlayer ?? $this->hostPlayer;
     }
 
     protected function getNextPlayerAttribute()
@@ -140,16 +136,14 @@ class Game extends BaseModel
             return $this->hostPlayer;
         }
 
-        $nextPlayer = $this->players()
-            ->where('id', '>', $this->currentRound->active_player_id)
-            ->first();
+        $nextPlayer = $this->players->firstWhere('id', '>', $this->currentRound->active_player_id);
 
         return $nextPlayer ?? $this->hostPlayer;
     }
 
     protected function getAuthenticatedPlayerIsActiveAttribute()
     {
-        return $this->currentPlayer->user_id == Auth::id();
+        return $this->currentPlayer->user_id === Auth::id();
     }
 
     protected function getAuthenticatedPlayerMoveAttribute()
@@ -181,7 +175,7 @@ class Game extends BaseModel
 
         /** @var Player $player */
         $player = $this->players()->create(['user_id' => Auth::id()]);
-        event(new PlayerCreated($player->id));
+        event(new PlayerCreated($player));
         $this->logic->playerJoined($player, $this);
 
         return $player;
@@ -233,5 +227,10 @@ class Game extends BaseModel
         }
 
         return $this->currentRound->payloadAttribute($key, $default);
+    }
+
+    public function addCurrentPayloadAttribute(string $key, mixed $value): array
+    {
+        return $this->currentRound->addPayloadAttribute($key, $value);
     }
 }

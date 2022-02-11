@@ -1,134 +1,126 @@
 <div class="w-full">
     <?php
-    /* @var App\Models\Game $game */
+    /* @var App\Models\JustOneGame $game */
     /* @var App\Models\Move $move */
     /* @var App\Models\Player $player */
     ?>
 
     <div class="flex justify-between max-w-xl mx-auto">
-        <div class="text-sm {{ $step == 'start' ? 'text-purple-600' : 'text-gray-400' }}">
+        <div class="text-sm {{ $game->isWaitingForClue ? 'text-purple-600' : 'text-gray-400' }}">
             All players give a clue
         </div>
 
-        <div class="text-sm {{ $step == 'clue-given' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->user->name }} guesses
+        <div class="text-sm {{ $game->isWaitingForGuess ? 'text-purple-600' : 'text-gray-400' }}">
+            {{ $game->currentPlayer->user->name }} guesses
         </div>
 
-        <div class="text-sm {{ $step == 'completed' ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->user->name }} starts next round
+        <div class="text-sm {{ $game->isCompleted ? 'text-purple-600' : 'text-gray-400' }}">
+            {{ $game->currentPlayer->user->name }} starts next round
         </div>
     </div>
 
-    <div class="mb-8 m-4 text-center pt-8">
-        @if($step == 'start')
-            @if($game->authenticatedPlayerIsActive)
-                <div class="mx-auto">
-                    Wait for the clues of the other players...
-                </div>
-            @else
-                <div class="mx-auto">
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="bg-gray-300 rounded-full mx-auto p-1 m-3 px-4">
-                            <div class="mx-4">
-                                {{ Str::upper($game->currentRound->payload['word']) }}
-                            </div>
-                            <div class="text-xs text-gray-500">
-                                The word to guess
-                            </div>
-                        </div>
-                    </div>
+    <form method="POST" action="{{ route('justone.move', ['game' => $game->uuid]) }}" class="mb-8 m-4 text-center pt-8">
+        @csrf
 
-                    <div class="flex flex-col text-center">
-                        <input wire:model='clue' wire:keydown.enter="giveClue"
-                               class="flex-grow border-b-2 border-purple-600 max-w-xl mx-auto text-center">
-                        <label class="self-center mr-4 text-xs">Give a one-worded clue</label>
-                    </div>
-
-                    <button wire:click="giveClue" class="px-4 py-1 rounded-full text-sm bg-gradient-to-r from-purple-800 to-pink-700 text-white mt-8">
-                        Give clue
-                    </button>
+        <div class="flex justify-center text-center">
+            @if($game->isCompleted || !$game->authenticatedPlayerIsActive)
+                <div class="my-2">
+                    <p>{{ Str::upper($game->word) }}</p>
+                    <p>The word to guess</p>
                 </div>
             @endif
-        @elseif($step == 'clue-given')
+            @if($game->isCompleted)
+                <div class="my-2">
+                    {{ $game->authenticatedPlayerMove?->score ? '=' : '≠' }}
+                </div>
+
+                <div class="my-2">
+                    <p>{{ Str::upper($game->guess) }}</p>
+                    <p>The guessed word</p>
+                </div>
+            @endif
+        </div>
+
+        @if($game->isCompleted || !$game->authenticatedPlayerIsActive)
+            <div class="bg-gray-300 rounded-full mx-auto p-1 m-3 px-4 max-w-sm">
+                <div class="mx-4">{{ Str::upper($game->word) }}</div>
+                <div class="text-xs text-gray-500">The word to guess</div>
+            </div>
+        @endif
+
+        @if($game->isWaitingForClue && $game->authenticatedPlayerIsActive)
+            <div class="mx-auto">
+                Wait for the clues of the other players...
+            </div>
+        @endif
+
+        @if($game->isWaitingForClue && !$game->authenticatedPlayerIsActive)
+            <div class="flex justify-between">
+                <div class="flex flex-col text-left mb-2">
+                    <input id="clue"
+                        class="border-b-2 border-pink-500 bg-transparent"
+                        name="clue"
+                        :value="old('clue')"
+                        autofocus
+                    />
+                    <label for="guess" class="text-pink-700 text-sm">
+                        One word to help the active Player to guess the word
+                    </label>
+                    @error('clue')<p class="input-error">{{ $message }}</p>@enderror
+                </div>
+
+                <button type="submit"
+                    class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400">
+                    Give Clue
+                </button>
+            </div>
+        @endif
+
+        @if($game->isWaitingForGuess || $game->isCompleted)
             <div class="flex flex-wrap justify-evenly m-4 text-center text-white">
                 @foreach($game->currentRound->moves()->where('player_id', '!=', $game->currentRound->active_player_id)->get() as $move)
-                    <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor ?? 'pink-500' }}">
-                        {{ ($move->payload['visible'] ?? false) ? Str::upper($move->payload['clue']) : '???' }}
-                        <div class="text-xs">
-                            {{ $move->player->user->name }}
-                        </div>
+                    <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor }}">
+                        {{ ($game->isCompleted || $move->payloadAttribute('visible')) ? Str::upper($move->payloadAttribute('clue')) : '???' }}
+                        <div class="text-xs">{{ $move->player->user->name }}</div>
                     </div>
                 @endforeach
             </div>
+        @endif
 
-            @if($game->authenticatedPlayerIsActive)
-                <div class="flex flex-col text-center">
-                    <input wire:model='value' wire:keydown.enter="giveGuess"
-                           class="flex-grow border-b-2 border-purple-600 max-w-xl mx-auto text-center">
-                    <label class="self-center mr-4 text-xs">What do you guess?</label>
+        @if($game->isWaitingForGuess && $game->authenticatedPlayerIsActive)
+            <div class="flex justify-between">
+                <div class="flex flex-col text-left mb-2">
+                    <input id="guess"
+                        class="border-b-2 border-pink-500 bg-transparent"
+                        name="guess"
+                        :value="old('guess')"
+                        autofocus
+                    />
+                    <label for="guess" class="text-pink-700 text-sm">
+                        Your guess of the word
+                    </label>
+                    @error('guess')<p class="input-error">{{ $message }}</p>@enderror
                 </div>
 
-                <button wire:click="giveGuess" class="px-4 py-1 rounded-full text-sm bg-gradient-to-r from-purple-800 to-pink-700 text-white mt-8">
+                <button type="submit"
+                    class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400">
                     Guess
                 </button>
-            @else
-                <div>
-                    The word {{ $game->currentRound->activePlayer->user->name }} must guess is
-                    <div class="my-8">
-                        {{ Str::upper($game->currentRound->payload['word']) }}
-                    </div>
-                </div>
-            @endif
-        @elseif($step == 'completed')
-            <div class="flex flex-wrap justify-evenly">
-                <div class="bg-gray-300 rounded-full mx-auto p-1 m-3 px-2">
-                    <div class="mx-4">
-                        {{ Str::upper($game->currentRound->payload['word']) }}
-                    </div>
-                    <div class="text-xs text-gray-500">
-                        The word to guess
-                    </div>
-                </div>
-
-                <div class="bg-gray-300 rounded-full mx-auto p-1 m-3 px-2 flex items-center">
-                    <div>
-                        <div>
-                            {{ Str::upper($game->currentRound->moves()->where('player_id', $game->currentRound->active_player_id)->first()->payload['guess'] ?? '') }}
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            {{ $game->currentRound->activePlayer->user->name }}'s guess
-                        </div>
-                    </div>
-                    <div class="text-white w-8 h-8  rounded-full p-1 {{ ($game->authenticatedPlayerMove->score ?? false) ? 'bg-green-700' : 'bg-red-700' }}">
-                        @if($game->authenticatedPlayerMove->score ?? false)
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-                            </svg>
-                        @else
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                            </svg>
-                        @endif
-                    </div>
-                </div>
             </div>
+        @endif
+    </form>
 
-            <div class="flex flex-wrap justify-evenly m-4 text-center text-white">
-                @foreach($game->currentRound->moves()->where('player_id', '!=', $game->currentRound->active_player_id)->get() as $move)
-                    <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor ?? 'pink-500' }}">
-                        {{ ($move->payload['visible'] ?? false) ? Str::upper($move->payload['clue']) : '???' }}
-                        <div class="text-xs">
-                            {{ $move->player->user->name }}
-                        </div>
-                    </div>
-                @endforeach
-            </div>
 
-            @if($game->authenticatedPlayerIsActive)
-                <button wire:click="nextRound" class="bg-gray-700 text-white rounded-full my-4 mx-auto py-1 px-4">
+    {{-- End Round --}}
+    @if($game->isCompleted && $game->authenticatedPlayerIsActive)
+        <div>
+            <form action="{{ route('justone.round', ['game' => $game->uuid]) }}" method="POST" class="m-4">
+                @csrf
+                <button type="submit"
+                    class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400">
                     Next round
                 </button>
-            @endif
-        @endif
-    </div>
+            </form>
+        </div>
+    @endif
 </div>

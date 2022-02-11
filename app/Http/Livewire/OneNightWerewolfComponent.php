@@ -100,12 +100,12 @@ class OneNightWerewolfComponent extends Component
     public function makeDawn()
     {
         OneNightWerewolfLogic::calculateSunrise($this->game->currentRound);
-//        event(new GameRoundAction($this->game->id));
+//        event(new GameRoundAction($this->game));
     }
 
     public function makeNight()
     {
         OneNightWerewolfLogic::calculateResults($this->game->currentRound);
-//        event(new GameRoundAction($this->game->id));
+//        event(new GameRoundAction($this->game));
     }
 }

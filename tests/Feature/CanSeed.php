@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Game;
+use Faker\Generator;
 use App\Models\Round;
 use App\Models\Player;
+use App\Models\JustOneGame;
 
 trait CanSeed
 {
@@ -32,6 +34,24 @@ trait CanSeed
                 'antonym1'   => 'antonym1',
                 'antonym2'   => 'antonym2',
             ],
+        ]);
+
+        return $game;
+    }
+
+    public function startJustOneGame(): JustOneGame
+    {
+        /** @var Game $game */
+        $game = JustOneGame::factory()
+            ->started()
+            ->has(Player::factory()->count(3), 'players')
+            ->create();
+
+        /** @var Round $round */
+        $round = Round::factory()->create([
+            'game_id'          => $game->id,
+            'active_player_id' => $activePlayer->id,
+            'payload'          => ['word' => (new Generator())->word()],
         ]);
 
         return $game;

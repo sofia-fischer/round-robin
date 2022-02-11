@@ -174,7 +174,7 @@ class OneNightWerewolfLogic implements Logic
         ];
         $round->save();
 
-        event(new GameRoundAction($round->game_id));
+        event(new GameRoundAction($round->game));
         OneNightWerewolfDayJob::dispatch($round->game_id)->onConnection('redis')->delay(now()->addSeconds(WerewolfRoleEnum::DAY_DURATION));
     }
 

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Game;
 use Illuminate\Support\Str;
+use App\Models\JustOneGame;
 use App\Models\WaveLengthGame;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -37,6 +38,13 @@ class GameFactory extends Factory
     {
         return $this->state([
             'logic_identifier' => WaveLengthGame::$logic_identifier,
+        ]);
+    }
+
+    public function justOne(): self
+    {
+        return $this->state([
+            'logic_identifier' => JustOneGame::$logic_identifier,
         ]);
     }
 

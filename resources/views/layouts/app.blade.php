@@ -18,8 +18,8 @@
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
 </head>
-<body class="font-sans antialiased">
-<div class="min-h-screen bg-gray-900">
+<body class="font-sans antialiased bg-gray-900">
+<div class="min-h-screen">
 
     <!-- Page Heading -->
     <header>

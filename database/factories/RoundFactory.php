@@ -24,7 +24,7 @@ class RoundFactory extends Factory
     {
         return [
             'uuid'             => Str::uuid(),
-            'game_id'          =>null,
+            'game_id'          => null,
             'active_player_id' => null,
             'completed_at'     => null,
             'payload'          => [],

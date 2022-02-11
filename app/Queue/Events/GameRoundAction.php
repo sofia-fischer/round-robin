@@ -12,17 +12,12 @@ use Illuminate\Broadcasting\Channel;
  */
 class GameRoundAction extends BaseEvent
 {
-    public $gameId;
-
-    public function __construct($gameId)
+    public function __construct(public Game $game)
     {
-        $this->gameId = $gameId;
     }
 
     public function broadcastOn()
     {
-        $game = Game::findOrFail($this->gameId);
-
-        return new Channel('Game.' . $game->uuid);
+        return new Channel('Game.' . $this->game->uuid);
     }
 }

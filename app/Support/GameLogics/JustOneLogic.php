@@ -11,10 +11,7 @@ use App\Queue\Events\GameStarted;
 use App\Support\Interfaces\Logic;
 use Illuminate\Support\Facades\Auth;
 use App\Queue\Events\GameRoundAction;
-
-use function now;
-use function event;
-use function collect;
+use Faker\Generator;
 
 class JustOneLogic implements Logic
 {
@@ -25,12 +22,13 @@ class JustOneLogic implements Logic
             $game->save();
         }
 
+        $faker = new Generator();
         Round::create([
             'uuid'             => Str::uuid(),
             'game_id'          => $game->id,
             'active_player_id' => $game->currentPlayer->id,
             'payload'          => [
-                'word' => collect(config('just_one.words'))->random(),
+                'word' => $faker->word(),
             ],
         ]);
         event(new GameStarted($game->id));
@@ -58,7 +56,7 @@ class JustOneLogic implements Logic
             'payload' => ['clue' => $clue],
         ]);
 
-        event(new GameRoundAction($round->game_id));
+        event(new GameRoundAction($round->game));
 
         if ($round->moves()->count() < ($round->game->players()->count() - 1)) {
             return;
@@ -105,7 +103,7 @@ class JustOneLogic implements Logic
         $round->payload = $roundPayload;
         $round->save();
 
-        event(new GameRoundAction($round->game_id));
+        event(new GameRoundAction($round->game));
     }
 
     public function endRound(Round $round)

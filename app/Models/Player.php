@@ -94,7 +94,7 @@ class Player extends BaseModel
 
     protected function getPassiveColorAttribute()
     {
-        return ($this->user->color ?? 'pink') . '-100';
+        return ($this->user->color ?? 'pink') . '-200';
     }
 
     protected function getNameAttribute()

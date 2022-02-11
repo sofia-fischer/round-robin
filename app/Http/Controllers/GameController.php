@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Game;
-use App\Models\Player;
 use Illuminate\Support\Str;
+use App\Models\JustOneGame;
 use App\Models\WaveLengthGame;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\JoinGameRequest;
@@ -22,6 +22,10 @@ class GameController
             return redirect(route('wavelength.join', ['game' => $game->uuid]));
         }
 
+        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
+            return redirect(route('justone.join', ['game' => $game->uuid]));
+        }
+
         $game->join();
 
         return view('GamePage', ['game' => $game]);
@@ -33,6 +37,10 @@ class GameController
         $game = Game::query()->where('token', $request->input('token'))->firstOrFail();
 
         if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
+            return redirect(route('wavelength.join', ['game' => $game->uuid]));
+        }
+
+        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
             return redirect(route('wavelength.join', ['game' => $game->uuid]));
         }
 
@@ -50,7 +58,7 @@ class GameController
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
-            'justOneGames'    => WaveLengthGame::query()
+            'justOneGames'    => JustOneGame::query()
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\JustOneController;
 use App\Http\Controllers\WavelengthController;
 
 /*
@@ -45,4 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/wavelength/{game}', [WavelengthController::class, 'join'])->name('wavelength.join');
     Route::post('/wavelength/{game}/move', [WavelengthController::class, 'move'])->name('wavelength.move');
     Route::post('/wavelength/{game}/round', [WavelengthController::class, 'round'])->name('wavelength.round');
+
+    // Just One
+    Route::get('/justone/{game}', [JustOneController::class, 'join'])->name('justone.join');
+    Route::post('/justone/{game}/move', [JustOneController::class, 'move'])->name('justone.move');
+    Route::post('/justone/{game}/round', [JustOneController::class, 'round'])->name('justone.round');
 });
