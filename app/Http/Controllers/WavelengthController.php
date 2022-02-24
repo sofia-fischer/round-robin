@@ -106,7 +106,7 @@ class WavelengthController
             $game->currentRound->save();
         }
 
-        $antonym = collect($game->antonyms)->random();
+        $antonym = collect(__('antonyms'))->random();
         Round::create([
             'uuid'             => Str::uuid(),
             'game_id'          => $game->id,

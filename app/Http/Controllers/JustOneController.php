@@ -108,7 +108,7 @@ class JustOneController
             'game_id'          => $game->id,
             'active_player_id' => $game->nextPlayer->id,
             'payload'          => [
-                'word' => collect(trans('words'))->random(),
+                'word' => collect(__('words'))->random(),
             ],
         ]);
 

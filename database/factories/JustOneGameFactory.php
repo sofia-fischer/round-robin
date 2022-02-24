@@ -41,7 +41,7 @@ class JustOneGameFactory extends Factory
             ->create([
                 'game_id'          => $game->id,
                 'active_player_id' => $game->host_user_id,
-                'payload'          => ['word' => $word ?? collect(trans('words'))->random(),],
+                'payload'          => ['word' => $word ?? collect(__('words'))->random(),],
             ]));
     }
 
