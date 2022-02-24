@@ -9,25 +9,23 @@
     "license": "MIT",
     "require": {
         "php": "^8.0|^8.1",
-        "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.12",
+        "laravel/framework": "^9.0",
         "laravel/jetstream": "^1.6",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.2",
         "predis/predis": "^1.1",
         "pusher/pusher-php-server": "^4.1.5",
-        "rollbar/rollbar-laravel": "^7.0",
-        "symfony/symfony": "5.4.x"
+        "rollbar/rollbar-laravel": "^7.0"
     },
     "require-dev": {
-        "facade/ignition": "^2.5",
+        "spatie/laravel-ignition": "^1.0",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.11",
         "mockery/mockery": "^1.4.2",
-        "nunomaduro/collision": "^5.0",
+        "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.3.3"
     },
     "config": {
