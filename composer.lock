@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa5117a8c287f1ea45c6285091113742",
+    "content-hash": "becd92360d9cfb6f07f6b3e3d127f370",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3278,30 +3278,30 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.4",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=8.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "3.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
+                    "Psr\\Log\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3322,9 +3322,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/1.1.4"
+                "source": "https://github.com/php-fig/log/tree/3.0.0"
             },
-            "time": "2021-05-03T11:20:27+00:00"
+            "time": "2021-07-14T16:46:02+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -3454,31 +3454,34 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "v4.1.5",
+            "version": "7.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9"
+                "reference": "af3eeaefc0c7959f5b3852f0a4dd5547245d33df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/251f22602320c1b1aff84798fe74f3f7ee0504a9",
-                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/af3eeaefc0c7959f5b3852f0a4dd5547245d33df",
+                "reference": "af3eeaefc0c7959f5b3852f0a4dd5547245d33df",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.2",
                 "paragonie/sodium_compat": "^1.6",
-                "php": "^7.1|^8.0",
-                "psr/log": "^1.0"
+                "php": "^7.3|^8.0",
+                "psr/log": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.2|^8.5|^9.3"
+                "overtrue/phplint": "^2.3",
+                "phpunit/phpunit": "^8.5|^9.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
@@ -3506,9 +3509,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pusher/pusher-http-php/issues",
-                "source": "https://github.com/pusher/pusher-http-php/tree/v4.1.5"
+                "source": "https://github.com/pusher/pusher-http-php/tree/7.0.2"
             },
-            "time": "2020-12-09T09:38:19+00:00"
+            "time": "2021-12-07T13:09:00+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -3730,142 +3733,6 @@
                 }
             ],
             "time": "2021-09-25T23:10:38+00:00"
-        },
-        {
-            "name": "rollbar/rollbar",
-            "version": "v2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rollbar/rollbar-php.git",
-                "reference": "ff3db5739dd635740caed02ddad43e671b5a37e5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rollbar/rollbar-php/zipball/ff3db5739dd635740caed02ddad43e671b5a37e5",
-                "reference": "ff3db5739dd635740caed02ddad43e671b5a37e5",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "monolog/monolog": "^1 || ^2",
-                "psr/log": "^1"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "dev-master",
-                "mockery/mockery": "1.*",
-                "packfire/php5.3-compat": "*",
-                "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "4.8.* || 5.7.* || ^8",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "suggest": {
-                "fluent/logger": "Needed to use the 'fluent' handler for fluentd support",
-                "packfire/php5.3-compat": "for backward compatibility with PHP 5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Rollbar\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Rollbar, Inc.",
-                    "email": "support@rollbar.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Monitors errors and exceptions and reports them to Rollbar",
-            "homepage": "http://github.com/rollbar/rollbar-php",
-            "keywords": [
-                "debugging",
-                "errors",
-                "exceptions",
-                "logging",
-                "monitoring"
-            ],
-            "support": {
-                "email": "support@rollbar.com",
-                "issues": "https://github.com/rollbar/rollbar-php/issues",
-                "source": "https://github.com/rollbar/rollbar-php/tree/v2.1.0"
-            },
-            "time": "2020-07-01T23:21:01+00:00"
-        },
-        {
-            "name": "rollbar/rollbar-laravel",
-            "version": "v7.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rollbar/rollbar-php-laravel.git",
-                "reference": "568134b68e9b2631fa52d0aa4668ee8b3cafbad5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rollbar/rollbar-php-laravel/zipball/568134b68e9b2631fa52d0aa4668ee8b3cafbad5",
-                "reference": "568134b68e9b2631fa52d0aa4668ee8b3cafbad5",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "^6.0|^7.0|^8.0|^9.0",
-                "php": ">=7.2|^8.0",
-                "rollbar/rollbar": "^2"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1",
-                "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0",
-                "php-coveralls/php-coveralls": "^2.2",
-                "phpunit/phpunit": "^8|^9.1",
-                "squizlabs/php_codesniffer": "3.*"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Rollbar\\Laravel\\RollbarServiceProvider"
-                    ],
-                    "aliases": {
-                        "Rollbar": "Rollbar\\Laravel\\Facades\\Rollbar"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Rollbar\\Laravel\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jens Segers",
-                    "homepage": "https://jenssegers.com"
-                },
-                {
-                    "name": "Artur Moczulski",
-                    "email": "artur.moczulski@gmail.com",
-                    "role": "Contractor @ Rollbar, Inc."
-                }
-            ],
-            "description": "Rollbar error monitoring integration for Laravel projects",
-            "homepage": "https://github.com/rollbar/rollbar-php-laravel",
-            "keywords": [
-                "error",
-                "laravel",
-                "logging",
-                "monitoring",
-                "rollbar"
-            ],
-            "support": {
-                "issues": "https://github.com/rollbar/rollbar-php-laravel/issues",
-                "source": "https://github.com/rollbar/rollbar-php-laravel/tree/v7.1.0"
-            },
-            "time": "2022-02-21T21:48:29+00:00"
         },
         {
             "name": "symfony/console",

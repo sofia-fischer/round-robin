@@ -37,7 +37,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily', 'rollbar'],
+            'channels' => ['daily'],
             'ignore_exceptions' => false,
         ],
 
@@ -104,12 +104,12 @@ return [
          * Custom Channels
          */
 
-        'rollbar' => [
-            'driver'       => 'monolog',
-            'handler'      => \Rollbar\Laravel\MonologHandler::class,
-            'access_token' => env('ROLLBAR_TOKEN'),
-            'level'        => 'debug',
-        ],
+//        'rollbar' => [
+//            'driver'       => 'monolog',
+//            'handler'      => \Rollbar\Laravel\MonologHandler::class,
+//            'access_token' => env('ROLLBAR_TOKEN'),
+//            'level'        => 'debug',
+//        ],
     ],
 
 ];
