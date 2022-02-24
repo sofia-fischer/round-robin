@@ -100,16 +100,6 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
-        /*
-         * Custom Channels
-         */
-
-//        'rollbar' => [
-//            'driver'       => 'monolog',
-//            'handler'      => \Rollbar\Laravel\MonologHandler::class,
-//            'access_token' => env('ROLLBAR_TOKEN'),
-//            'level'        => 'debug',
-//        ],
     ],
 
 ];
