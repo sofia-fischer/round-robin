@@ -19,7 +19,8 @@
         "livewire/livewire": "^2.2",
         "predis/predis": "^1.1",
         "pusher/pusher-php-server": "^4.1.5",
-        "rollbar/rollbar-laravel": "^7.0"
+        "rollbar/rollbar-laravel": "^7.0",
+        "symfony/symfony": "5.4.x"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
