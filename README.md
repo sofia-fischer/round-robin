@@ -9,7 +9,7 @@ RoundRobin is a platform for round based games
 Starting the Docker Container `$ ./vendor/bin/sail up -d`
 Visit in Brwoser: `http://localhost/`
 
-### currently open
+### currently open tasks
 
 - Player Destroyed for Wavelength and Just one test
-- Settings Tests
+- Settings Tests (okay, settings do not work, need to be fixed and tested)
