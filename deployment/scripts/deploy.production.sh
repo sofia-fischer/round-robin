@@ -18,8 +18,8 @@ php artisan test
 
 echo $HETZNER_SSH_PASSWORD | sudo -kS cp /var/www/html/round-robin/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/round-robin-workers-redis-production.conf
 
-echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl reread
-echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl update
-echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl start all
+#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl reread
+#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl update
+#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl start all
 
 echo $HETZNER_SSH_PASSWORD | sudo -kS chown -R www-data:www-data /var/www/html/round-robin
