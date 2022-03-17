@@ -64,7 +64,7 @@
                 @else
                     {{-- Active Indicator --}}
                     <div class="bg-gray-700  text-white font-semibold h-8 p-2">
-                        <input type="range" min="1" max="100" class="w-full text-pink text-center"
+                        <input id="guess" name="guess" :value="old('guess')" type="range" min="1" max="100" class="w-full text-pink text-center"
                             {{ $game->authenticatedPlayerIsActive ? 'disabled' : '' }}>
                     </div>
                 @endif
