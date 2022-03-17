@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\JustOneController;
 use App\Http\Controllers\WavelengthController;
@@ -37,10 +38,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/game/{game}/settings', [GameController::class, 'settings'])->name('game.settings');
     Route::patch('/game/{game}', [GameController::class, 'update'])->name('game.update');
     Route::delete('/game/{game}', [GameController::class, 'destroy'])->name('game.destroy');
+    Route::put('/game/{game}', [GameController::class, 'round'])->name('game.round');
 
     // Player
     Route::delete('/player/{player}', [PlayerController::class, 'destroy'])->name('player.destroy');
-    Route::put('/player/{player}', [PlayerController::class, 'update'])->name('player.update');
+
+    // User
+    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.delete');
 
     // Wavelength
     Route::get('/wavelength/{game}', [WavelengthController::class, 'join'])->name('wavelength.join');

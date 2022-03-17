@@ -25,6 +25,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property string $profile_photo_path
  * @property string $color
  *
+ * @property \Illuminate\Support\Collection players
+ *
  * @package App\Models
  */
 class User extends Authenticatable
@@ -75,6 +77,17 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /*
+    |-------------------------------------------------------------------------------------
+    | Relations
+    |-------------------------------------------------------------------------------------
+    */
+
+    public function players()
+    {
+        return $this->hasMany(Player::class);
+    }
 
     /*
     |-------------------------------------------------------------------------------------

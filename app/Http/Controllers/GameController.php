@@ -93,6 +93,16 @@ class GameController
         return redirect(route('game.index'));
     }
 
+    public function round(Game $game)
+    {
+        throw_unless($game->host_user_id === Auth::id(), AuthorizationException::class);
+
+        $game->currentRound->completed_at = now();
+        $game->currentRound->save();
+
+        return redirect(route('game.show', ['game' => $game,]));
+    }
+
     public function settings(Game $game)
     {
         return view('GameSettingsPage', ['game' => $game]);

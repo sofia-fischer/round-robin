@@ -7,61 +7,91 @@
 <x-app-layout>
     <div class="max-w-2xl mx-auto mt-4 sm:px-6 lg:px-8 ">
 
-        <div class="rounded-xl bg-gray-800 my-2 p-4">
-            <h1 class="text-xl text-center font-semibold text-white mb-4">Stats</h1>
+        @if($game)
+            <div class="rounded-xl bg-gray-800 my-2 p-4">
+                <h1 class="text-xl text-center font-semibold text-white mb-4">Stats</h1>
 
-            <p class="text-gray-200 text-center my-1 w-full">
-                {{ $game->rounds->count() }}<b> Rounds</b>
-                <br>
-                {{ $game->moves()->where('user_id', \Illuminate\Support\Facades\Auth::id())->where('score', '>', 0)->count() }}
-                <b> Rounds with success</b>
-                <br>
-                {{ $game->started_at->toDateString() }}<b> Started</b>
-                <br>
-                {{ $game->hostPlayer->user->name }}<b> is Host</b>
-            </p>
-        </div>
+                <p class="text-gray-200 text-center my-1 w-full">
+                    {{ $game->rounds->count() }}<b> Rounds</b>
+                    <br>
+                    {{ $game->moves()->where('user_id', \Illuminate\Support\Facades\Auth::id())->where('score', '>', 0)->count() }}
+                    <b> Rounds with success</b>
+                    <br>
+                    {{ $game->started_at->toDateString() }}<b> Started</b>
+                    <br>
+                    {{ $game->hostPlayer->user->name }}<b> is Host</b>
+                </p>
+            </div>
 
-        <div class="rounded-xl bg-gray-800 my-2 p-4">
-            <h1 class="text-xl text-center font-semibold text-white mb-4">Kick Player</h1>
+            @if($game->host_user_id === \Illuminate\Support\Facades\Auth::id())
+                <div class="rounded-xl bg-gray-800 my-2 p-4">
+                    <h1 class="text-xl text-center font-semibold text-white mb-4">Kick Player</h1>
 
-            <div class="my-1 w-full flex justify-center">
-                @foreach($game->players as $player)
-                    <form method="DELETE" action="{{ route('player.destroy', ['player' => $player->uuid]) }}">
-                        @csrf
-                        <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
+                    <div class="my-1 w-full flex justify-center">
+                        @foreach($game->players as $player)
+                            <form method="POST" action="{{ route('player.destroy', ['player' => $player->uuid]) }}"
+                                onsubmit="return confirm('The selected player will leave the game');">
+                                @csrf
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
                             {{ 'hover:bg-' . $player->passiveColor}} {{ 'bg-' . $player->activeColor}}">
-                            {{ $player->user_id === \Illuminate\Support\Facades\Auth::id() ? 'Myself' : $player->user->name }}
+                                    {{ $player->user_id === \Illuminate\Support\Facades\Auth::id() ? 'Myself' : $player->user->name }}
+                                </button>
+                            </form>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="rounded-xl bg-gray-800 my-2 p-4">
+                    <h1 class="text-xl text-center font-semibold text-white mb-4">Game Settings</h1>
+
+                    <form class="my-1 w-full flex justify-center mb-4" method="POST"
+                        onsubmit="return confirm('Just skip to the next round');"
+                        action="{{ route('game.round', ['game' => $game->uuid]) }}">
+                        @csrf
+                        <input type="hidden" name="_method" value="PUT">
+                        <input type="hidden" name="game_id" value="{{$game?->id}}">
+                        <button type="submit" class="text-center rounded-xl h-7 px-2 bg-pink-600 text-white hover:bg-purple-500">
+                            🐛 Enforce Next Round
                         </button>
                     </form>
-                @endforeach
-            </div>
-        </div>
 
-        <div class="rounded-xl bg-gray-800 my-2 p-4">
-            <h1 class="text-xl text-center font-semibold text-white mb-4">Game Settings</h1>
+                    <form class="my-1 w-full flex justify-center" method="POST"
+                        onsubmit="return confirm('Do you want to destroy the current game?');"
+                        action="{{ route('game.destroy', ['game' => $game->uuid]) }}">
+                        @csrf
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="text-center rounded-xl h-7 px-2 bg-red-700 text-white hover:bg-purple-500">
+                            ⚠️ DESTROY GAME
+                        </button>
+                    </form>
+                </div>
+            @else
+                <div class="rounded-xl bg-gray-800 my-2 p-4">
+                    <h1 class="text-xl text-center font-semibold text-white mb-4">Leave Game</h1>
 
-            @if($game->logic_identifier === \App\Models\WaveLengthGame::$logic_identifier)
-                <form class="my-1 w-full flex justify-center" method="DELETE" action="{{ route('wavelength.round', ['game' => $game->uuid]) }}">
-                    @csrf
-                    <button type="submit" class="text-center rounded-xl h-7 px-2 bg-pink-600 text-white hover:bg-purple-500">
-                        ⚠️ Enforce Next Round
-                    </button>
-                </form>
+                    <form class="my-1 w-full flex justify-center" method="POST" action="{{ route('player.destroy', ['player' => $game->authenticatedPlayer->uuid]) }}"
+                        onsubmit="return confirm('The selected player will leave the game');">
+                        @csrf
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
+                            {{ 'hover:bg-' . $game->authenticatedPlayer->passiveColor}} {{ 'bg-' . $game->authenticatedPlayer->activeColor}}">
+                           {{ $game->authenticatedPlayer->user->name }} wants to go?
+                        </button>
+                    </form>
+                </div>
             @endif
-            <form class="my-1 w-full flex justify-center" method="DELETE" action="{{ route('game.destroy', ['game' => $game->uuid]) }}">
-                @csrf
-                <button type="submit" class="text-center rounded-xl h-7 px-2 bg-red-700 text-white hover:bg-purple-500">
-                    ⚠️ DESTROY GAME
-                </button>
-            </form>
-        </div>
+        @endif
 
         <div class="rounded-xl bg-gray-800 my-2 p-4">
-            <h1 class="text-xl text-center font-semibold text-white mb-4">Player Settings</h1>
-            <form class="flex flex-col my-2" method="PUT" action="{{ route('player.update', ['player' => $player->uuid]) }}">
+            <h1 class="text-xl text-center font-semibold text-white mb-4">Account Settings</h1>
+            <form class="flex flex-col my-2" method="POST" action="{{ route('user.update', ['user' => $game->authenticatedPlayer->user, 'game' => $game]) }}">
+                @csrf
                 <div>
-                    <select name="color" id="color" onchange="this.form.submit()" class="px-4 rounded-xl text-white {{ 'bg-' . $player->activeColor }}">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="game_id" value="{{$game?->id}}">
+                    <select name="color" id="color" onchange="this.form.submit()" class="px-4 rounded-xl text-white {{ 'bg-' . $game->authenticatedPlayer->activeColor }}">
+                        <option value="" selected disabled hidden> {{ $game->authenticatedPlayer->user->color ?? 'pink' }}</option>
                         <option value="gray" class="bg-gray-500">gray</option>
                         <option value="red" class="bg-red-500">red</option>
                         <option value="orange" class="bg-orange-500">orange</option>
@@ -75,13 +105,14 @@
                 </div>
                 <label for="color" class="text-white text-sm">Color</label>
             </form>
-            <form method="PUT" class="w-full flex justify-between my-2" action="{{ route('player.update', ['player' => $player->uuid]) }}">
+            <form method="POST" class="w-full flex justify-between my-2" action="{{ route('user.update', ['user' => $game->authenticatedPlayer->user]) }}">
                 @csrf
-
                 <div class="flex flex-col text-left mb-2">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="game_id" value="{{$game?->id}}">
                     <input id="name"
-                        class="border-b-2 border-white bg-transparent"
-                        placeholder="{{ $player->user->name }}"
+                        class="border-b-2 border-white bg-transparent text-white"
+                        placeholder="{{ $game->authenticatedPlayer->user->name }}"
                         name="name"
                     />
                     <label for="name" class="text-white text-sm">Name</label>
@@ -92,83 +123,63 @@
                     Rename
                 </button>
             </form>
+
+            <form method="POST" class="w-full flex justify-between my-2" action="{{ route('user.update', ['user' => $game->authenticatedPlayer->user]) }}">
+                @csrf
+                <div class="flex flex-col text-left mb-2">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="game_id" value="{{$game?->id}}">
+                    <input id="email"
+                        type="email"
+                        class="border-b-2 border-white bg-transparent text-white"
+                        placeholder="{{ $game->authenticatedPlayer->user->email ??'Set up an Email' }}"
+                        name="email"
+                    />
+                    <label for="email" class="text-white text-sm">Email</label>
+                    @error('email')<p class="input-error">{{ $message }}</p>@enderror
+                </div>
+
+                <button type="submit" class="bg-pink-700 text-white rounded-full hover:bg-purple-500 my-3 px-4">
+                    Save Email
+                </button>
+            </form>
+
+            <form method="POST" class="w-full flex justify-between my-2"
+                action="{{ route('user.update', ['user' => $game->authenticatedPlayer->user]) }}">
+                @csrf
+                <div class="flex flex-col text-left mb-2">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="game_id" value="{{$game?->id}}">
+                    <input id="password"
+                        type="password"
+                        class="border-b-2 border-white bg-transparent text-white"
+                        placeholder="{{ '*******' }}"
+                        name="password"
+                    />
+                    <label for="password" class="text-white text-sm">Password</label>
+                    @error('password')<p class="input-error">{{ $message }}</p>@enderror
+                </div>
+
+                <button type="submit" class="bg-pink-700 text-white rounded-full hover:bg-purple-500 my-3 px-4">
+                    Save Password
+                </button>
+            </form>
         </div>
 
-        <div class="rounded-xl bg-gray-800 my-2 p-4">
-            <h1 class="text-xl text-center font-semibold text-white mb-4">Account Settings</h1>
+        @if($game->authenticatedPlayer->user->email)
+            <div class="rounded-xl bg-gray-800 my-2 p-4">
+                <h1 class="text-xl text-center font-semibold text-white mb-4">Destroy Account</h1>
 
-            <div class="bg-orange-500 text-white rounded-xl w-full md:w-1/4 my-1">
-                ✉️️ Change Email
+                <form class="my-1 w-full flex justify-center" method="POST"
+                    onsubmit="return confirm('😢 Sorry to see you go... ');"
+                    action="{{ route('user.delete',  ['user' => $game->authenticatedPlayer->user]) }}">
+                    @csrf
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="text-center rounded-xl h-7 px-2 bg-pink-600 text-white hover:bg-purple-500">
+                        🚨 Delete Account
+                    </button>
+                </form>
             </div>
-            <div class="bg-orange-200 rounded-xl flex-grow my-1 w-full flex flex-wrap">
-                {{--                <form method="PUT" class="w-full flex justify-between" action="{{ route('player.update', ['player' => $player->uuid]) }}">--}}
-                {{--                    @csrf--}}
-
-                {{--                    <div class="flex flex-col text-left mb-2">--}}
-                {{--                        <input id="name"--}}
-                {{--                            class="border-b-2 border-white bg-transparent"--}}
-                {{--                            name="name"--}}
-                {{--                        />--}}
-                {{--                        <label for="name" class="text-white text-sm">Name</label>--}}
-                {{--                        @error('name')<p class="input-error">{{ $message }}</p>@enderror--}}
-                {{--                    </div>--}}
-
-                {{--                    <div>--}}
-                {{--                        <button type="submit"--}}
-                {{--                            class="bg-orange-700 text-white rounded-full hover:bg-purple-400 py-2 px-4">--}}
-                {{--                            Rename--}}
-                {{--                        </button>--}}
-                {{--                    </div>--}}
-                {{--                </form>--}}
-            </div>
-            <div class="bg-orange-500 text-white rounded-xl w-full md:w-1/4 my-1">
-                🔐 Change Password
-            </div>
-            <div class="bg-orange-200 rounded-xl flex-grow my-1 w-full flex flex-wrap">
-                {{--                <form method="PUT" class="w-full flex justify-between" action="{{ route('player.update', ['player' => $player->uuid]) }}">--}}
-                {{--                    @csrf--}}
-
-                {{--                    <div class="flex flex-col text-left mb-2">--}}
-                {{--                        <input id="name"--}}
-                {{--                            class="border-b-2 border-white bg-transparent"--}}
-                {{--                            name="name"--}}
-                {{--                        />--}}
-                {{--                        <label for="name" class="text-white text-sm">Name</label>--}}
-                {{--                        @error('name')<p class="input-error">{{ $message }}</p>@enderror--}}
-                {{--                    </div>--}}
-
-                {{--                    <div>--}}
-                {{--                        <button type="submit"--}}
-                {{--                            class="bg-orange-600 text-white rounded-full hover:bg-prange-400 py-2 px-4">--}}
-                {{--                            Rename--}}
-                {{--                        </button>--}}
-                {{--                    </div>--}}
-                {{--                </form>--}}
-            </div>
-            <div class="bg-orange-500 text-white rounded-xl w-full md:w-1/4 my-1">
-                🚨 Delete Account
-            </div>
-            <div class="bg-orange-200 rounded-xl flex-grow my-1 w-full flex flex-wrap">
-                {{--                <form method="DELETE" class="w-full flex justify-between" action="{{ route('auth.update', ['player' => $player->uuid]) }}">--}}
-                {{--                    @csrf--}}
-
-                {{--                    <div class="flex flex-col text-left mb-2">--}}
-                {{--                        <input id="name"--}}
-                {{--                            class="border-b-2 border-white bg-transparent"--}}
-                {{--                            name="name"--}}
-                {{--                        />--}}
-                {{--                        <label for="name" class="text-white text-sm">Name</label>--}}
-                {{--                        @error('name')<p class="input-error">{{ $message }}</p>@enderror--}}
-                {{--                    </div>--}}
-
-                {{--                    <div>--}}
-                {{--                        <button type="submit"--}}
-                {{--                            class="bg-orange-600 text-white rounded-full hover:bg-prange-400 py-2 px-4">--}}
-                {{--                            Rename--}}
-                {{--                        </button>--}}
-                {{--                    </div>--}}
-                {{--                </form>--}}
-            </div>
-        </div>
+        @endif
     </div>
 </x-app-layout>
