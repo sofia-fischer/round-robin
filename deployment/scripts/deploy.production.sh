@@ -16,8 +16,8 @@ sudo -kS supervisorctl start all
 # navigate to the new files
 cd /var/www/html/round-robin/
 
-# remove deployment instructions
-composer dumpautoload
+## remove deployment instructions
+#composer dumpautoload
 
 # migrate the database
 php artisan migrate --force
