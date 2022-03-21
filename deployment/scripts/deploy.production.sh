@@ -33,6 +33,3 @@ php artisan storage:link
 
 # send restart signal to queue
 php artisan queue:restart
-
-# remove deployment instructions
-sudo rm -rf deployment/
