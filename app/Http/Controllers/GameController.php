@@ -57,7 +57,7 @@ class GameController
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
-            'werewolfGames'   => WaveLengthGame::query()
+            'werewolfGames'   => WerewolfGame::query()
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
