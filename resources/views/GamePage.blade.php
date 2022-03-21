@@ -1,6 +1,5 @@
 <?php
-/* @var App\Models\Game|\App\Models\WaveLengthGame $game */
-/* @var App\Models\Game|\App\Models\JustOneGame $game */
+/* @var App\Models\Game|\App\Models\WaveLengthGame|\App\Models\JustOneGame|\App\Models\WerewolfGame $game */
 
 /* @var App\Models\Player $player */
 ?>
@@ -17,7 +16,7 @@
                     </svg>
                 </div>
                 <div class="text-center text-lg text-purple-600 font-semibold relative flex items-center justify-center">
-                    <div>{{ $game->title }}</div>
+                    <div>{{ $game::$title }}</div>
 
                     <div class="px-2" id="btn-modal">
                         <svg class="w-6 h-6 text-gray-300 relative" fill="none" viewBox="0 0 24 24"
@@ -31,7 +30,7 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg sm:p-4">
                 @if(get_class($game) === \App\Models\WaveLengthGame::class)
                     <livewire:wave-length-component :game="$game"></livewire:wave-length-component>
-                @elseif($game->logic_identifier ===  App\Support\GameLogics\OneNightWerewolfLogic::class)
+                @elseif(get_class($game) === \App\Models\WerewolfGame::class)
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
                 @elseif(get_class($game) === \App\Models\JustOneGame::class)
                     <livewire:just-one-component :game="$game"></livewire:just-one-component>
@@ -56,7 +55,7 @@
         class="bg-white text-small invisible rounded-lg shadow-lg max-w-xl top-32 w-full left-0 right-0 mx-auto p-4 text-center absolute"
         id="modal">
         <h2 class="text-center text-purple-600 pb-2">
-            {{ $game->title }}
+            {{ $game::$title }}
         </h2>
 
         <p>

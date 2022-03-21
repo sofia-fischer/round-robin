@@ -14,14 +14,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 
 class PlayerController
 {
-    public function create(Game $game)
-    {
-        /** @var Player $player */
-        $game->join();
-
-        return redirect()->route('game.show', ['game' => $game]);
-    }
-
     public function destroy(Player $player)
     {
         throw_unless($player->game->host_user_id === Auth::id() || $player->user_id === Auth::id(), AuthorizationException::class);

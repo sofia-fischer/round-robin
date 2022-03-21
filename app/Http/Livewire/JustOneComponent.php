@@ -18,7 +18,6 @@ class JustOneComponent extends Component
 
     public function render()
     {
-//        dd($this->game->word);
         return view('livewire.JustOneComponent');
     }
 
@@ -31,7 +30,7 @@ class JustOneComponent extends Component
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class     => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => 'nextRound',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',
         ];
     }
 }

@@ -31,7 +31,7 @@ class WaveLengthComponent extends Component
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class       => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => 'nextRound',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',
         ];
     }
 }

@@ -90,14 +90,14 @@
         <div class="bg-gradient-to-r from-indigo-400 to-pink-500 rounded-xl text-white overflow-hidden my-4">
             <h1 class="text-2xl font-semibold m-4">Werewolf BETA</h1>
             <div class="flex md:flex-row sm:flex-col content-center m-4">
-                <div class="p-2">{{ \App\Support\GameLogics\OneNightWerewolfLogic::description() }}</div>
+                <div class="p-2">{{ \App\Models\WerewolfGame::$description }}</div>
                 <div>
                     @if( \Illuminate\Support\Facades\Auth::user()->email)
                         <form action="{{ route('game.create') }}" method="POST">
                             @csrf
                             <button name="logic"
                                 class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
-                                value="{{ \App\Support\GameLogics\OneNightWerewolfLogic::class }}">
+                                value="{{ \App\Models\WerewolfGame::$logic_identifier }}">
                                 Start
                             </button>
                         </form>

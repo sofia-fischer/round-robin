@@ -1,52 +1,59 @@
 <div class="w-full">
     <?php
-    /* @var App\Models\Game $game */
+    /* @var App\Models\WerewolfGame $game */
     /* @var App\Models\Player $player */
+    /* @var App\Models\Move $move */
     ?>
 
     {{--    Roles    --}}
     <div class="flex flex-wrap mb-8 m-4 text-center justify-evenly text-gray-500">
-        @foreach($roles as $role => $count)
-            <div class="flex items-center rounded-full border border-gray-600 m-2"
-                wire:click="$toggle('show{{ $role }}')">
-                <div class="w-6 h-6 m-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
-                    </svg>
+        @foreach($game->playerRoles->merge($game->extraRoles)->values()->countBy() as $role => $count)
+            <div>
+                <div class="flex items-center rounded-full border mx-2 mt-2 border-gray-600
+                        {{ $game->authenticatedRole === $role ? 'text-white bg-' . $game->authenticatedPlayer->activeColor : ''}}">
+                    <div class="w-6 h-6 m-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
+                        </svg>
+                    </div>
+                    <div class="p-2 text-sm">
+                        {{ $count }} {{ Str::title($role) }}
+                        <div class="text-xs">{{ WerewolfRoleEnum::INFO[$role] ?? '' }}</div>
+                    </div>
                 </div>
-                <div class="text-xs p-1">{{ $count }}</div>
-                <div class="p-2 text-sm {{ ! ${'show'.$role} ? 'hidden' : 'block' }}">
-                    {{ Str::title($role) }}
-                    <div class="text-xs">{{ \App\Support\Enums\WerewolfRoleEnum::INFO[$role] ?? '' }}</div>
-                </div>
+                @if($game->authenticatedRole === $role)
+                    <div class="{{ 'text-' . $game->authenticatedPlayer->activeColor }}">
+                        You are a {{ $role }}
+                    </div>
+                @endif
+
             </div>
         @endforeach
     </div>
 
-    @if($step != 'start')
+    @if(! $game->isStart)
         {{--    Timer    --}}
         <div class="flex mt-4 sm:rounded-t-full overflow-hidden">
-            <div class="w-6 h-4 {{ $step == 'start' ? 'bg-white text-indigo-900' : 'bg-indigo-900 text-white'}} pl-2">
+            <div class="w-6 h-4 bg-indigo-900 text-white pl-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
                 </svg>
             </div>
-            <div class="flex-grow h-4 bg-indigo-900 {{ $step == 'night' ? 'timer' : ''}}"
-                id="night-timer"
-                style="--duration: {{ \App\Support\Enums\WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) }} ">
-                <div class=" w-full h-4 {{ $step == 'night' ? 'bg-white' : 'bg-indigo-900'}}"></div>
+            <div class="flex-grow h-4 bg-indigo-900 {{ $game->isNight ? 'timer' : ''}}" id="night-timer"
+                style="--duration: {{ WerewolfRoleEnum::NIGHT_DURATION - $game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) }} ">
+                <div class=" w-full h-4 {{ $game->isNight ? 'bg-white' : 'bg-indigo-900'}}"></div>
             </div>
-            <div class="w-4 h-4 pt-2 overflow-hidden {{ $step == 'day' || $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
+            <div class="w-4 h-4 pt-2 overflow-hidden {{ $game->isDay || $game->isEnd ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <div class="flex-grow h-4 {{ $step == 'day' ? 'timer bg-indigo-900' : 'bg-white'}}"
+            <div class="flex-grow h-4 {{ $game->isDay ? 'timer bg-indigo-900' : 'bg-white'}}"
                 id="day-timer"
-                style="--duration: {{ \App\Support\Enums\WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) - \App\Support\Enums\WerewolfRoleEnum::NIGHT_DURATION) }} ">
-                <div class=" w-full h-4 {{ $step == 'end' ? 'bg-indigo-900' : 'bg-white'}}"></div>
+                style="--duration: {{ WerewolfRoleEnum::DAY_DURATION - ($game->currentRound->created_at->diffInSeconds(now()->addSeconds(3)) - WerewolfRoleEnum::NIGHT_DURATION) }} ">
+                <div class=" w-full h-4 {{ $game->isEnd ? 'bg-indigo-900' : 'bg-white'}}"></div>
             </div>
-            <div class="w-6 h-4 pr-2 {{ $step == 'end' ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
+            <div class="w-6 h-4 pr-2 {{ $game->isEnd ? 'bg-indigo-900 text-white' : 'bg-white text-indigo-900'}}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
                 </svg>
@@ -74,399 +81,325 @@
 
     {{--    Game Window    --}}
     <div class="flex flex-col content-center w-full text-center mb-4 rounded-b-lg px-4 py-10 bg-gradient-to-b
-                    {{ $step == 'night' ? 'from-blue-900 to-black text-white' : ($step == 'day'
-                            ? 'from-blue-300 via-pink-200 to-yellow-100 text-indigo-900'
-                            : ($step == 'start' ? 'bg-white' : 'from-yellow-400 via-red-800 to-black text-white')) }}}">
-
-        {{--    Authenticated Role    --}}
-        @if($step != 'start')
-            <div class="flex items-center w-full justify-between text-center text-indigo-900 bg-white bg-opacity-50 rounded-full px-2 my-4">
-                <div class="font-semibold px-2"> You are a {{ Str::title($playerRole) }}</div>
-                <div>
-                    <div class=" px-2">Who {{ \App\Support\Enums\WerewolfRoleEnum::INFO[$playerRole] ?? '' }}</div>
-                    <div class="text-xs px-2">You
-                                              win {{ \App\Support\Enums\WerewolfRoleEnum::WIN[$playerRole] ?? '' }}</div>
-                </div>
-                <div class="mr-2 w-8 h-8">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$playerRole] ?? '' }}"/>
-                    </svg>
-                </div>
-            </div>
-        @endif
+            {{ $game->isNight ? 'from-blue-900 to-black text-white' : ($game->isDay
+                    ? 'from-blue-300 via-pink-200 to-yellow-100 text-indigo-900'
+                    : ($game->isStart ? 'bg-white' : 'from-yellow-400 via-red-800 to-black text-white')) }}}">
 
         {{--    Authenticated Night Move    --}}
-        @if($step == 'night')
-            <div class="bg-white rounded-xl px-2 text-indigo-900 bg-opacity-50 my-4">
-                @switch($playerRole)
-                    @case(WerewolfRoleEnum::WEREWOLF)
-                    <div class="flex flex-wrap justify-evenly">
-                        @if(count($playerByRoles[WerewolfRoleEnum::WEREWOLF]) > 1)
-                            <div class="p-2 max-w-sm">Meet the pack</div>
-                            <div class="flex justify-evenly text-center text-white">
-                                @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::WEREWOLF]) as $player)
-                                    <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                        {{ $player->user->name }}
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else()
-                            <div class="p-2 max-w-sm">You are a lone wolf... you can look at one anonymous role</div>
-                            <div class="p-2 flex">
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('seeAnonymous', 1)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('seeAnonymous', 2)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('seeAnonymous', 3)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::MINION)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">Meet the pack</div>
-                        <div class="flex justify-evenly text-center text-white">
-                            @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::WEREWOLF]) as $player)
-                                <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                    {{ $player->user->name }}
+        @if($game->isNight)
+            <div class="rounded-xl px-2 text-white my-4 flex flex-col justify-center flex-col align-center">
+                <form method="POST" action="{{ route('werewolf.move', ['game' => $game->uuid]) }}">
+                    @csrf
+
+                    {{--    Display Werewolves    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::MASON || $game->authenticatedRole === WerewolfRoleEnum::WEREWOLF)
+                        <div class="p-2">Meet the pack</div>
+                        <div class="flex justify-evenly text-center">
+                            @foreach($game->playerWithRole(WerewolfRoleEnum::WEREWOLF) as $player)
+                                <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor }}">
+                                    {{ $player->name }}
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::MASON)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">You are initiated</div>
-                        <div class="flex justify-evenly text-center text-white">
-                            @foreach($game->players->find($playerByRoles[WerewolfRoleEnum::MASON] ?? []) as $player)
-                                <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                                    {{ $player->user->name }}
+                    @endif
+
+                    {{--    See Anonymous role for lone wolf    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::WEREWOLF && $game->playerWithRole(WerewolfRoleEnum::WEREWOLF)->count() === 1)
+                        <div class="p-2">You are a lone wolf... you can look at one anonymous role</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
+                            @foreach(['one', 'two', 'three'] as $anonymous)
+                                <div class="rounded-full h-8 w-8 pt-1 hover:bg-blue-800
+                                        {{ $game->authenticatedMovePayloadAttribute('seeAnonymous') === $anonymous ? 'bg-blue-100' : 'bg-blue-800' }}">
+                                    <input type="radio"
+                                        name="seeAnonymous"
+                                        id="seeAnonymous-{{ $anonymous }}"
+                                        value="{{ $anonymous }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label for="seeAnonymous-{{ $anonymous }}">?</label>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::SEER)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">Feel the aura of one of the other players.</div>
-                        <div class="flex flex-wrap justify-evenly">
+                    @endif
+
+                    {{--    Mason    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::MASON)
+                        <div class="p-2">You are initiated</div>
+                        <div class="flex justify-evenly text-center">
+                            @foreach($game->playerWithRole(WerewolfRoleEnum::MASON) as $player)
+                                <div class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor }}">
+                                    {{ $player->name }}
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{--    Seer    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::SEER)
+                        <div class="p-2">Feel the aura of one of the other players...</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
                             @foreach($game->players as $player)
-                                <div class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
-                                {{ ($game->authenticatedPlayerMove->payload['see'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('see', {{ $player->id }})">
-                                    {{ $player->user->name }}
+                                <div class="rounded-full px-2 pt-1 hover:{{ 'bg-'. $player->activeColor }}
+                                {{ $game->authenticatedMovePayloadAttribute('see') === $player->id ? 'bg-'. $player->activeColor : 'bg-'. $player->passiveColor }}">
+                                    <input type="radio"
+                                        name="see"
+                                        id="see-{{ $player->id }}"
+                                        value="{{ $player->id }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="see-{{ $player->id }}">{{ $player->name }}</label>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::ROBBER)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">Whose role to steal?</div>
-                        <div class="p-2 flex">
-                            @foreach($extraRoles as $index => $role)
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('anonymous', 1)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('anonymous', 2)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('anonymous', 3)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::TROUBLEMAKER)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">Time for chaos... who should switch their roles?</div>
-                        <div class="flex justify-evenly flex-wrap text-center text-white">
+                    @endif
+
+                    {{--    Robber    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::ROBBER)
+                        <div class="p-2">Whose role do you want to steal?</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
                             @foreach($game->players as $player)
-                                <div
-                                    class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
-                                    {{ ($game->authenticatedPlayerMove->payload['switch1'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('switch1', {{ $player->id }})">
-                                    {{ $player->user->name }}
-                                </div>
-                            @endforeach
-                            @foreach($extraRoles as $index => $role)
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['switch1'] ?? 0) == ('anonymous-' . ($index + 1)) ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('switch1', '{{ 'anonymous-' . ($index + 1) }}')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
+                                <div class="rounded-full px-2 pt-1 hover:{{ 'bg-'. $player->activeColor }}
+                                {{ $game->authenticatedMovePayloadAttribute('steal') === $player->id ? 'bg-'. $player->activeColor : 'bg-'. $player->passiveColor }}">
+                                    <input type="radio"
+                                        name="steal"
+                                        id="steal-{{$player->id }}"
+                                        value="{{ $player->id }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="steal-{{ $player->id }}">{{ $player->name }}</label>
                                 </div>
                             @endforeach
                         </div>
-                        <div>and</div>
-                        <div class="flex justify-evenly flex-wrap text-center text-white">
+                    @endif
+
+                    {{--    Troublemaker    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::TROUBLEMAKER)
+                        <div class="p-2">Whose roles do you want to switch?</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
                             @foreach($game->players as $player)
-                                <div
-                                    class="px-2 m-2 rounded-xl h-7 w-36 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
-                                    {{ ($game->authenticatedPlayerMove->payload['switch2'] ?? 0) == $player->id ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('switch2', {{ $player->id }})">
-                                    {{ $player->user->name }}
+                                <div class="rounded-full px-2 pt-1 hover:{{ 'bg-'. $player->activeColor }}
+                                {{ $game->authenticatedMovePayloadAttribute('switch1') === $player->id ?'bg-' . $player->activeColor : 'bg-' .$player->passiveColor }}">
+                                    <input
+                                        type="radio"
+                                        name="switch1"
+                                        id="switch1-{{ $player->id }}"
+                                        value="{{ $player->id }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="switch1-{{ $player->id }}">{{ $player->name }}</label>
                                 </div>
                             @endforeach
-                            @foreach($extraRoles as $index => $role)
-                                <div
-                                    class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['switch2'] ?? 0) == ('anonymous-' . ($index + 1)) ? 'shadow-white' : ''}}"
-                                    wire:click="performAction('switch2', '{{ 'anonymous-' . ($index + 1) }}')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                    </svg>
+                            @foreach(['one', 'two', 'three'] as $anonymous)
+                                <div class="rounded-full h-8 w-8 pt-1  hover:bg-blue-800
+                                        {{ $game->authenticatedMovePayloadAttribute('switch1') === $anonymous ? 'bg-blue-800' : 'bg-blue-100'}}">
+                                    <input type="radio"
+                                        name="switch1"
+                                        id="switch1-{{ $anonymous }}"
+                                        value="{{ $anonymous }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="switch1-{{ $anonymous }}">?</label>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                    @break
-                    @case(WerewolfRoleEnum::DRUNK)
-                    <div class="flex flex-wrap justify-evenly">
-                        <div class="p-2 max-w-sm">Who where you again?</div>
-                        <div class="p-2 flex">
-                            <div
-                                class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 1 ? 'shadow-white' : ''}}"
-                                wire:click="performAction('anonymous', 1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                </svg>
-                            </div>
-                            <div
-                                class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 2 ? 'shadow-white' : ''}}"
-                                wire:click="performAction('anonymous', 2)">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                </svg>
-                            </div>
-                            <div
-                                class="rounded-full h-8 w-8 bg-gray-500 text-white m-2  {{ ($game->authenticatedPlayerMove->payload['anonymous'] ?? 0) == 3 ? 'shadow-white' : ''}}"
-                                wire:click="performAction('anonymous', 3)">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON['anonymous'] }}"/>
-                                </svg>
-                            </div>
+                        <div class="p-2">and</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
+                            @foreach($game->players as $player)
+                                <div class="rounded-full px-2 pt-1 hover:{{ 'bg-'. $player->activeColor }}
+                                {{ $game->authenticatedMovePayloadAttribute('switch2') === $player->id ? 'bg-' .$player->activeColor : 'bg-' .$player->passiveColor }}">
+                                    <input type="radio"
+                                        name="switch2"
+                                        id="switch2-{{ $player->id }}"
+                                        value="{{ $player->id }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="switch2-{{ $player->id }}">{{ $player->name }}</label>
+                                </div>
+                            @endforeach
+                            @foreach(['one', 'two', 'three'] as $anonymous)
+                                <div class="rounded-full h-8 w-8 pt-1 hover:bg-blue-800
+                                        {{ $game->authenticatedMovePayloadAttribute('switch2') === $anonymous ? 'bg-blue-800' : 'bg-blue-100' }}">
+                                    <input type="radio"
+                                        name="switch2"
+                                        id="switch2-{{ $anonymous }}"
+                                        value="{{ $anonymous }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="switch2-{{ $anonymous }}">?</label>
+                                </div>
+                            @endforeach
                         </div>
-                    </div>
-                    @break
-                @endswitch
+                    @endif
+
+                    {{--    Drunk    --}}
+                    @if($game->authenticatedRole === WerewolfRoleEnum::DRUNK)
+                        <div class="p-2">Who are you again?</div>
+                        <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
+                            @foreach(['one', 'two', 'three'] as $anonymous)
+                                <div class="rounded-full h-8 w-8 pt-1 hover:bg-blue-800
+                                      {{ $game->authenticatedMovePayloadAttribute('drunk') === $anonymous ? 'bg-blue-100' : 'bg-blue-800' }}">
+                                    <input type="radio"
+                                        name="drunk"
+                                        id="drunk-{{ $anonymous }}"
+                                        value="{{ $anonymous }}"
+                                        class="hidden"
+                                        onchange="this.form.submit()">
+                                    <label class="cursor-pointer" for="drunk-{{ $anonymous }}">?</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </form>
             </div>
         @endif
 
         {{--    Authenticated Day Move    --}}
-        @if($step == 'day' || $step == 'end')
-            <div class="bg-white rounded-full px-2 text-indigo-900 bg-opacity-50 my-4">
-                <div class="flex flex-wrap justify-evenly items-center">
-                    @if($game->authenticatedPlayerMove->payload['sawAnonymous'] ?? false)
-                        <div class="p-2">
-                            You saw the anonymous role number
-                            {{ $game->authenticatedPlayerMove->payload['seeAnonymous'] ?? 0 }}
-                            <div class="text-xs">
-                                {{ $game->currentRound->moves()->where('created_at', '<', $game->authenticatedPlayerMove->created_at)->count() + 1 }}
-                                . Action
-                            </div>
-                        </div>
-                        <div class="w-6 h-6 m-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['sawAnonymous']] ?? '' }}"/>
-                            </svg>
-                        </div>
-                    @endif()
-
-                    @if($game->authenticatedPlayerMove->payload['saw'] ?? false)
-                        <div>
-                            You saw
-                            <div class="text-xs">
-                                {{ $game->currentRound->moves()->where('created_at', '<', $game->authenticatedPlayerMove->created_at)->count() + 1 }}
-                                . Action
-                            </div>
-                        </div>
-                        <div class="flex overflow-hidden justify-center items-center text-white rounded-xl h-7 w-36 m-2
-                                 {{ 'bg-' . $players[$game->authenticatedPlayerMove->payload['see']]->activeColor ?? 'pink-500' }}">
-                            {{ $players[$game->authenticatedPlayerMove->payload['see']]->name ?? 'Nobody' }}
-                            <div class="w-6 h-6 pl-2 pt-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->authenticatedPlayerMove->payload['saw']] ?? '' }}"/>
-                                </svg>
-                            </div>
-                        </div>
-                    @endif()
-
-                    @if($game->authenticatedPlayerMove->payload['anonymous'] ?? false)
-                        <div class="p-2">
-                            You became the anonymous role
-                            number {{ $game->authenticatedPlayerMove->payload['anonymous'] ?? 0 }}.
-                            Now your role is
-                            <div class="text-xs">
-                                {{ $game->currentRound->moves()->where('created_at', '<', $game->authenticatedPlayerMove->created_at)->count() + 1 }}
-                                . Action
-                            </div>
-                        </div>
-                        @if($playerRole == \App\Support\Enums\WerewolfRoleEnum::DRUNK)
-                            <div>something else...</div>
-                        @else
-                            <div class="w-6 h-6 m-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$newPlayerRole] ?? '' }}"/>
-                                </svg>
-                            </div>
-                        @endif
-                    @endif()
-
-                    @if($game->authenticatedPlayerMove->payload['switch1'] ?? false && $game->authenticatedPlayerMove->payload['switch2'] ?? false)
-                        <div class="p-2">
-                            You switched
-                            <div class="text-xs">
-                                {{ $game->currentRound->moves()->where('created_at', '<', $game->authenticatedPlayerMove->created_at)->count() + 1 }}
-                                . Action
-                            </div>
-                        </div>
-                        @if(Str::startsWith($game->authenticatedPlayerMove->payload['switch1'], 'anonymous-'))
-                            <div class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 pt-1">
-                                {{ Str::replaceFirst( 'anonymous-', '', $game->authenticatedPlayerMove->payload['switch1']) }}
-                            </div>
-                        @else
-                            <div class="text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $players[$game->authenticatedPlayerMove->payload['switch1']]->activeColor ?? 'pink-500' }}">
-                                {{ $players[$game->authenticatedPlayerMove->payload['switch1']]->name }}
-                            </div>
-                        @endif
-                        <div>
-                            and
-                        </div>
-                        @if(Str::startsWith($game->authenticatedPlayerMove->payload['switch2'], 'anonymous-'))
-                            <div class="rounded-full h-8 w-8 bg-gray-500 text-white m-2 pt-1">
-                                {{ Str::replaceFirst( 'anonymous-', '', $game->authenticatedPlayerMove->payload['switch2']) }}
-                            </div>
-                        @else
-                            <div class="text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $players[$game->authenticatedPlayerMove->payload['switch2']]->activeColor ?? 'pink-500' }}">
-                                {{ $players[$game->authenticatedPlayerMove->payload['switch2']]->name }}
-                            </div>
-                        @endif
-                    @endif()
-                </div>
+        @if($game->isDay || $game->isEnd)
+            <div class="bg-white rounded-xl px-2 text-indigo-900 bg-opacity-50 my-4 p-2">
+                @if($game->authenticatedMovePayloadAttribute('sawName'))
+                    You saw the role of
+                    <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $game->authenticatedMovePayloadAttribute('sawColor') }}">
+                        {{ $game->authenticatedMovePayloadAttribute('sawName') }}
+                    </span>
+                    who was {{ $game->authenticatedMovePayloadAttribute('sawRole') }}
+                @elseif($game->authenticatedMovePayloadAttribute('saw'))
+                    You took the role of
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $game->authenticatedMovePayloadAttribute('becameColor') }}">
+                        {{ $game->authenticatedMovePayloadAttribute('becameName') }}
+                    </span>
+                    who was {{ $game->authenticatedMovePayloadAttribute('becameRole') }}
+                @elseif($game->authenticatedMovePayloadAttribute('switched1Name'))
+                    You switched the roles of
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $game->authenticatedMovePayloadAttribute('switched1Color') }}">
+                        {{ $game->authenticatedMovePayloadAttribute('switched1Name') }}
+                    </span>
+                    and
+                        <span class="text-white rounded-full px-2 m-1  {{ 'bg-' . $game->authenticatedMovePayloadAttribute('switched2Color') }}">
+                        {{ $game->authenticatedMovePayloadAttribute('switched2Name') }}
+                    </span>
+                @endif
             </div>
         @endif
 
         {{--    Voting Input    --}}
-        @if($step == 'day')
-            <div class="flex flex-wrap justify-evenly items-center bg-white rounded-xl text-indigo-900 bg-opacity-50 my-4 p-2">
-                <div>Who do you vote? The player with the most votes will be killed.</div>
-                @foreach($game->players as $player)
-                    <div
-                        class="text-center text-white rounded-xl h-7 w-36 m-2 {{ 'bg-' . $player->activeColor ?? 'pink-500' }}
-                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == $player->id ? 'border-solid border-4 border-black' : ''}}"
-                        wire:click="performAction('vote', {{ $player->id }})">
-                        {{ $player->user->name }}
+        @if($game->isDay)
+            <form method="POST" action="{{ route('werewolf.move', ['game' => $game->uuid]) }}">
+                @csrf
+
+                <div class="p-2">Who do you vote? The player with the most votes will be killed.</div>
+                <div class="flex justify-around align-center rounded-full bg-white bg-opacity-50 p-2 my-2 flex-wrap">
+                    @foreach($game->players as $player)
+                        <div class="rounded-full px-2 pt-1 hover:{{ 'bg-'. $player->activeColor }}
+                        {{ $game->authenticatedMovePayloadAttribute('vote') === $player->id ? 'bg-'. $player->activeColor : 'bg-'. $player->passiveColor }}">
+                            <input type="radio"
+                                name="vote"
+                                id="vote-{{ $player->id }}"
+                                value="{{ $player->id }}"
+                                class="hidden"
+                                onchange="this.form.submit()">
+                            <label class="cursor-pointer" for="vote-{{ $player->id }}">{{ $player->name }}</label>
+                        </div>
+                    @endforeach
+                    <div class="rounded-full px-2 pt-1 hover:bg-gray-500
+                    {{ $game->authenticatedMovePayloadAttribute('vote') === 'nobody' ? 'bg-gray-500' : 'bg-gray-300' }}">
+                        <input type="radio"
+                            name="vote"
+                            id="vote-nobody"
+                            value="nobody"
+                            class="hidden"
+                            onchange="this.form.submit()">
+                        <label class="cursor-pointer" for="vote-nobody">Nobody</label>
                     </div>
-                @endforeach
-                <div class="text-center text-white rounded-xl h-7 w-36 bg-indigo-700
-                        {{ ($game->authenticatedPlayerMove->payload['vote'] ?? 0) == 0 ? 'border-solid border-4 border-black' : ''}}"
-                    wire:click="performAction('vote', null)">
-                    Nobody
                 </div>
-            </div>
+            </form>
         @endif
 
         {{--    Game End Results    --}}
-        @if($step == 'end')
-            <div class="flex flex-wrap justify-evenly items-center bg-white rounded-full px-2 text-indigo-900 bg-opacity-50 my-4">
-                <div class="p-2">You voted</div>
-                <div class="flex overflow-hidden justify-center  text-white rounded-xl h-7 w-36 m-2
-                            {{ $votedPlayerId ? 'bg-' . $players[$votedPlayerId]->activeColor : 'bg-gray-500' }}">
-                    {{ $votedPlayerId ? $players[$votedPlayerId]->name : 'Nobody'}}
-                </div>
+        @if($game->isEnd)
+            <div class="bg-white rounded-xl px-2 text-indigo-900 bg-opacity-50 my-4 p-2">
+                You voted for
+                <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $game->authenticatedPlayerVote?->activeColor }}">
+                    {{ $game->authenticatedPlayerVote?->name ?? 'Nobody' }}
+                </span>
             </div>
 
-            <div>
-                {{ ($game->currentRound->payload['win'] ?? null) == \App\Support\Enums\WerewolfRoleEnum::WEREWOLF
-                    ? 'The night prevailed'
-                    : (($game->currentRound->payload['win'] ?? null) == \App\Support\Enums\WerewolfRoleEnum::TANNER
-                        ? 'You have underestimated the power of one person'
-                        : 'The good is winning')  }}
-            </div>
-            <div>{{ $game->authenticatedPlayerMove->score ?? false ? 'You won' : 'You lost' }}</div>
-
-            <div class="flex flex-wrap justify-evenly text-center text-white pt-16">
+            <div class="bg-white rounded-xl px-2 text-indigo-900 bg-opacity-50 my-4 p-2">
                 @foreach($game->players as $player)
-                    <div class="flex overflow-hidden justify-between items-center rounded-xl h-7 w-36 m-2
-                        {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-                        <div class="pt-1 text-white px-2 flex-grow text-left">{{ $player->name }}</div>
-                        <div class="w-6 h-6 m-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$game->currentRound->payload['newPlayerRoles'][$player->id] ?? null] ?? '' }}"/>
-                            </svg>
-                        </div>
-                    </div>
+                    <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $player->activeColor }}">
+                        {{ $player->name }} woke up as {{ $game->playerRoles->get($player->id) ?? 'Watcher' }}
+                    </span>
                 @endforeach
-                @foreach($extraRoles as $index => $role)
-                    <div class="flex overflow-hidden justify-between items-center rounded-xl h-7 w-36 m-2 bg-gray-500 text-white">
-                        <div class="pt-1 text-white px-2 flex-grow text-left">{{ $index + 1 }}</div>
-                        <div class="w-6 h-6 m-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ \App\Support\Enums\WerewolfRoleEnum::ICON[$role] ?? '' }}"/>
-                            </svg>
-                        </div>
-                    </div>
+                <br>
+                <br>
+                @foreach($game->currentRound->moves as $move)
+                    @if($move->payloadAttribute('sawName'))
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
+                        saw the role of
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('sawColor') }}">
+                        {{ $move->payloadAttribute('sawName') }}
+                    </span>
+                        who was {{ $move->payloadAttribute('sawRole') }}
+                    @elseif($move->payloadAttribute('saw'))
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
+                        took the role of
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('becameColor') }}">
+                        {{ $move->payloadAttribute('becameName') }}
+                    </span>
+                        who was {{ $move->payloadAttribute('becameRole') }}
+                    @elseif($move->payloadAttribute('switched1Name'))
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
+                        switched the roles of
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('switched1Color') }}">
+                        {{ $move->payloadAttribute('switched1Name') }}
+                    </span>
+                        and
+                        <span class="text-white rounded-full px-2 m-1  {{ 'bg-' . $move->payloadAttribute('switched2Color') }}">
+                        {{ $move->payloadAttribute('switched2Name') }}
+                    </span>
+                    @endif
                 @endforeach
+                <br>
+                <br>
+                        The group killed
+                <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $game->currentPayloadAttribute('killedPlayerColor') }}">
+                         {{ $game->currentPayloadAttribute('killedPlayerName') }}
+                    </span>
+                @if($game->currentPayloadAttribute('killedPlayerColor'))
+                    <span>who is a {{ $game->currentPayloadAttribute('killedRole') }}</span>
+                @endif
+                <br>
+                <br>
+                <span class="font-extrabold text-xl"> {{ match($game->currentPayloadAttribute('win')) {
+                    WerewolfRoleEnum::WEREWOLF => 'The night prevailed',
+                     WerewolfRoleEnum::TANNER => 'You have underestimated the power of one person',
+                     default => 'The good is winning',
+                } }}</span> -
+                <span class="font-extrabold text-xl">
+                    {{ $game->authenticatedPlayerMove?->score ? 'You won' : 'You lost' }}
+                </span>
             </div>
         @endif
 
         @if($game->host_user_id == \Illuminate\Support\Facades\Auth::id())
             <div class="text-white text-center mx-auto">
-                @switch($step)
-                    @case('start')
-                    <button wire:click="startGame" class="rounded-lg bg-gradient-to-br from-purple-600 to-orange-400 text-white  px-4">
-                        Start Game
-                    </button>@break
-                    @case('night')
-                    <button wire:click="makeDawn" class="rounded-lg bg-green-500 px-4">Make Day</button>@break
-                    @case('day')
-                    <button wire:click="makeNight" class="rounded-lg bg-green-500 px-4">End Game</button>@break
-                    @case('end')
-                    <button wire:click="nextRound" class="rounded-lg bg-green-500 px-4">Restart</button>@break
-                @endswitch
+                <form method="POST" action="{{
+                         match (true) {
+                            $game->isStart => route('werewolf.round', ['game' => $game]),
+                            $game->isNight => route('werewolf.sunrise', ['game' => $game]),
+                            $game->isDay => route('werewolf.vote', ['game' => $game]),
+                            $game->isEnd => route('werewolf.vote', ['game' => $game]),
+                        } }}">
+                    @csrf
+                    <button type="submit" class="rounded-lg bg-orange-500 px-4">
+                        {{ match (true) {
+                            $game->isStart => 'Start Game',
+                            $game->isNight => 'Make Sunrise',
+                            $game->isDay => 'Vote',
+                            $game->isEnd => 'Restart',
+                        } }}
+                    </button>
+                </form>
             </div>
         @endif
     </div>
-
-    <style>
-        .shadow-white {
-            -webkit-box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 1);
-            -moz-box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 1);
-            box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 1);
-        }
-    </style>
 </div>

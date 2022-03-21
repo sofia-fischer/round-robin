@@ -11,11 +11,11 @@
         </div>
 
         <div class="text-sm {{ $game->isWaitingForGuess ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentPlayer->user->name }} guesses
+            {{ $game->currentPlayer->name }} guesses
         </div>
 
         <div class="text-sm {{ $game->isCompleted ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentPlayer->user->name }} starts next round
+            {{ $game->currentPlayer->name }} starts next round
         </div>
     </div>
 
@@ -81,7 +81,7 @@
                 @foreach($game->currentRound->moves()->where('player_id', '!=', $game->currentRound->active_player_id)->get() as $move)
                     <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor }}">
                         {{ ($game->isCompleted || $move->payloadAttribute('visible')) ? Str::upper($move->payloadAttribute('clue')) : '???' }}
-                        <div class="text-xs">{{ $move->player->user->name }}</div>
+                        <div class="text-xs">{{ $move->player->name }}</div>
                     </div>
                 @endforeach
             </div>

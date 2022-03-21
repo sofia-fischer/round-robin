@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Builders\B2BUserBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 

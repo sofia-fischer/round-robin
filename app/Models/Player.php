@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
-use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
  * Class Player
@@ -15,7 +14,6 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property  int game_id
  * @property  int user_id
  * @property  string name
- * @property  string color
  * @property  Carbon created_at
  * @property  Carbon updated_at
  * @property  Carbon deleted_at

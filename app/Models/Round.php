@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
  * Class Round
@@ -110,6 +109,14 @@ class Round extends BaseModel
         $payload       = $this->payload ?? [];
         $payload[$key] = $value;
         $this->payload = $payload;
+        $this->save();
+
+        return $this->payload;
+    }
+
+    public function mergePayloadAttribute(array $data): array
+    {
+        $this->payload = array_merge($this->payload ?? [], $data);
         $this->save();
 
         return $this->payload;

@@ -6,7 +6,7 @@
 
     <div class="flex justify-between max-w-xl mx-auto">
         <div class="text-sm {{ $game->isWaitingForClue ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->user->name }} gives a clue
+            {{ $game->currentRound->activePlayer->name }} gives a clue
         </div>
 
         <div class="text-sm {{ $game->isWaitingForGuess ? 'text-purple-600' : 'text-gray-400' }}">
@@ -14,7 +14,7 @@
         </div>
 
         <div class="text-sm {{ $game->isCompleted ? 'text-purple-600' : 'text-gray-400' }}">
-            {{ $game->currentRound->activePlayer->user->name }} starts next round
+            {{ $game->currentRound->activePlayer->name }} starts next round
         </div>
     </div>
 
@@ -46,7 +46,7 @@
                                     rounded-b-lg rounded-r-lg hover-trigger">
                                     <div class="absolute bg-{{ $move->player->activeColor ?? 'pink-500' }}
                                         border border-grey-100 px-4 hover-target rounded-b-lg rounded-r-lg">
-                                        {{ $move->player->user->name }}
+                                        {{ $move->player->name }}
                                     </div>
                                     <style>
                                         .hover-trigger .hover-target {

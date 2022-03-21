@@ -3,10 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
-use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
-use App\Queue\Events\PlayerDestroyed;
-use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
  * Class Game
@@ -48,9 +45,6 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property Move authenticatedPlayerMove
  * @see \App\Models\Game::getAuthenticatedPlayerMoveAttribute()
  *
- * @property \App\Support\Interfaces\Logic $logic
- * @see \App\Models\Game::getLogicAttribute()
- *
  * @package app/Database/Models
  */
 class Game extends BaseModel
@@ -66,6 +60,9 @@ class Game extends BaseModel
         'logic_identifier',
         'host_user_id',
     ];
+
+    static $title = 'Undefined Game';
+    static $description = 'Undefined Description';
 
     /**
      * The attributes that should be cast to native types.
@@ -151,69 +148,6 @@ class Game extends BaseModel
         return $this->currentRound ? $this->currentRound->authenticatedPlayerMove : null;
     }
 
-    protected function getLogicAttribute()
-    {
-        return app($this->logic_identifier);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Capabilities
-    |--------------------------------------------------------------------------
-    */
-
-    public function start()
-    {
-        $this->logic->startGame($this);
-    }
-
-    public function join(): Player
-    {
-        if ($this->authenticatedPlayer) {
-            return $this->authenticatedPlayer;
-        }
-
-        /** @var Player $player */
-        $player = $this->players()->create(['user_id' => Auth::id()]);
-        event(new PlayerCreated($player));
-        $this->logic->playerJoined($player, $this);
-
-        return $player;
-    }
-
-    public function destroyPlayer(Player $player): bool
-    {
-        $player->delete();
-        event(new PlayerDestroyed($player->id));
-
-        $this->logic->playerJoined($player, $this);
-
-        return true;
-    }
-
-    public function roundAction(array $options = [])
-    {
-        $this->logic->roundAction($this->currentRound, $options);
-    }
-
-    public function endRound()
-    {
-        $this->logic->endRound($this->currentRound);
-    }
-
-    /**
-     *  Setup model event hooks
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        self::deleting(function (Game $game) {
-            $game->players()->delete();
-            $game->rounds()->delete();
-        });
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Capabilities
@@ -232,5 +166,38 @@ class Game extends BaseModel
     public function addCurrentPayloadAttribute(string $key, mixed $value): array
     {
         return $this->currentRound->addPayloadAttribute($key, $value);
+    }
+
+    public function mergeCurrentPayloadAttribute(array $data): array
+    {
+        return $this->currentRound->mergePayloadAttribute($data);
+    }
+
+    public function authenticatedMovePayloadAttribute(string $key, $default = null)
+    {
+        if (! $this->authenticatedPlayerMove) {
+            return $default;
+        }
+
+        return $this->authenticatedPlayerMove->payloadAttribute($key, $default);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Boot
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     *  Setup model event hooks
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function (Game $game) {
+            $game->players()->delete();
+            $game->rounds()->delete();
+        });
     }
 }

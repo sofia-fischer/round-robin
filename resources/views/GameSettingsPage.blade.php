@@ -19,7 +19,7 @@
                     <br>
                     {{ $game->started_at->toDateString() }}<b> Started</b>
                     <br>
-                    {{ $game->hostPlayer->user->name }}<b> is Host</b>
+                    {{ $game->hostPlayer->name }}<b> is Host</b>
                 </p>
             </div>
 
@@ -35,7 +35,7 @@
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
                             {{ 'hover:bg-' . $player->passiveColor}} {{ 'bg-' . $player->activeColor}}">
-                                    {{ $player->user_id === \Illuminate\Support\Facades\Auth::id() ? 'Myself' : $player->user->name }}
+                                    {{ $player->user_id === \Illuminate\Support\Facades\Auth::id() ? 'Myself' : $player->name }}
                                 </button>
                             </form>
                         @endforeach
@@ -76,7 +76,7 @@
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
                             {{ 'hover:bg-' . $game->authenticatedPlayer->passiveColor}} {{ 'bg-' . $game->authenticatedPlayer->activeColor}}">
-                           {{ $game->authenticatedPlayer->user->name }} wants to go?
+                           {{ $game->authenticatedPlayer->name }} wants to go?
                         </button>
                     </form>
                 </div>
@@ -112,7 +112,7 @@
                     <input type="hidden" name="game_id" value="{{$game?->id}}">
                     <input id="name"
                         class="border-b-2 border-white bg-transparent text-white"
-                        placeholder="{{ $game->authenticatedPlayer->user->name }}"
+                        placeholder="{{ $game->authenticatedPlayer->name }}"
                         name="name"
                     />
                     <label for="name" class="text-white text-sm">Name</label>

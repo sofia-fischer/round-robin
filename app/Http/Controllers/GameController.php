@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use Illuminate\Support\Str;
 use App\Models\JustOneGame;
+use App\Models\WerewolfGame;
 use App\Models\WaveLengthGame;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\JoinGameRequest;
@@ -26,7 +27,9 @@ class GameController
             return redirect(route('justone.join', ['game' => $game->uuid]));
         }
 
-        $game->join();
+        if ($game->logic_identifier === WerewolfGame::$logic_identifier) {
+            return redirect(route('werewolf.join', ['game' => $game->uuid]));
+        }
 
         return view('GamePage', ['game' => $game]);
     }

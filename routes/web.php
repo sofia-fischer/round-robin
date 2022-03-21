@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\JustOneController;
+use App\Http\Controllers\WerewolfController;
 use App\Http\Controllers\WavelengthController;
 
 /*
@@ -56,4 +57,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/justone/{game}', [JustOneController::class, 'join'])->name('justone.join');
     Route::post('/justone/{game}/move', [JustOneController::class, 'move'])->name('justone.move');
     Route::post('/justone/{game}/round', [JustOneController::class, 'round'])->name('justone.round');
+
+    // Werewolf
+    Route::get('/werewolf/{game}', [WerewolfController::class, 'join'])->name('werewolf.join');
+    Route::post('/werewolf/{game}/move', [WerewolfController::class, 'move'])->name('werewolf.move');
+    Route::post('/werewolf/{game}/sunrise', [WerewolfController::class, 'sunrise'])->name('werewolf.sunrise');
+    Route::post('/werewolf/{game}/vote', [WerewolfController::class, 'vote'])->name('werewolf.vote');
+    Route::post('/werewolf/{game}/round', [WerewolfController::class, 'round'])->name('werewolf.round');
 });

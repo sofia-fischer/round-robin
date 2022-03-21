@@ -3,13 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Game;
+use App\Models\WerewolfGame;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Support\GameLogics\OneNightWerewolfLogic;
 
 class OneNightWerewolfDayJob implements ShouldQueue
 {
@@ -35,9 +35,8 @@ class OneNightWerewolfDayJob implements ShouldQueue
     public function handle()
     {
         Log::info('OneNightWerewolfNightJob started');
-        /** @var Game $game */
-        $game = Game::findOrFail($this->gameId);
-
-        OneNightWerewolfLogic::calculateResults($game->currentRound);
+        /** @var WerewolfGame $game */
+        $game = WerewolfGame::findOrFail($this->gameId);
+        $game->vote();
     }
 }

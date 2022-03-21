@@ -1,27 +1,38 @@
+# copy files to /var/www/
 echo $HETZNER_SSH_PASSWORD | sudo -kS cp -r dev/round-robin/* /var/www/html/round-robin/
 
+# fix permissions from sudo copy
 echo $HETZNER_SSH_PASSWORD | sudo -kS chown www-data:www-data -R /var/www/html/round-robin/
+#
+## Copy Supervisor Files
+#sudo cp round-robin.server/deployment/config/workers-database.production.conf /etc/supervisor/conf.d/round-robin-com-workers-database-production.conf
+#sudo cp round-robin.server/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/round-robin-com-workers-redis-production.conf
+#
+# Instruct supervisor to read the new files
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo -kS supervisorctl start all
 
+# navigate to the new files
 cd /var/www/html/round-robin/
 
-#echo $HETZNER_SSH_PASSWORD | sudo -kS chown -R $HETZNER_SSH_USERNAME:$HETZNER_SSH_USERNAME /var/www/html/round-robin
+# remove deployment instructions
+composer dumpautoload
 
+# migrate the database
 php artisan migrate --force
 
+# cache the config
 php artisan config:cache
 
-php artisan route:clear
-
+# cache the routes
 php artisan route:cache
 
+# create storage links
 php artisan storage:link
 
-php artisan test
+# send restart signal to queue
+php artisan queue:restart
 
-echo $HETZNER_SSH_PASSWORD | sudo -kS cp /var/www/html/round-robin/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/round-robin-workers-redis-production.conf
-
-#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl reread
-#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl update
-#echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl start all
-
-#echo $HETZNER_SSH_PASSWORD | sudo -kS chown -R www-data:www-data /var/www/html/round-robin
+# remove deployment instructions
+sudo rm -rf deployment/

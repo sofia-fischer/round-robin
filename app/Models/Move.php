@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
-use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
 
 /**
  * Class Move
@@ -104,6 +103,14 @@ class Move extends BaseModel
         $payload       = $this->payload ?? [];
         $payload[$key] = $value;
         $this->payload = $payload;
+        $this->save();
+
+        return $this->payload;
+    }
+
+    public function mergePayloadAttribute(array $data): array
+    {
+        $this->payload = array_merge($this->payload ?? [], $data);
         $this->save();
 
         return $this->payload;

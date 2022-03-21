@@ -20,15 +20,15 @@ class WerewolfRoleEnum
     public const  WATCHER = 'watcher';
 
     public const INFO = [
-        self::WEREWOLF     => 'Is evil',
+        self::WEREWOLF     => 'Is evil - wins if no werewolf is executed',
         self::MASON        => 'Knows other Masons',
-        self::MINION       => 'Knows the werewolfs',
+        self::MINION       => 'Knows the werewolfs - wins if the werewolf wins',
         self::SEER         => 'Can see one players card',
         self::ROBBER       => 'Steals and becomes an anonymous card',
         self::TROUBLEMAKER => 'Swabs to players cards',
         self::VILLAGER     => 'Feels special',
         self::DRUNK        => 'Becomes an unknown anonymous card',
-        self::TANNER       => 'Wants to die',
+        self::TANNER       => 'Wants to die - wins if executed',
         self::INSOMNIAC    => 'Knows their card',
         self::WATCHER      => 'Lean back and enjoy',
     ];

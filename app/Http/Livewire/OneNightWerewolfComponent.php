@@ -2,71 +2,26 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Game;
 use App\Models\Player;
 use Livewire\Component;
+use App\Models\WerewolfGame;
 use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerUpdated;
 use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\PlayerDestroyed;
-use App\Support\GameLogics\OneNightWerewolfLogic;
 
 class OneNightWerewolfComponent extends Component
 {
-    public Game $game;
-
-    public bool $showwerewolf = false;
-
-    public bool $showmason = false;
-
-    public bool $showminion = false;
-
-    public bool $showseer = false;
-
-    public bool $showtroublemaker = false;
-
-    public bool $showrobber = false;
-
-    public bool $showvillager = false;
-
-    public bool $showdrunk = false;
-
-    public bool $showtanner = false;
-
-    public bool $showinsomniac = false;
+    public WerewolfGame $game;
 
     public function render()
     {
         $roundInfos = $this->game->currentRound->payload ?? [];
 
-        $step = 'start';
-
-        if ($roundInfos) {
-            $step = $roundInfos['state'];
-        }
-
-        if ($this->game->currentRound->completed_at ?? false) {
-            $step = 'end';
-        }
-
-        $playerByRoles = [];
-        collect($roundInfos['playerRoles'] ?? [])->map(function ($role, $playerId) use (&$playerByRoles) {
-            return $playerByRoles[$role] = [...($playerByRoles[$role] ?? []), $playerId];
-        });
-
         return view('livewire.OneNightWerewolfComponent', [
-            'step'           => $step,
-            'roles'          => collect($roundInfos['playerRoles'] ?? [])->merge($roundInfos['extraRoles'] ?? [])->values()->countBy()->toArray(),
-            'playerRole'     => $roundInfos['playerRoles'][$this->game->authenticatedPlayer->id ?? null] ?? 'watcher',
-            'newPlayerRole'  => $roundInfos['newPlayerRoles'][$this->game->authenticatedPlayer->id ?? null] ?? 'watcher',
-            'playerByRoles'  => $playerByRoles,
-            'playerRoles'    => $roundInfos['playerRoles'] ?? [],
-            'newPlayerRoles' => $roundInfos['newPlayerRoles'] ?? [],
             'extraRoles'     => $roundInfos['extraRoles'] ?? [],
-            'players'        => $this->game->players->mapWithKeys(function (Player $player) {
-                return [$player->id => $player];
-            }),
+            'players'        => $this->game->players->mapWithKeys(fn (Player $player) => [$player->id => $player]),
             'votedPlayerId'  => $this->game ? $this->game->authenticatedPlayerMove->payload['vote'] ?? null : null,
         ]);
     }
@@ -78,34 +33,12 @@ class OneNightWerewolfComponent extends Component
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class       => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => 'nextRound',
+            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',
         ];
-    }
-
-    public function startGame()
-    {
-        $this->game->start();
     }
 
     public function performAction($action, $contentId)
     {
         $this->game->roundAction(array_merge($this->game->authenticatedPlayerMove->payload ?? [], [$action => $contentId]));
-    }
-
-    public function nextRound()
-    {
-        $this->game->endRound();
-    }
-
-    public function makeDawn()
-    {
-        OneNightWerewolfLogic::calculateSunrise($this->game->currentRound);
-//        event(new GameRoundAction($this->game));
-    }
-
-    public function makeNight()
-    {
-        OneNightWerewolfLogic::calculateResults($this->game->currentRound);
-//        event(new GameRoundAction($this->game));
     }
 }

@@ -17,7 +17,7 @@
     @foreach($game->players as $index => $player)
         <div class="flex overflow-hidden justify-between rounded-xl w-full h-7 sm:w-36 m-3
                {{ 'bg-' . $player->activeColor ?? 'pink-500' }}">
-            <div class="pt-1 text-white px-2 ">{{ $player->name }}</div>
+            <div class="pt-1 text-white px-2 ">{{ $player->user->name }}</div>
 
             <div class="text-white w-6 h-4">
                 @if($game->currentRound && $game->currentRound->moves->firstWhere('player_id', $player->id) ?? false)
