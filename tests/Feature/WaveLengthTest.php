@@ -8,7 +8,6 @@ use App\Models\Game;
 use App\Models\Move;
 use App\Models\Player;
 use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\GameRoundAction;
 use Illuminate\Support\Facades\Event;
@@ -76,7 +75,6 @@ class WaveLengthTest extends TestCase
         ]);
 
         Event::assertDispatched(PlayerCreated::class);
-        Event::assertDispatched(GameStarted::class);
         Event::assertDispatched(GameRoundAction::class);
     }
 
@@ -106,7 +104,6 @@ class WaveLengthTest extends TestCase
         $this->assertEmpty(Player::where('game_id', $game->id)->where('created_at', '>', $player->created_at)->get());
 
         Event::assertNotDispatched(PlayerCreated::class);
-        Event::assertNotDispatched(GameStarted::class);
         Event::assertNotDispatched(GameRoundAction::class);
     }
 
@@ -307,6 +304,5 @@ class WaveLengthTest extends TestCase
         $this->assertNotEquals($oldRound->id, $game->currentRound);
 
         Event::assertDispatched(GameRoundAction::class);
-        Event::assertNotDispatched(GameStarted::class);
     }
 }

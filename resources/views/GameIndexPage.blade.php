@@ -116,24 +116,14 @@
                         <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
                             <button class="font-semibold overflow-hidden w-full hover:bg-pink-500">
                                 <div class="flex text-black text-sm bg-white opacity-50 p-4 text-left w-full justify-between">
-                                    <div class="pr-4">{{ $game->token }}</div>
-                                    <div class="h-5 w-5 mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div> {{ $game->players_count }} Player</div>
+                                    <x-icons.qrcode class="h-6 mx-2"/>
+                                    {{ $game->token }}
                                     <div class="flex-grow"></div>
-                                    <div class="h-5 w-5 mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div> Round {{ $game->rounds_count }}</div>
+                                    <x-icons.user-group class="h-6 mx-2"/>
+                                    {{ $game->players_count }} Player
+                                    <div class="flex-grow"></div>
+                                    <x-icons.clock class="h-6 mx-2"/>
+                                                               Round {{ $game->rounds_count }}
                                 </div>
                             </button>
                         </a>

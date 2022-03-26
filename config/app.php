@@ -229,7 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // custom added
-        'WerewolfRoleEnum' => \App\Support\Enums\WerewolfRoleEnum::class,
+        'WerewolfGame' => \App\Models\WerewolfGame::class,
     ],
 
 ];

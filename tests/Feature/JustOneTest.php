@@ -5,12 +5,10 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Move;
-use App\Models\Game;
 use App\Models\Round;
 use App\Models\Player;
 use App\Models\JustOneGame;
 use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\GameRoundAction;
 use Illuminate\Support\Facades\Event;
@@ -81,7 +79,6 @@ class JustOneTest extends TestCase
         ]);
 
         Event::assertDispatched(PlayerCreated::class);
-        Event::assertDispatched(GameStarted::class);
         Event::assertDispatched(GameRoundAction::class);
     }
 
@@ -115,7 +112,6 @@ class JustOneTest extends TestCase
         $this->assertEmpty(Player::where('game_id', $game->id)->where('created_at', '>', $player->created_at)->get());
 
         Event::assertNotDispatched(PlayerCreated::class);
-        Event::assertNotDispatched(GameStarted::class);
         Event::assertNotDispatched(GameRoundAction::class);
     }
 
@@ -345,6 +341,5 @@ class JustOneTest extends TestCase
         ]);
 
         Event::assertDispatched(GameRoundAction::class);
-        Event::assertNotDispatched(GameStarted::class);
     }
 }

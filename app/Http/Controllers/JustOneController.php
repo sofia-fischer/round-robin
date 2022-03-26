@@ -10,7 +10,6 @@ use App\Models\Player;
 use Illuminate\Support\Str;
 use App\Models\JustOneGame;
 use App\Queue\Events\GameEnded;
-use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
 use App\Queue\Events\GameRoundAction;
@@ -115,7 +114,6 @@ class JustOneController
         if (! $game->started_at) {
             $game->started_at = now();
             $game->save();
-            event(new GameStarted($game->id));
         }
 
         event(new GameRoundAction($game));

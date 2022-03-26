@@ -6,12 +6,8 @@
             <!-- Navigation Links -->
             <a href="{{ url('/welcome') }}">
                 <button name="welcome" class="p-4 text-white text-xl hidden sm:block">Round Robin</button>
-                <button class="pt-4 h-6 w-6 text-white text-xl block sm:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                            clip-rule="evenodd"/>
-                    </svg>
+                <button class="pt-2 w-10 text-white text-xl block sm:hidden">
+                    <img src="{{ asset('storage/images/round_robin_logo_white.png') }}" alt="logo">
                 </button>
             </a>
 

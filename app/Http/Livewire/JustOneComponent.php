@@ -5,7 +5,6 @@ namespace App\Http\Livewire;
 use Livewire\Livewire;
 use Livewire\Component;
 use App\Models\JustOneGame;
-use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerUpdated;
 use App\Queue\Events\PlayerDestroyed;
 use App\Queue\Events\GameRoundAction;
@@ -27,7 +26,6 @@ class JustOneComponent extends Component
     public function getListeners(): array
     {
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameStarted::class     => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
             'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',

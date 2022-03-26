@@ -17,6 +17,7 @@
 
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
+    <link rel="icon" type="image/png" href="{!! asset('storage/images/round_robin_favicon.png') !!}"/>
 </head>
 <body class="font-sans antialiased bg-gray-900">
 <div class="min-h-screen">

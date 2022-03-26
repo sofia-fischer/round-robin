@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use App\Jobs\OneNightWerewolfDayJob;
 use App\Queue\Events\GameRoundAction;
 use App\Jobs\OneNightWerewolfNightJob;
-use App\Support\Enums\WerewolfRoleEnum;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -53,6 +52,25 @@ class WerewolfGame extends Game
           At the end of each game you will vote for a player who is not on your team;
           the player that receives the most votes is "killed".';
 
+    static $leftAnonymRole = 'left';
+    static $centerAnonymRole = 'center';
+    static $rightAnonymRole = 'right';
+
+    const  WEREWOLF     = 'werewolf';
+    const  MASON        = 'mason';
+    const  MINION       = 'minion';
+    const  SEER         = 'seer';
+    const  ROBBER       = 'robber';
+    const  TROUBLEMAKER = 'troublemaker';
+    const  VILLAGER     = 'villager';
+    const  DRUNK        = 'drunk';
+    const  TANNER       = 'tanner';
+    const  INSOMNIAC    = 'insomniac';
+    const  WATCHER      = 'watcher';
+
+    public const NIGHT_DURATION = 100;
+    public const DAY_DURATION   = 200;
+
     public static function query(): Builder
     {
         return parent::query()->where('logic_identifier', self::$logic_identifier);
@@ -65,17 +83,17 @@ class WerewolfGame extends Game
 
     protected function getIsDayAttribute()
     {
-        return $this->currentRound->payloadAttribute('state') === 'day';
+        return $this->currentRound?->payloadAttribute('state') === 'day';
     }
 
     protected function getIsNightAttribute()
     {
-        return $this->currentRound->payloadAttribute('state') === 'night';
+        return $this->currentRound?->payloadAttribute('state') === 'night';
     }
 
     protected function getIsEndAttribute()
     {
-        return $this->currentRound->payloadAttribute('state') === 'end';
+        return $this->currentRound?->payloadAttribute('state') === 'end';
     }
 
     protected function getExtraRolesAttribute()
@@ -160,24 +178,20 @@ class WerewolfGame extends Game
 
         switch (true) {
             case is_numeric($target1) && is_numeric($target2):
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newPlayerRoles->merge([
-                    $target1 => $role2,
-                    $target2 => $role1,
-                ]));
+                $this->addCurrentPayloadAttribute('newPlayerRoles', collect([$target1 => $role2, $target2 => $role1])
+                    ->union($this->newPlayerRoles));
                 break;
             case is_numeric($target1) && ! is_numeric($target2):
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newPlayerRoles->merge([$target1 => $role2]));
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newExtraRoles->merge([$target2 => $role1]));
+                $this->addCurrentPayloadAttribute('newPlayerRoles', collect([$target1 => $role2])->union($this->newPlayerRoles));
+                $this->addCurrentPayloadAttribute('newExtraRoles', collect([$target2 => $role1])->union($this->newPlayerRoles));
                 break;
             case (! is_numeric($target1)) && is_numeric($target2):
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newExtraRoles->merge([$target1 => $role2]));
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newPlayerRoles->merge([$target2 => $role1]));
+                $this->addCurrentPayloadAttribute('newPlayerRoles', collect([$target2 => $role1])->union($this->newPlayerRoles));
+                $this->addCurrentPayloadAttribute('newExtraRoles', collect([$target1 => $role2])->union($this->newExtraRoles));
                 break;
             case (! is_numeric($target1)) && ! is_numeric($target2):
-                $this->addCurrentPayloadAttribute('newPlayerRoles', $this->newExtraRoles->merge([
-                    $target1 => $role2,
-                    $target2 => $role1,
-                ]));
+                $this->addCurrentPayloadAttribute('newExtraRoles', collect([$target1 => $role2, $target2 => $role1])
+                    ->union($this->newExtraRoles));
                 break;
         };
 
@@ -186,7 +200,7 @@ class WerewolfGame extends Game
 
     public function getAuthenticatedRoleAttribute(): string
     {
-        return $this->playerRoles->get($this->authenticatedPlayer->id) ?? WerewolfRoleEnum::WATCHER;
+        return $this->playerRoles->get($this->authenticatedPlayer->id) ?? WerewolfGame::WATCHER;
     }
 
     public function getAuthenticatedPlayerVoteAttribute(): ?Player
@@ -196,53 +210,33 @@ class WerewolfGame extends Game
                 ?->payloadAttribute('vote'));
     }
 
-    private function generateRoles($currentRoles = [])
+    public function startRound()
     {
-        $currentRoles = Collection::wrap($currentRoles);
+        // generating roles
+        $evilRoleCount = floor($this->players->count() / 3) ?? 1;
+        $roles         = collect([]);
 
-        if ($currentRoles->count() == $this->players->count() + 3) {
-            return $currentRoles;
-        }
+        $werewolfCount = $evilRoleCount - floor($evilRoleCount / 4);
+        Collection::times($werewolfCount)->each(fn ($item) => $roles->push(WerewolfGame::WEREWOLF));
+        Collection::times($evilRoleCount - $werewolfCount)->each(fn ($item) => $roles->push(WerewolfGame::MINION));
 
-        if (! $currentRoles->contains(WerewolfRoleEnum::WEREWOLF)) {
-            $currentRoles->push(WerewolfRoleEnum::WEREWOLF);
-            $currentRoles->push(WerewolfRoleEnum::VILLAGER);
-            $currentRoles->push(WerewolfRoleEnum::SEER);
+        Collection::times($this->players->count() + 3 - $evilRoleCount)
+            ->each(fn ($item) => $roles->push(collect([
+                WerewolfGame::SEER,
+                WerewolfGame::ROBBER,
+                WerewolfGame::TROUBLEMAKER,
+                WerewolfGame::VILLAGER,
+                WerewolfGame::VILLAGER,
+                WerewolfGame::DRUNK,
+                WerewolfGame::TANNER,
+                WerewolfGame::INSOMNIAC,
+                WerewolfGame::INSOMNIAC,
+            ])->random()));
 
-            return $this->generateRoles($currentRoles);
-        }
-
-        if (($currentRoles->count() + 2 <= $this->players->count() + 3) && (rand(1, 100) <= 20)) {
-            $currentRoles->push(WerewolfRoleEnum::MASON);
-            $currentRoles->push(WerewolfRoleEnum::MASON);
-
-            return $this->generateRoles($currentRoles);
-        }
-
-        $randomRole = collect([
-            WerewolfRoleEnum::WEREWOLF,
-            WerewolfRoleEnum::SEER,
-            WerewolfRoleEnum::ROBBER,
-            WerewolfRoleEnum::TROUBLEMAKER,
-            WerewolfRoleEnum::TROUBLEMAKER,
-            WerewolfRoleEnum::VILLAGER,
-            WerewolfRoleEnum::VILLAGER,
-            WerewolfRoleEnum::DRUNK,
-            WerewolfRoleEnum::TANNER,
-            WerewolfRoleEnum::INSOMNIAC,
-            WerewolfRoleEnum::INSOMNIAC,
-            WerewolfRoleEnum::MINION,
-        ])->random();
-
-        $currentRoles->push($randomRole);
-
-        return $this->generateRoles($currentRoles);
-    }
-
-    public function sunset()
-    {
-        $roles       = $this->generateRoles()->shuffle()->values();
-        $playerRoles = $this->players->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => $roles[$index]]);
+        // assign roles
+        $roles       = $roles->shuffle()->values();
+        $playerRoles = $this->players->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => $roles[$index]])->toArray();
+        $extraRoles  = $roles->slice(-3, 3)->values();
 
         Round::create([
             'uuid'    => Str::uuid(),
@@ -250,18 +244,22 @@ class WerewolfGame extends Game
             'payload' => [
                 'state'       => 'night',
                 'playerRoles' => $playerRoles,
-                'extraRoles'  => $roles->slice(-3, 3)->values(),
+                'extraRoles'  => [
+                    WerewolfGame::$leftAnonymRole   => $extraRoles[0],
+                    WerewolfGame::$centerAnonymRole => $extraRoles[1],
+                    WerewolfGame::$rightAnonymRole  => $extraRoles[2],
+                ],
             ],
         ]);
 
         event(new GameRoundAction($this));
-        OneNightWerewolfNightJob::dispatch($this->id)->onConnection('redis')->delay(now()->addSeconds(WerewolfRoleEnum::NIGHT_DURATION));
+        OneNightWerewolfNightJob::dispatch($this->id)->onConnection('redis')->delay(now()->addSeconds(WerewolfGame::NIGHT_DURATION));
     }
 
     public function sunrise()
     {
         //    Werewolves
-        $this->playerWithRole(WerewolfRoleEnum::WEREWOLF)
+        $this->playerWithRole(WerewolfGame::WEREWOLF)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(fn (Player $player) => $this->currentMoveFromPlayer($player)
                 ->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see')));
@@ -269,25 +267,25 @@ class WerewolfGame extends Game
         //    Minion
         //    Masons
         //    Seer
-        $this->playerWithRole(WerewolfRoleEnum::SEER)
+        $this->playerWithRole(WerewolfGame::SEER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(fn (Player $player) => $this->currentMoveFromPlayer($player)
                 ->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see')));
 
         //    Robber
-        $this->playerWithRole(WerewolfRoleEnum::ROBBER)
+        $this->playerWithRole(WerewolfGame::ROBBER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(function (Player $player) {
                 $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->payloadAttribute('steal'));
                 $this->currentMoveFromPlayer($player)->mergePayloadAttribute([
                     'becameName'  => $result['switched2Name'],
                     'becameColor' => $result['switched2Color'],
-                    'becameRole'  => $result['switched2Color'],
+                    'becameRole'  => $result['switched2Role'],
                 ]);
             });
 
         //    Troublemaker
-        $this->playerWithRole(WerewolfRoleEnum::TROUBLEMAKER)
+        $this->playerWithRole(WerewolfGame::TROUBLEMAKER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->map(fn (Player $player) => $this->currentMoveFromPlayer($player)
                 ->mergePayloadAttribute($this->switchRoles(
@@ -296,18 +294,18 @@ class WerewolfGame extends Game
                 )));
 
         //    Drunk
-        $this->playerWithRole(WerewolfRoleEnum::DRUNK)
+        $this->playerWithRole(WerewolfGame::DRUNK)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(function (Player $player) {
                 $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->payloadAttribute('drunk'));
                 $this->currentMoveFromPlayer($player)->mergePayloadAttribute([
                     'becameName' => $result['switched2Name'],
-                    'becameRole' => 'Something else...',
+                    'becameRole' => __('werewolf.player.anonymous_drunk_role'),
                 ]);
             });
 
         //    Insomniac
-        $this->playerWithRole(WerewolfRoleEnum::INSOMNIAC)
+        $this->playerWithRole(WerewolfGame::INSOMNIAC)
             ->each(function (Player $player) {
                 Move::updateOrCreate([
                     'round_id'  => $this->currentRound->id,
@@ -321,7 +319,7 @@ class WerewolfGame extends Game
 
         $this->addCurrentPayloadAttribute('state', 'day');
         event(new GameRoundAction($this));
-        OneNightWerewolfDayJob::dispatch($this->id)->onConnection('redis')->delay(now()->addSeconds(WerewolfRoleEnum::DAY_DURATION));
+        OneNightWerewolfDayJob::dispatch($this->id)->onConnection('redis')->delay(now()->addSeconds(WerewolfGame::DAY_DURATION));
     }
 
 
@@ -336,13 +334,13 @@ class WerewolfGame extends Game
             ->keys()
             ->first();
 
-        $killedPlayerRole = $killedPlayerId ? $this->newPlayerRoles->get($killedPlayerId) : null;
+        $killedPlayerRole = $this->newPlayerRoles->get($killedPlayerId);
 
         $win = match ($killedPlayerRole) {
-            WerewolfRoleEnum::TANNER => WerewolfRoleEnum::TANNER,
-            WerewolfRoleEnum::WEREWOLF => WerewolfRoleEnum::VILLAGER,
-            default => $this->newPlayerRoles->filter(fn ($role, $playerId) => $role === WerewolfRoleEnum::WEREWOLF)->count()
-                ? WerewolfRoleEnum::WEREWOLF : WerewolfRoleEnum::VILLAGER,
+            WerewolfGame::TANNER => WerewolfGame::TANNER,
+            WerewolfGame::WEREWOLF => WerewolfGame::VILLAGER,
+            default => $this->newPlayerRoles->filter(fn ($role, $playerId) => $role === WerewolfGame::WEREWOLF)->count()
+                ? WerewolfGame::WEREWOLF : WerewolfGame::VILLAGER,
         };
 
         $this->players->each(fn (Player $player) => Move::updateOrCreate([
@@ -351,11 +349,11 @@ class WerewolfGame extends Game
             'user_id'   => $player->user_id,
         ], [
             'score' => match ($this->newPlayerRoles->get($player->id)) {
-                WerewolfRoleEnum::WEREWOLF => $win === WerewolfRoleEnum::WEREWOLF,
-                WerewolfRoleEnum::MINION => $win === WerewolfRoleEnum::WEREWOLF,
-                WerewolfRoleEnum::TANNER => $win === WerewolfRoleEnum::TANNER,
-                WerewolfRoleEnum::WATCHER => 0,
-                default => $win == WerewolfRoleEnum::VILLAGER
+                WerewolfGame::WEREWOLF => $win === WerewolfGame::WEREWOLF ? 1 : 0,
+                WerewolfGame::MINION => $win === WerewolfGame::WEREWOLF ? 1 : 0,
+                WerewolfGame::TANNER => $win === WerewolfGame::TANNER ? 1 : 0,
+                WerewolfGame::WATCHER => 0,
+                default => $win === WerewolfGame::VILLAGER ? 1 : 0
             },
         ]));
 

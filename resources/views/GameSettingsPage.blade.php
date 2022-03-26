@@ -1,23 +1,30 @@
 <?php
-/* @var App\Models\Game $game */
+/* @var App\Models\Game | null $game */
 
 /* @var App\Models\Player $player */
 ?>
 
 <x-app-layout>
     <div class="max-w-2xl mx-auto mt-4 sm:px-6 lg:px-8 ">
-
+        <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
+            <div class="rounded-xl bg-pink-600 my-2 p-2 hover:bg-purple-500 text-white text-center w-full flex justify-between">
+                <x-icons.arrow-left class="h-6"/>
+                <div> Back to the game</div>
+                <x-icons.arrow-left class="h-6"/>
+            </div>
+        </a>
         @if($game)
             <div class="rounded-xl bg-gray-800 my-2 p-4">
-                <h1 class="text-xl text-center font-semibold text-white mb-4">Stats</h1>
-
+                <h1 class="text-xl text-center font-semibold text-white mb-4">Game Settings</h1>
                 <p class="text-gray-200 text-center my-1 w-full">
+                    {{ $game->token }}<b> Code to join</b>
+                    <br>
                     {{ $game->rounds->count() }}<b> Rounds</b>
                     <br>
                     {{ $game->moves()->where('user_id', \Illuminate\Support\Facades\Auth::id())->where('score', '>', 0)->count() }}
                     <b> Rounds with success</b>
                     <br>
-                    {{ $game->started_at->toDateString() }}<b> Started</b>
+                    {{ $game->started_at?->toDateString() ?? 'Not' }}<b> Started</b>
                     <br>
                     {{ $game->hostPlayer->name }}<b> is Host</b>
                 </p>
@@ -76,7 +83,7 @@
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
                             {{ 'hover:bg-' . $game->authenticatedPlayer->passiveColor}} {{ 'bg-' . $game->authenticatedPlayer->activeColor}}">
-                           {{ $game->authenticatedPlayer->name }} wants to go?
+                            {{ $game->authenticatedPlayer->name }} wants to go?
                         </button>
                     </form>
                 </div>
@@ -130,7 +137,6 @@
                     <input type="hidden" name="_method" value="PUT">
                     <input type="hidden" name="game_id" value="{{$game?->id}}">
                     <input id="email"
-                        type="email"
                         class="border-b-2 border-white bg-transparent text-white"
                         placeholder="{{ $game->authenticatedPlayer->user->email ??'Set up an Email' }}"
                         name="email"
@@ -151,7 +157,6 @@
                     <input type="hidden" name="_method" value="PUT">
                     <input type="hidden" name="game_id" value="{{$game?->id}}">
                     <input id="password"
-                        type="password"
                         class="border-b-2 border-white bg-transparent text-white"
                         placeholder="{{ '*******' }}"
                         name="password"

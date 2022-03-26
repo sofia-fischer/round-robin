@@ -33,6 +33,8 @@ use Illuminate\Support\Facades\Auth;
  * @see \App\Models\Game::authenticatedPlayer()
  * @property Player hostPlayer
  * @see \App\Models\Game::hostPlayer()
+ * @property \App\Models\User hostUser
+ * @see \App\Models\Game::hostUser()
  *
  * Attributes
  *
@@ -109,6 +111,11 @@ class Game extends BaseModel
     public function hostPlayer()
     {
         return $this->hasOne(Player::class, 'game_id')->where('user_id', $this->host_user_id);
+    }
+
+    public function hostUser()
+    {
+        return $this->belongsTo(User::class, 'host_user_id');
     }
 
     public function authenticatedPlayer()

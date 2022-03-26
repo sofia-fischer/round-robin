@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Models\Move;
 use Illuminate\Support\Str;
 use App\Models\WerewolfGame;
-use App\Queue\Events\GameStarted;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\WerewolfMoveCreateRequest;
@@ -42,6 +41,11 @@ class WerewolfController
             'uuid'    => Str::uuid(),
             'user_id' => Auth::id(),
         ]);
+        $game->refresh();
+
+        if ($game->started_at) {
+            $game->addCurrentPayloadAttribute('playerRoles', collect([$player->id => WerewolfGame::WATCHER])->union($game->playerRoles));
+        }
         event(new PlayerCreated($player));
 
         return view('GamePage', ['game' => $game]);
@@ -80,7 +84,6 @@ class WerewolfController
         if (! $game->started_at) {
             $game->started_at = now();
             $game->save();
-            event(new GameStarted($game->id));
         }
 
         if ($game->currentRound && ! $game->currentRound->completed_at) {
@@ -88,7 +91,7 @@ class WerewolfController
             $game->currentRound->save();
         }
 
-        $game->sunset();
+        $game->startRound();
 
         return view('GamePage', ['game' => $game]);
     }
