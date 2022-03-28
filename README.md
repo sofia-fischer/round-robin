@@ -1,15 +1,18 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+<p align="center"><a href="https://www.round-robin.philodev.one" target="_blank"><img src="https://www.round-robin.philodev.one/storage/images/round_robin_logo_white.png" width="400"></a></p>
 
 ## About Round Robin
 
 RoundRobin is a platform for round based games
 
-## Developing
+## 🌕 Production
+
+Production URL: https://www.round-robin.philodev.one
+
+## 🌘 Local Developing
 
 Starting the Docker Container `$ ./vendor/bin/sail up -d`
 Visit in Brwoser: `http://localhost/`
 
-### currently open tasks
+### Open Tasks
+- Remove old Profle Edit page and link new
 
-- Player Destroyed for Wavelength and Just one test
-- Settings Tests (okay, settings do not work, need to be fixed and tested)
