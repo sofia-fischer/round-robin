@@ -9,9 +9,9 @@ echo $HETZNER_SSH_PASSWORD | sudo -kS chown www-data:www-data -R /var/www/html/r
 #sudo cp round-robin.server/deployment/config/workers-redis.production.conf /etc/supervisor/conf.d/round-robin-com-workers-redis-production.conf
 #
 # Instruct supervisor to read the new files
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo -kS supervisorctl start all
+echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl reread
+echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl update
+echo $HETZNER_SSH_PASSWORD | sudo -kS supervisorctl start all
 
 # navigate to the new files
 cd /var/www/html/round-robin/
