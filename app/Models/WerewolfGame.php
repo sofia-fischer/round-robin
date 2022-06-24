@@ -216,7 +216,7 @@ class WerewolfGame extends Game
         $evilRoleCount = floor($this->players->count() / 3) ?? 1;
         $roles         = collect([]);
 
-        $werewolfCount = $evilRoleCount - floor($evilRoleCount / 4);
+        $werewolfCount = max($evilRoleCount - floor($evilRoleCount / 4), 1);
         Collection::times($werewolfCount)->each(fn ($item) => $roles->push(WerewolfGame::WEREWOLF));
         Collection::times($evilRoleCount - $werewolfCount)->each(fn ($item) => $roles->push(WerewolfGame::MINION));
 
