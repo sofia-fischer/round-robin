@@ -103,6 +103,18 @@ class GameController
         $game->currentRound->completed_at = now();
         $game->currentRound->save();
 
+        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
+            return redirect(route('wavelength.round', ['game' => $game->uuid]));
+        }
+
+        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
+            return redirect(route('justone.round', ['game' => $game->uuid]));
+        }
+
+        if ($game->logic_identifier === WerewolfGame::$logic_identifier) {
+            return redirect(route('werewolf.round', ['game' => $game->uuid]));
+        }
+
         return redirect(route('game.show', ['game' => $game,]));
     }
 
