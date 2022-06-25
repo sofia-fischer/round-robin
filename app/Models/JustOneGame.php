@@ -38,12 +38,12 @@ class JustOneGame extends Game
         return parent::query()->where('logic_identifier', self::$logic_identifier);
     }
 
-    protected function getWordAttribute()
+    protected function getWordAttribute(): string
     {
         return $this->currentRound->payloadAttribute('word');
     }
 
-    protected function getGuessAttribute()
+    protected function getGuessAttribute(): string
     {
         /** @var Move $activePlayerMove */
         $activePlayerMove = $this->currentRound->moves->firstWhere('player_id', $this->currentRound->active_player_id);
@@ -51,17 +51,17 @@ class JustOneGame extends Game
         return $activePlayerMove?->payloadAttribute('guess');
     }
 
-    protected function getIsCompletedAttribute()
+    protected function getIsCompletedAttribute(): bool
     {
-        return ! ! $this->currentRound->completed_at;
+        return  (bool) $this->currentRound->completed_at;
     }
 
-    protected function getIsWaitingForClueAttribute()
+    protected function getIsWaitingForClueAttribute(): bool
     {
         return ! $this->currentPayloadAttribute('clues_calculated');
     }
 
-    protected function getIsWaitingForGuessAttribute()
+    protected function getIsWaitingForGuessAttribute(): bool
     {
         return ! $this->currentRound->completed_at && $this->currentPayloadAttribute('clues_calculated');
     }

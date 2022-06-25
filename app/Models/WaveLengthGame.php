@@ -33,18 +33,18 @@ class WaveLengthGame extends Game
         return parent::query()->where('logic_identifier', self::$logic_identifier);
     }
 
-    protected function getIsCompletedAttribute()
+    protected function getIsCompletedAttribute(): bool
     {
-        return ! ! $this->currentRound?->completed_at;
+        return (bool) $this->currentRound?->completed_at;
     }
 
-    protected function getIsWaitingForClueAttribute()
+    protected function getIsWaitingForClueAttribute(): bool
     {
-        return ! $this->currentRound?->completed_at && ! $this->currentPayloadAttribute('clue');
+        return (! $this->currentRound?->completed_at) && (! $this->currentPayloadAttribute('clue'));
     }
 
-    protected function getIsWaitingForGuessAttribute()
+    protected function getIsWaitingForGuessAttribute(): bool
     {
-        return ! $this->currentRound?->completed_at && $this->currentPayloadAttribute('clue');
+        return (! $this->currentRound?->completed_at) && $this->currentPayloadAttribute('clue');
     }
 }

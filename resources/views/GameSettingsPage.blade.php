@@ -17,16 +17,16 @@
             <div class="rounded-xl bg-gray-800 my-2 p-4">
                 <h1 class="text-xl text-center font-semibold text-white mb-4">Game Settings</h1>
                 <p class="text-gray-200 text-center my-1 w-full">
-                    {{ $game->token }}<b> Code to join</b>
+                    {{ $game->token }}<strong> Code to join</strong>
                     <br>
-                    {{ $game->rounds->count() }}<b> Rounds</b>
+                    {{ $game->rounds->count() }}<strong> Rounds</strong>
                     <br>
                     {{ $game->moves()->where('user_id', \Illuminate\Support\Facades\Auth::id())->where('score', '>', 0)->count() }}
-                    <b> Rounds with success</b>
+                    <strong> Rounds with success</strong>
                     <br>
-                    {{ $game->started_at?->toDateString() ?? 'Not' }}<b> Started</b>
+                    {{ $game->started_at?->toDateString() ?? 'Not' }}<strong> Started</strong>
                     <br>
-                    {{ $game->hostPlayer->name }}<b> is Host</b>
+                    {{ $game->hostPlayer->name }}<strong> is Host</strong>
                 </p>
             </div>
 
