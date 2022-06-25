@@ -50,9 +50,6 @@ class AuthControllerTest extends TestCase
     /** @test */
     public function register()
     {
-        /** @var Game $game */
-        $game = Game::factory()->create();
-
         $this->post(route('auth.register'), [
             'email'    => 'norbert@example.com',
             'name'     => 'Norbert',
@@ -114,8 +111,6 @@ class AuthControllerTest extends TestCase
     /** @test */
     public function login()
     {
-        /** @var Game $game */
-        $game = Game::factory()->create();
         /** @var User $existingUser */
         $existingUser = User::factory()->create();
 

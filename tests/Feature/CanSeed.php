@@ -25,8 +25,7 @@ trait CanSeed
         $game->host_user_id = $activePlayer->user_id;
         $game->save();
 
-        /** @var Round $round */
-        $round = Round::factory()->create([
+        Round::factory()->create([
             'game_id'          => $game->id,
             'active_player_id' => $activePlayer->id,
             'payload'          => [
@@ -34,24 +33,6 @@ trait CanSeed
                 'antonym1'   => 'antonym1',
                 'antonym2'   => 'antonym2',
             ],
-        ]);
-
-        return $game;
-    }
-
-    public function startJustOneGame(): JustOneGame
-    {
-        /** @var Game $game */
-        $game = JustOneGame::factory()
-            ->started()
-            ->has(Player::factory()->count(3), 'players')
-            ->create();
-
-        /** @var Round $round */
-        $round = Round::factory()->create([
-            'game_id'          => $game->id,
-            'active_player_id' => $activePlayer->id,
-            'payload'          => ['word' => (new Generator())->word()],
         ]);
 
         return $game;

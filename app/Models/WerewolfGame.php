@@ -193,7 +193,7 @@ class WerewolfGame extends Game
                 $this->addCurrentPayloadAttribute('newExtraRoles', collect([$target1 => $role2, $target2 => $role1])
                     ->union($this->newExtraRoles));
                 break;
-        };
+        }
 
         return $result;
     }

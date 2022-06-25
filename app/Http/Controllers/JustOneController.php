@@ -75,7 +75,7 @@ class JustOneController
         return view('GamePage', ['game' => $game]);
     }
 
-    public function show(JustOneGame $game, \Faker\Generator $generator)
+    public function show(JustOneGame $game)
     {
         if ($game->authenticatedPlayer) {
             return view('GamePage', ['game' => $game]);
