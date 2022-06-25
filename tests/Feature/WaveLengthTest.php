@@ -30,7 +30,7 @@ class WaveLengthTest extends TestCase
         $game = $this->startedWavelengthGame();
 
         $this->actingAs($user)
-            ->get(route('wavelength.join', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -56,7 +56,7 @@ class WaveLengthTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->get(route('wavelength.join', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -97,7 +97,7 @@ class WaveLengthTest extends TestCase
         $this->travel(5);
 
         $this->actingAs($user)
-            ->get(route('wavelength.join', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 

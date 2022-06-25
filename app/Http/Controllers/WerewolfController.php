@@ -30,7 +30,7 @@ class WerewolfController
         return view('GamePage', ['game' => $game]);
     }
 
-    public function join(WerewolfGame $game)
+    public function show(WerewolfGame $game)
     {
         if ($game->authenticatedPlayer) {
             return view('GamePage', ['game' => $game]);

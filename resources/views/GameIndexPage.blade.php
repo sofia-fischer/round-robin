@@ -58,7 +58,7 @@
 
                 <div>
                     @foreach($waveLengthGames as $game)
-                        <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
+                        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->uuid]) }}">
                             <button class="font-semibold overflow-hidden w-full hover:bg-pink-500">
                                 <div class="flex text-black text-sm bg-white opacity-50 p-4 text-left w-full justify-between">
                                     <div class="pr-4">{{ $game->token }}</div>
@@ -113,7 +113,7 @@
 
                 <div>
                     @foreach($werewolfGames as $game)
-                        <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
+                        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->uuid]) }}">
                             <button class="font-semibold overflow-hidden w-full hover:bg-pink-500">
                                 <div class="flex text-black text-sm bg-white opacity-50 p-4 text-left w-full justify-between">
                                     <x-icons.qrcode class="h-6 mx-2"/>
@@ -158,7 +158,7 @@
 
                 <div>
                     @foreach($justOneGames as $game)
-                        <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
+                        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->uuid]) }}">
                             <button class="font-semibold overflow-hidden w-full hover:bg-pink-500">
                                 <div class="flex text-black text-sm bg-white opacity-50 p-4 text-left w-full justify-between">
                                     <div class="pr-4">{{ $game->token }}</div>

@@ -81,7 +81,7 @@ class AuthControllerTest extends TestCase
             'token'    => $game->token,
         ])
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('game.show', ['game' => $game->uuid]));
+            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
 
         $this->assertAuthenticated('web');
         $this->assertDatabaseHas('users', [
@@ -144,7 +144,7 @@ class AuthControllerTest extends TestCase
             'token'    => $game->token,
         ]))
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('game.show', ['game' => $game->uuid]));
+            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
 
         $this->assertAuthenticated('web');
     }
@@ -181,7 +181,7 @@ class AuthControllerTest extends TestCase
             'token' => $game->token,
         ])
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('game.show', ['game' => $game->uuid]));
+            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
 
         $this->assertAuthenticated('web');
     }

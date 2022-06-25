@@ -17,37 +17,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController
 {
-    public function show(Game $game)
-    {
-        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
-            return redirect(route('wavelength.join', ['game' => $game->uuid]));
-        }
-
-        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
-            return redirect(route('justone.join', ['game' => $game->uuid]));
-        }
-
-        if ($game->logic_identifier === WerewolfGame::$logic_identifier) {
-            return redirect(route('werewolf.join', ['game' => $game->uuid]));
-        }
-
-        return view('GamePage', ['game' => $game]);
-    }
-
     public function join(JoinGameRequest $request)
     {
         /** @var Game $game */
         $game = Game::query()->where('token', $request->input('token'))->firstOrFail();
 
-        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
-            return redirect(route('wavelength.join', ['game' => $game->uuid]));
-        }
-
-        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
-            return redirect(route('wavelength.join', ['game' => $game->uuid]));
-        }
-
-        return redirect(route('game.show', ['game' => $game,]));
+        return redirect(route("{$game->logic_identifier}.show", ['game' => $game,]));
     }
 
     public function index()
@@ -84,7 +59,7 @@ class GameController
             'host_user_id'     => $user->id,
         ]);
 
-        return redirect(route('game.show', ['game' => $game,]));
+        return redirect(route("{$game->logic_identifier}.show", ['game' => $game,]));
     }
 
     public function destroy(Game $game)
@@ -103,19 +78,7 @@ class GameController
         $game->currentRound->completed_at = now();
         $game->currentRound->save();
 
-        if ($game->logic_identifier === WaveLengthGame::$logic_identifier) {
-            return redirect(route('wavelength.round', ['game' => $game->uuid]));
-        }
-
-        if ($game->logic_identifier === JustOneGame::$logic_identifier) {
-            return redirect(route('justone.round', ['game' => $game->uuid]));
-        }
-
-        if ($game->logic_identifier === WerewolfGame::$logic_identifier) {
-            return redirect(route('werewolf.round', ['game' => $game->uuid]));
-        }
-
-        return redirect(route('game.show', ['game' => $game,]));
+        return redirect(route("{$game->logic_identifier}.round", ['game' => $game,]));
     }
 
     public function settings(Game $game)

@@ -35,7 +35,7 @@ class JustOneTest extends TestCase
             ->create();
 
         $this->actingAs($user)
-            ->get(route('justone.join', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -60,7 +60,7 @@ class JustOneTest extends TestCase
             ->create(['started_at' => null, 'host_user_id' => $user->id]);
 
         $this->actingAs($user)
-            ->get(route('justone.join', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -105,7 +105,7 @@ class JustOneTest extends TestCase
         $this->travel(5);
 
         $this->actingAs($user)
-            ->get(route('justone.join', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 

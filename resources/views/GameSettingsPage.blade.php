@@ -6,7 +6,7 @@
 
 <x-app-layout>
     <div class="max-w-2xl mx-auto mt-4 sm:px-6 lg:px-8 ">
-        <a href="{{ route('game.show', ['game' => $game->uuid]) }}">
+        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->uuid]) }}">
             <div class="rounded-xl bg-pink-600 my-2 p-2 hover:bg-purple-500 text-white text-center w-full flex justify-between">
                 <x-icons.arrow-left class="h-6"/>
                 <div> Back to the game</div>

@@ -31,7 +31,7 @@ class WerewolfTest extends TestCase
         $game = WerewolfGame::factory()->startedWithAllRoles()->create();
 
         $this->actingAs($user)
-            ->get(route('werewolf.join', ['game' => $game->uuid]))
+            ->get(route('werewolf.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -67,7 +67,7 @@ class WerewolfTest extends TestCase
         $this->travel(5)->minutes();
 
         $this->actingAs($user)
-            ->get(route('werewolf.join', ['game' => $game->uuid]))
+            ->get(route('werewolf.show', ['game' => $game->uuid]))
             ->assertOk()
             ->assertViewIs('GamePage');
 

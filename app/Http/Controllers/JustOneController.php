@@ -41,7 +41,7 @@ class JustOneController
             $words = $game->currentRound->moves->map(fn (Move $move) => Str::upper($move->payloadAttribute('clue')));
 
             // calculate visibility of words
-            $game->currentRound->moves->map(function (Move $move) use ($words, $game) {
+            $game->currentRound->moves->map(function (Move $move) use ($words) {
                 $moveWord = Str::upper($move->payloadAttribute('clue'));
                 $move->addPayloadAttribute('visible', $words->filter(fn ($word) => $word === $moveWord
                         || Str::contains($word, $moveWord)
@@ -75,7 +75,7 @@ class JustOneController
         return view('GamePage', ['game' => $game]);
     }
 
-    public function join(JustOneGame $game, \Faker\Generator $generator)
+    public function show(JustOneGame $game, \Faker\Generator $generator)
     {
         if ($game->authenticatedPlayer) {
             return view('GamePage', ['game' => $game]);

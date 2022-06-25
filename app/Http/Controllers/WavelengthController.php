@@ -78,7 +78,7 @@ class WavelengthController
         return view('GamePage', ['game' => $game]);
     }
 
-    public function join(WaveLengthGame $game)
+    public function show(WaveLengthGame $game)
     {
         if ($game->authenticatedPlayer) {
             return view('GamePage', ['game' => $game]);

@@ -33,9 +33,8 @@ Route::get('/auth/{view?}', [AuthController::class, 'show'])->name('auth.show');
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/game', [GameController::class, 'index'])->name('game.index');
     Route::post('/game', [GameController::class, 'create'])->name('game.create');
-    Route::post('/game/join', [GameController::class, 'join'])->name('game.join');
+    Route::post('/game/show', [GameController::class, 'join'])->name('game.join');
 
-    Route::get('/game/{game}', [GameController::class, 'show'])->name('game.show');
     Route::get('/game/{game}/settings', [GameController::class, 'settings'])->name('game.settings');
     Route::patch('/game/{game}', [GameController::class, 'update'])->name('game.update');
     Route::delete('/game/{game}', [GameController::class, 'destroy'])->name('game.destroy');
@@ -49,17 +48,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.delete');
 
     // Wavelength
-    Route::get('/wavelength/{game}', [WavelengthController::class, 'join'])->name('wavelength.join');
+    Route::get('/wavelength/{game}', [WavelengthController::class, 'show'])->name('wavelength.show');
     Route::post('/wavelength/{game}/move', [WavelengthController::class, 'move'])->name('wavelength.move');
     Route::post('/wavelength/{game}/round', [WavelengthController::class, 'round'])->name('wavelength.round');
 
     // Just One
-    Route::get('/justone/{game}', [JustOneController::class, 'join'])->name('justone.join');
+    Route::get('/justone/{game}', [JustOneController::class, 'show'])->name('justone.show');
     Route::post('/justone/{game}/move', [JustOneController::class, 'move'])->name('justone.move');
     Route::post('/justone/{game}/round', [JustOneController::class, 'round'])->name('justone.round');
 
     // Werewolf
-    Route::get('/werewolf/{game}', [WerewolfController::class, 'join'])->name('werewolf.join');
+    Route::get('/werewolf/{game}', [WerewolfController::class, 'show'])->name('werewolf.show');
     Route::post('/werewolf/{game}/move', [WerewolfController::class, 'move'])->name('werewolf.move');
     Route::post('/werewolf/{game}/sunrise', [WerewolfController::class, 'sunrise'])->name('werewolf.sunrise');
     Route::post('/werewolf/{game}/vote', [WerewolfController::class, 'vote'])->name('werewolf.vote');

@@ -68,6 +68,6 @@ class AuthController
             ->where('token', $token)
             ->firstOrFail();
 
-        return redirect(route('game.show', ['game' => $game->uuid]));
+        return redirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
     }
 }
