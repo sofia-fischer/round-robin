@@ -9,7 +9,6 @@ use App\Models\Game;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\AnonymousLoginRequest;
 
 class AuthController
 {
@@ -18,7 +17,7 @@ class AuthController
         return view('ImpressumPage');
     }
 
-    public function show(string $view = 'anonymous-login')
+    public function show(string $view = 'login')
     {
         if (Auth::check()) {
             return redirect(route('game.index'));
@@ -42,17 +41,9 @@ class AuthController
     public function login(LoginRequest $request)
     {
         Auth::attempt([
-            'email'    => $request->input('email'),
+            'name'    => $request->input('name'),
             'password' => $request->input('password')
         ], true);
-
-        return $this->afterAuthentication($request->input('token'));
-    }
-
-    public function anonymousLogin(AnonymousLoginRequest $request)
-    {
-        $user = User::create($request->data());
-        Auth::login($user, true);
 
         return $this->afterAuthentication($request->input('token'));
     }

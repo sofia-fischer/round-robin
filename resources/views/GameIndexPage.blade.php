@@ -20,7 +20,7 @@
                             :value="old('token')"
                             autofocus
                         />
-                        <label for="register-token"> Game Token</label>
+                        <label for="register-token">Game Token</label>
                         @error('token')<p class="input-error">{{ $message }}</p>@enderror
                     </div>
 
@@ -36,18 +36,14 @@
             <h1 class="text-2xl font-semibold m-4">{{ \App\Models\WaveLengthGame::$title }}</h1>
             <div class="flex md:flex-row sm:flex-col content-center m-4">
                 <div class="p-2">{{ \App\Models\WaveLengthGame::$description }}</div>
-                <div>
-                    @if( \Illuminate\Support\Facades\Auth::user()->email)
-                        <form action="{{ route('game.create') }}" method="POST">
-                            @csrf
-                            <button name="logic"
-                                class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
-                                value="{{ \App\Models\WaveLengthGame::$logic_identifier }}">
-                                Start
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                <form action="{{ route('game.create') }}" method="POST">
+                    @csrf
+                    <button name="logic"
+                        class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
+                        value="{{ \App\Models\WaveLengthGame::$logic_identifier }}">
+                        Start
+                    </button>
+                </form>
             </div>
 
             @if($waveLengthGames->isNotEmpty())
@@ -91,18 +87,14 @@
             <h1 class="text-2xl font-semibold m-4">Werewolf BETA</h1>
             <div class="flex md:flex-row sm:flex-col content-center m-4">
                 <div class="p-2">{{ \App\Models\WerewolfGame::$description }}</div>
-                <div>
-                    @if( \Illuminate\Support\Facades\Auth::user()->email)
-                        <form action="{{ route('game.create') }}" method="POST">
-                            @csrf
-                            <button name="logic"
-                                class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
-                                value="{{ \App\Models\WerewolfGame::$logic_identifier }}">
-                                Start
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                <form action="{{ route('game.create') }}" method="POST">
+                    @csrf
+                    <button name="logic"
+                        class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
+                        value="{{ \App\Models\WerewolfGame::$logic_identifier }}">
+                        Start
+                    </button>
+                </form>
             </div>
 
             @if($werewolfGames->isNotEmpty())
@@ -136,18 +128,14 @@
             <h1 class="text-2xl font-semibold m-4">{{ \App\Models\JustOneGame::$title }}</h1>
             <div class="flex md:flex-row sm:flex-col content-center m-4">
                 <div class="p-2">{{ \App\Models\JustOneGame::$description }}</div>
-                <div>
-                    @if( \Illuminate\Support\Facades\Auth::user()->email)
-                        <form action="{{ route('game.create') }}" method="POST">
-                            @csrf
-                            <button name="logic"
-                                class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
-                                value="{{ \App\Models\JustOneGame::$logic_identifier }}">
-                                Start
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                <form action="{{ route('game.create') }}" method="POST">
+                    @csrf
+                    <button name="logic"
+                        class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400"
+                        value="{{ \App\Models\JustOneGame::$logic_identifier }}">
+                        Start
+                    </button>
+                </form>
             </div>
 
             @if($justOneGames->isNotEmpty())

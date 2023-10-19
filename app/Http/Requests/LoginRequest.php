@@ -4,16 +4,16 @@ namespace App\Http\Requests;
 
 use App\Models\Game;
 use App\Models\User;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'token'    => ['nullable', 'string', Rule::exists(Game::class, 'token')],
-            'email'    => ['required', 'string', 'email', 'max:255', Rule::exists(User::class, 'email')],
+            'token' => ['nullable', 'string', Rule::exists(Game::class, 'token')],
+            'name' => ['required', 'string', 'max:255', Rule::exists(User::class, 'name')],
             'password' => ['required', 'string', 'min:7'],
         ];
     }

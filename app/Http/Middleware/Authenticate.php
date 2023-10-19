@@ -16,15 +16,15 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->route('game')) {
-            return route('auth.login');
+            return route('login');
         }
 
         $game = Game::query()->where('uuid', $request->route('game'))->first();
 
         if (! $game) {
-            return route('auth.login');
+            return route('login');
         }
 
-        return route('auth.login', ['token' => $game->token]);
+        return route('login', ['token' => $game->token]);
     }
 }

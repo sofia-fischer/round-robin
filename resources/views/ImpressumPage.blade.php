@@ -209,7 +209,7 @@
                         The personal data I store is limited dto what you enter as email and name, as well as some
                         session data I need to make sure that not a different Computer with the same cookie is using
                         your account. This Data will be stored on my server and will only be send to
-                        <a href="https://rollbar.com/" class="text-blue-500">Rollbar</a>,
+                        <a href="https://sentry.com/" class="text-blue-500">Sentry</a>,
                         which I use to handle Errors. This helps me to improve Round Robin but you can stop this by
                         activating the 'Do not Track' option in your Browser.
                     </div>

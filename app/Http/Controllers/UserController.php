@@ -4,22 +4,27 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Game;
-use App\Models\User;
-use App\Models\Player;
-use App\Queue\Events\PlayerUpdated;
-use Illuminate\Support\Facades\Auth;
-use App\Queue\Events\PlayerDestroyed;
 use App\Http\Requests\UserUpdateRequest;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\Game;
+use App\Models\Player;
+use App\Models\User;
+use App\Queue\Events\PlayerDestroyed;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController
 {
-    public function destroy(User $user)
+    public function view()
     {
-        throw_unless($user->id === Auth::id(), AuthorizationException::class);
+        return view('ProfilePage');
+    }
 
-        $players = $user->players;
+    public function destroy()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         Game::query()
             ->where('host_user_id', $user->id)
@@ -36,22 +41,44 @@ class UserController
                 $game->save();
             });
 
-        $user->delete();
-        $user->players()->delete();
-        $players->each(fn (Player $player) => event(new PlayerDestroyed($player->id)));
+        $players = Player::query()
+            ->where('user_id', $user->id)
+            ->get();
 
-        return redirect()->route('game.settings', ['game' => $user->game]);
+        $players->delete();
+        $players->each(fn (Player $player) => event(new PlayerDestroyed($player->id)));
+        $user->tokens->each->delete();
+        $user->delete();
+
+        return redirect()->route('login');
     }
 
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request)
     {
-        throw_unless($user->id === Auth::id(), AuthorizationException::class);
+        /** @var User $user */
+        $user = Auth::user();
 
-        $user->update($request->data());
-        $user->players->each(fn (Player $player) => event(new PlayerUpdated($player->id)));
+        if ($request->get('name')) {
+            $user->name = $request->get('name');
+            $user->save();
+        }
 
-        $game = $request->get('game_id') ? Game::find($request->get('game_id')) : null;
+        if ($request->get('password')) {
+            $user->password = Hash::make($request->get('password'));
+            $user->save();
+        }
 
-        return redirect()->route('game.settings', ['game' => $game]);
+        $user->save();
+
+        return redirect()->route('game.index');
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

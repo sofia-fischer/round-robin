@@ -4,15 +4,15 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Game;
-use Illuminate\Support\Str;
-use App\Models\JustOneGame;
-use App\Models\WerewolfGame;
-use App\Models\WaveLengthGame;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\JoinGameRequest;
 use App\Http\Requests\GameCreateRequest;
+use App\Http\Requests\JoinGameRequest;
+use App\Models\Game;
+use App\Models\JustOneGame;
+use App\Models\WaveLengthGame;
+use App\Models\WerewolfGame;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController
@@ -32,11 +32,11 @@ class GameController
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
-            'werewolfGames'   => WerewolfGame::query()
+            'werewolfGames' => WerewolfGame::query()
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
-            'justOneGames'    => JustOneGame::query()
+            'justOneGames' => JustOneGame::query()
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),
@@ -48,15 +48,16 @@ class GameController
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if (! $user->email) {
-            throw new UnauthorizedHttpException();
-        }
+        Game::query()
+            ->where('host_user_id', $user->id)
+            ->where('logic_identifier', $request->input('logic'))
+            ->delete();
 
         /** @var Game $game */
         $game = Game::create([
-            'token'            => Str::upper(Str::random(5)),
+            'token' => Str::upper(Str::random(5)),
             'logic_identifier' => $request->input('logic'),
-            'host_user_id'     => $user->id,
+            'host_user_id' => $user->id,
         ]);
 
         return redirect(route("{$game->logic_identifier}.show", ['game' => $game,]));

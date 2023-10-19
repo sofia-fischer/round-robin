@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-use App\Queue\Events\GameEnded;
-use Illuminate\Support\Collection;
 use App\Jobs\OneNightWerewolfDayJob;
-use App\Queue\Events\GameRoundAction;
 use App\Jobs\OneNightWerewolfNightJob;
+use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameRoundAction;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Class Game
@@ -56,20 +56,20 @@ class WerewolfGame extends Game
     static $centerAnonymRole = 'center';
     static $rightAnonymRole = 'right';
 
-    const  WEREWOLF     = 'werewolf';
-    const  MASON        = 'mason';
-    const  MINION       = 'minion';
-    const  SEER         = 'seer';
-    const  ROBBER       = 'robber';
+    const  WEREWOLF = 'werewolf';
+    const  MASON = 'mason';
+    const  MINION = 'minion';
+    const  SEER = 'seer';
+    const  ROBBER = 'robber';
     const  TROUBLEMAKER = 'troublemaker';
-    const  VILLAGER     = 'villager';
-    const  DRUNK        = 'drunk';
-    const  TANNER       = 'tanner';
-    const  INSOMNIAC    = 'insomniac';
-    const  WATCHER      = 'watcher';
+    const  VILLAGER = 'villager';
+    const  DRUNK = 'drunk';
+    const  TANNER = 'tanner';
+    const  INSOMNIAC = 'insomniac';
+    const  WATCHER = 'watcher';
 
     public const NIGHT_DURATION = 100;
-    public const DAY_DURATION   = 200;
+    public const DAY_DURATION = 200;
 
     public static function query(): Builder
     {
@@ -138,9 +138,9 @@ class WerewolfGame extends Game
 
         if (! is_numeric($identifier)) {
             return [
-                'sawName'  => $identifier,
+                'sawName' => $identifier,
                 'sawColor' => null,
-                'sawRole'  => $this->newExtraRoles->get($identifier),
+                'sawRole' => $this->newExtraRoles->get($identifier),
             ];
         }
 
@@ -152,9 +152,9 @@ class WerewolfGame extends Game
         }
 
         return [
-            'sawName'  => $player->name,
+            'sawName' => $player->name,
             'sawColor' => $player->activeColor,
-            'sawRole'  => $this->newPlayerRoles->get($player->id),
+            'sawRole' => $this->newPlayerRoles->get($player->id),
         ];
     }
 
@@ -164,16 +164,16 @@ class WerewolfGame extends Game
         $targetPlayer1 = is_numeric($target1) ? $this->players->firstWhere('id', $target1) : null;
         /** @var Player|null $targetPlayer2 */
         $targetPlayer2 = is_numeric($target2) ? $this->players->firstWhere('id', $target2) : null;
-        $role1         = $targetPlayer1 ? $this->newPlayerRoles->get($target1) : $this->newExtraRoles->get($target1);
-        $role2         = $targetPlayer2 ? $this->newPlayerRoles->get($target2) : $this->newExtraRoles->get($target2);
+        $role1 = $targetPlayer1 ? $this->newPlayerRoles->get($target1) : $this->newExtraRoles->get($target1);
+        $role2 = $targetPlayer2 ? $this->newPlayerRoles->get($target2) : $this->newExtraRoles->get($target2);
 
         $result = [
-            'switched1Name'  => $targetPlayer1 ? $targetPlayer1->name : $target1,
+            'switched1Name' => $targetPlayer1 ? $targetPlayer1->name : $target1,
             'switched1Color' => $targetPlayer1 ? $targetPlayer1->activeColor : null,
-            'switched1Role'  => $role1,
-            'switched2Name'  => $targetPlayer2 ? $targetPlayer2->name : $target2,
+            'switched1Role' => $role1,
+            'switched2Name' => $targetPlayer2 ? $targetPlayer2->name : $target2,
             'switched2Color' => $targetPlayer2 ? $targetPlayer2->activeColor : null,
-            'switched2Role'  => $role2,
+            'switched2Role' => $role2,
         ];
 
         switch (true) {
@@ -214,7 +214,7 @@ class WerewolfGame extends Game
     {
         // generating roles
         $evilRoleCount = floor($this->players->count() / 3) ?? 1;
-        $roles         = collect([]);
+        $roles = collect([]);
 
         $werewolfCount = max($evilRoleCount - floor($evilRoleCount / 4), 1);
         Collection::times($werewolfCount)->each(fn ($item) => $roles->push(WerewolfGame::WEREWOLF));
@@ -234,20 +234,20 @@ class WerewolfGame extends Game
             ])->random()));
 
         // assign roles
-        $roles       = $roles->shuffle()->values();
+        $roles = $roles->shuffle()->values();
         $playerRoles = $this->players->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => $roles[$index]])->toArray();
-        $extraRoles  = $roles->slice(-3, 3)->values();
+        $extraRoles = $roles->slice(-3, 3)->values();
 
         Round::create([
-            'uuid'    => Str::uuid(),
+            'uuid' => Str::uuid(),
             'game_id' => $this->id,
             'payload' => [
-                'state'       => 'night',
+                'state' => 'night',
                 'playerRoles' => $playerRoles,
-                'extraRoles'  => [
-                    WerewolfGame::$leftAnonymRole   => $extraRoles[0],
+                'extraRoles' => [
+                    WerewolfGame::$leftAnonymRole => $extraRoles[0],
                     WerewolfGame::$centerAnonymRole => $extraRoles[1],
-                    WerewolfGame::$rightAnonymRole  => $extraRoles[2],
+                    WerewolfGame::$rightAnonymRole => $extraRoles[2],
                 ],
             ],
         ]);
@@ -278,9 +278,9 @@ class WerewolfGame extends Game
             ->each(function (Player $player) {
                 $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->payloadAttribute('steal'));
                 $this->currentMoveFromPlayer($player)->mergePayloadAttribute([
-                    'becameName'  => $result['switched2Name'],
+                    'becameName' => $result['switched2Name'],
                     'becameColor' => $result['switched2Color'],
-                    'becameRole'  => $result['switched2Role'],
+                    'becameRole' => $result['switched2Role'],
                 ]);
             });
 
@@ -307,11 +307,12 @@ class WerewolfGame extends Game
         //    Insomniac
         $this->playerWithRole(WerewolfGame::INSOMNIAC)
             ->each(function (Player $player) {
-                Move::updateOrCreate([
-                    'round_id'  => $this->currentRound->id,
+                Move::query()->create([
+                    'payload' => ['see' => $player->id],
+                    'round_id' => $this->currentRound->id,
+                    'user_id' => $player->user_id,
                     'player_id' => $player->id,
-                    'user_id'   => $player->user_id,
-                    'payload'   => ['see' => $player->id]
+                    'uuid' => Str::uuid(),
                 ]);
 
                 $this->currentMoveFromPlayer($player)->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see'));
@@ -344,9 +345,9 @@ class WerewolfGame extends Game
         };
 
         $this->players->each(fn (Player $player) => Move::updateOrCreate([
-            'round_id'  => $this->currentRound->id,
+            'round_id' => $this->currentRound->id,
             'player_id' => $player->id,
-            'user_id'   => $player->user_id,
+            'user_id' => $player->user_id,
         ], [
             'score' => match ($this->newPlayerRoles->get($player->id)) {
                 WerewolfGame::WEREWOLF => $win === WerewolfGame::WEREWOLF ? 1 : 0,
@@ -359,12 +360,12 @@ class WerewolfGame extends Game
 
         $killledPlayer = $this->players->firstWhere('id', $killedPlayerId);
         $this->mergeCurrentPayloadAttribute([
-            'state'             => 'end',
-            'win'               => $win,
-            'killedPlayerId'    => $killedPlayerId,
-            'killedPlayerName'  => $killledPlayer?->name ?? 'Nobody',
+            'state' => 'end',
+            'win' => $win,
+            'killedPlayerId' => $killedPlayerId,
+            'killedPlayerName' => $killledPlayer?->name ?? 'Nobody',
             'killedPlayerColor' => $killledPlayer->activeColor ?? 'gray-500',
-            'killedRole'        => $killedPlayerRole,
+            'killedRole' => $killedPlayerRole,
         ]);
 
         $this->currentRound->completed_at = now();

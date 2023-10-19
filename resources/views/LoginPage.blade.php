@@ -52,11 +52,6 @@
                                     href="{{ route('auth.show', ['view' => 'register', 'token' => $token]) }}">
                                     Want an account? </a>
                             </div>
-                            <div>
-                                <a class="m-4 {{ $view === 'anonymous' ? '' : 'opacity-50' }}"
-                                    href="{{ route('auth.show', ['view' => 'anonymous', 'token' => $token]) }}">
-                                    Play anonymous? </a>
-                            </div>
                         </div>
 
                         @if($view == 'register')
@@ -87,18 +82,6 @@
                                     </div>
 
                                     <div class="flex flex-col text-left mb-2">
-                                        <input id="email"
-                                            class="border-b-2 border-white bg-transparent"
-                                            name="email"
-                                            type="email"
-                                            :value="old('email')"
-                                            required
-                                        />
-                                        <label for="email"> Email</label>
-                                        @error('email')<p class="input-error">{{ $message }}</p>@enderror
-                                    </div>
-
-                                    <div class="flex flex-col text-left mb-2">
                                         <input id="password"
                                             class="border-b-2 border-white bg-transparent"
                                             type="password"
@@ -121,7 +104,7 @@
                             </div>
                         @elseif($view == 'login')
                             <div class="sm:mt-6">
-                                <form method="POST" action="{{ route('auth.login') }}">
+                                <form method="POST" action="{{ route('login') }}">
                                     @csrf
 
                                     <div class="flex flex-col text-left mb-2">
@@ -136,15 +119,14 @@
                                     </div>
 
                                     <div class="flex flex-col text-left mb-2">
-                                        <input id="email"
+                                        <input id="name"
                                             class="border-b-2 border-white bg-transparent"
-                                            name="email"
-                                            type="email"
-                                            :value="old('email')"
+                                            name="name"
+                                            :value="old('name')"
                                             required
                                         />
-                                        <label for="email"> Email</label>
-                                        @error('email')<p class="input-error">{{ $message }}</p>@enderror
+                                        <label for="name">Name or Identifier</label>
+                                        @error('name')<p class="input-error">{{ $message }}</p>@enderror
                                     </div>
 
                                     <div class="flex flex-col text-left mb-2">
@@ -156,43 +138,6 @@
                                         />
                                         <label for="password"> Password</label>
                                         @error('password')<p class="input-error">{{ $message }}</p>@enderror
-                                    </div>
-
-                                    <div class="flex items-center justify-end mt-8">
-                                        <button type="submit"
-                                            class="bg-purple-700 rounded-full hover:bg-pink-600 py-2 px-4"
-                                        >
-                                            Join Game
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        @else
-                            <div class="sm:mt-6">
-                                <form method="POST" action="{{ route('auth.anonymous') }}">
-                                    @csrf
-
-                                    <div class="flex flex-col text-left mb-2">
-                                        <input id="token"
-                                            class="border-b-2 border-white bg-transparent"
-                                            name="token"
-                                            value="{{ old('token') ?? $token }}"
-                                            autofocus
-                                            required
-                                        />
-                                        <label for="register-token"> Game Token</label>
-                                        @error('token')<p class="input-error">{{ $message }}</p>@enderror
-                                    </div>
-
-                                    <div class="flex flex-col text-left mb-2">
-                                        <input id="name"
-                                            class="border-b-2 border-white bg-transparent"
-                                            name="name"
-                                            :value="old('name')"
-                                            required
-                                        />
-                                        <label for="name"> Name</label>
-                                        @error('name')<p class="input-error">{{ $message }}</p>@enderror
                                     </div>
 
                                     <div class="flex items-center justify-end mt-8">

@@ -14,8 +14,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'token'    => ['nullable', 'string', Rule::exists(Game::class, 'token')],
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
+            'name'     => ['required', 'string', 'max:255', Rule::unique(User::class, 'name')],
             'password' => ['required', 'string', 'min:7'],
         ];
     }
@@ -24,8 +23,6 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name'              => $this->input('name'),
-            'email'             => $this->input('email'),
-            'email_verified_at' => now(),
             'password'          => Hash::make($this->input('password')),
         ];
     }

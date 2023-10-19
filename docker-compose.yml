@@ -1,63 +1,67 @@
-# For more information: https://laravel.com/docs/sail
-version: '3'
 services:
-    laravel.test:
-        build:
-            context: ./vendor/laravel/sail/runtimes/8.0
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.1/app
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        ports:
-            - '${APP_PORT:-80}:80'
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-        volumes:
-            - '.:/var/www/html'
-        networks:
-            - sail
-        depends_on:
-            - mariadb
-            - redis
-    mariadb:
-        image: 'mariadb:10'
-        container_name: database
-        ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
-        environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-        volumes:
-            - 'sailmariadb:/var/lib/mysql'
-        networks:
-            - sail
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
-            retries: 3
-            timeout: 5s
-    redis:
-      image: 'redis:alpine'
-      ports:
-        - '${FORWARD_REDIS_PORT:-6379}:6379'
-      volumes:
-        - 'sailredis:/data'
-      networks:
-        - sail
-      healthcheck:
-        test: [ "CMD", "redis-cli", "ping" ]
-networks:
-    sail:
-        driver: bridge
+
+  # Web Server Service
+  # ngnix used as reverse proxy, a standard for php to increase performance
+  # ngnix will receive the request and forward it to the php application
+  nginx:
+    image: nginx:alpine
+    ports:
+      # this is the port that will be exposed to the host machine
+      - "8080:80"
+    volumes:
+      # mount the project root into the container
+      - ./public/:/var/www/public/
+      # mount the nginx configuration file
+      - ./deployment/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - application
+
+  # Database Service
+  postgres:
+    platform: linux/x86_64
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+
+  # Test Database Service
+  postgres_test:
+    platform: linux/x86_64
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/test_database
+    ports:
+      - "3333:5432"
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+
+  # PHP Service
+  application:
+    build:
+      context: ./deployment/docker
+      dockerfile: Dockerfile
+    volumes:
+      # mount the project root into the container
+      # by mounting it as volume, changes will be reflected immediately
+      - ./:/var/www
+    depends_on:
+      - postgres
+
+  #  Redis (Queue) Service
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+
 volumes:
-    sailmariadb:
-        driver: local
-    sailredis:
-      driver: local
+  database:
+    driver: local

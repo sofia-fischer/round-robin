@@ -1,17 +1,12 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+import defaultTheme from 'tailwindcss/defaultTheme';
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 
+const colors = require('tailwindcss/colors')
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-    purge: {
-        enabled: false,
-        content: [
-            './vendor/laravel/jetstream/**/*.blade.php',
-            './storage/framework/views/*.php',
-            './resources/views/**/*.blade.php',
-        ],
-    },
-
     content: [
-        './vendor/laravel/jetstream/**/*.blade.php',
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
     ],
@@ -19,18 +14,14 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
     },
-
-    variants: {
-        opacity: ['responsive', 'hover', 'focus', 'disabled'],
-    },
-
-    plugins: [
-        require('@tailwindcss/forms'),
-        require('@tailwindcss/typography'),
-        require('@tailwindcss/aspect-ratio'),
-    ]
+    safelist: [
+        {
+            pattern: /bg-+/,
+        },
+    ],
+    plugins: [forms, typography],
 };

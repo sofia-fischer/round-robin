@@ -20,14 +20,10 @@ use App\Http\Controllers\WavelengthController;
 |
 */
 
-Route::get('/', [AuthController::class, 'show']);
-
-Route::get('/welcome', [AuthController::class, 'show'])->name('WelcomePage');
-Route::get('/impressum', [AuthController::class, 'impressum'])->name('impressums');
+Route::get('/', [AuthController::class, 'show'])->name('home');
 
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
-Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
-Route::post('/auth/anonymous', [AuthController::class, 'anonymousLogin'])->name('auth.anonymous');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
 Route::get('/auth/{view?}', [AuthController::class, 'show'])->name('auth.show');
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -44,8 +40,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/player/{player}', [PlayerController::class, 'destroy'])->name('player.destroy');
 
     // User
-    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
-    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.delete');
+    Route::get('/user', [UserController::class, 'view'])->name('user.show');
+    Route::post('/user', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::post('/user/logout', [UserController::class, 'logout'])->name('user.logout');
 
     // Wavelength
     Route::get('/wavelength/{game}', [WavelengthController::class, 'show'])->name('wavelength.show');

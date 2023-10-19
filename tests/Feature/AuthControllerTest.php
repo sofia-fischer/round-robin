@@ -2,28 +2,28 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function register_requires_email()
+    public function register_requires_name()
     {
-        $this->post(route('auth.register'))
-            ->assertSessionHasErrors('email');
+        $response = $this->post(route('auth.register'));
+        $response->assertSessionHasErrors('name');
     }
 
     /** @test */
-    public function register_requires_new_email()
+    public function register_requires_new_name()
     {
         $existingUser = User::factory()->create();
-        $this->post(route('auth.register'), ['email' => $existingUser->email])
-            ->assertSessionHasErrors('email');
+        $this->post(route('auth.register'), ['name' => $existingUser->name])
+            ->assertSessionHasErrors('name');
     }
 
     /** @test */
@@ -31,13 +31,6 @@ class AuthControllerTest extends TestCase
     {
         $this->post(route('auth.register'))
             ->assertSessionHasErrors('password');
-    }
-
-    /** @test */
-    public function register_requires_name()
-    {
-        $this->post(route('auth.register'))
-            ->assertSessionHasErrors('name');
     }
 
     /** @test */
@@ -51,8 +44,7 @@ class AuthControllerTest extends TestCase
     public function register()
     {
         $this->post(route('auth.register'), [
-            'email'    => 'norbert@example.com',
-            'name'     => 'Norbert',
+            'name' => 'Norbert',
             'password' => 'password',
         ])
             ->assertSessionHasNoErrors()
@@ -60,8 +52,7 @@ class AuthControllerTest extends TestCase
 
         $this->assertAuthenticated('web');
         $this->assertDatabaseHas('users', [
-            'email' => 'norbert@example.com',
-            'name'  => 'Norbert',
+            'name' => 'Norbert',
         ]);
     }
 
@@ -72,39 +63,37 @@ class AuthControllerTest extends TestCase
         $game = Game::factory()->create();
 
         $this->post(route('auth.register'), [
-            'email'    => 'norbert@example.com',
-            'name'     => 'Norbert',
+            'name' => 'Norbert',
             'password' => 'password',
-            'token'    => $game->token,
+            'token' => $game->token,
         ])
             ->assertSessionHasNoErrors()
             ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
 
         $this->assertAuthenticated('web');
         $this->assertDatabaseHas('users', [
-            'email' => 'norbert@example.com',
-            'name'  => 'Norbert',
+            'name' => 'Norbert',
         ]);
     }
 
     /** @test */
-    public function login_requires_email()
+    public function login_requires_name()
     {
-        $this->post(route('auth.login'))
-            ->assertSessionHasErrors('email');
+        $this->post(route('login'))
+            ->assertSessionHasErrors('name');
     }
 
     /** @test */
     public function login_requires_password()
     {
-        $this->post(route('auth.login'))
+        $this->post(route('login'))
             ->assertSessionHasErrors('password');
     }
 
     /** @test */
     public function login_requires_token()
     {
-        $this->post(route('auth.login'), ['token' => 'not-a-valid-token'])
+        $this->post(route('login'), ['token' => 'not-a-valid-token'])
             ->assertSessionHasErrors('token');
     }
 
@@ -114,11 +103,10 @@ class AuthControllerTest extends TestCase
         /** @var User $existingUser */
         $existingUser = User::factory()->create();
 
-        $this
-            ->post(route('auth.login', [
-                'email'    => $existingUser->email,
-                'password' => 'password',
-            ]))
+        $this->post(route('login', [
+            'name' => $existingUser->name,
+            'password' => 'password',
+        ]))
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('game.index'));
 
@@ -133,48 +121,11 @@ class AuthControllerTest extends TestCase
         /** @var User $existingUser */
         $existingUser = User::factory()->create();
 
-        $this->post(route('auth.login', [
-            'email'    => $existingUser->email,
+        $this->post(route('login', [
+            'name' => $existingUser->name,
             'password' => 'password',
-            'token'    => $game->token,
-        ]))
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
-
-        $this->assertAuthenticated('web');
-    }
-
-    /** @test */
-    public function anonymous_requires_name()
-    {
-        $this->post(route('auth.anonymous'))
-            ->assertSessionHasErrors('name');
-    }
-
-    /** @test */
-    public function anonymous_requires_token()
-    {
-        $this->post(route('auth.anonymous'))
-            ->assertSessionHasErrors('token');
-    }
-
-    /** @test */
-    public function anonymous_valid_requires_token()
-    {
-        $this->post(route('auth.anonymous'), ['token' => 'not-a-valid-token'])
-            ->assertSessionHasErrors('token');
-    }
-
-    /** @test */
-    public function anonymous()
-    {
-        /** @var Game $game */
-        $game = Game::factory()->create();
-
-        $this->post(route('auth.anonymous'), [
-            'name'  => 'Norbert',
             'token' => $game->token,
-        ])
+        ]))
             ->assertSessionHasNoErrors()
             ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
 

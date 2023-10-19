@@ -8,31 +8,31 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.0|^8.1",
-        "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^9.0",
-        "laravel/jetstream": "^2.6",
-        "laravel/sanctum": "^2.14",
-        "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.10",
-        "predis/predis": "^1.1",
-        "pusher/pusher-php-server": "^7.0.2",
-        "rollbar/rollbar-laravel": "^7.1",
-        "sentry/sentry-laravel": "^2.11"
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^10.28",
+        "laravel/sanctum": "^3.3",
+        "laravel/tinker": "^2.8",
+        "livewire/livewire": "^3.0",
+        "monolog/monolog": "3",
+        "predis/predis": "^2.2",
+        "pusher/pusher-php-server": "^7.2",
+        "sentry/sentry-laravel": "^3.8"
     },
     "require-dev": {
-        "spatie/laravel-ignition": "^1.0",
-        "fakerphp/faker": "^1.9.1",
-        "laravel/sail": "^1.11",
-        "mockery/mockery": "^1.4.2",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.3.3"
+        "fakerphp/faker": "^1.23",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "6.4",
+        "phpunit/phpunit": "9.6",
+        "spatie/laravel-ignition": "2"
     },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "laravel": {

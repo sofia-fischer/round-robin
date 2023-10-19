@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ValueObjects\Color;
 use Illuminate\Support\Carbon;
 
 /**
@@ -49,10 +50,10 @@ class Player extends BaseModel
      * @var array
      */
     protected $casts = [
-        'id'         => 'int',
-        'uuid'       => 'string',
-        'game_id'    => 'int',
-        'user_id'    => 'int',
+        'id' => 'int',
+        'uuid' => 'string',
+        'game_id' => 'int',
+        'user_id' => 'int',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -87,12 +88,17 @@ class Player extends BaseModel
 
     protected function getActiveColorAttribute()
     {
-        return ($this->user->color ?? 'pink') . '-500';
+        return Color::fromInt($this->id)->baseColor();
     }
 
     protected function getPassiveColorAttribute()
     {
-        return ($this->user->color ?? 'pink') . '-200';
+        return Color::fromInt($this->id)->passiveColor();
+    }
+
+    protected function color(): Color
+    {
+        return Color::fromInt($this->id);
     }
 
     protected function getNameAttribute()
