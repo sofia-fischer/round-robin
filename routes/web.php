@@ -1,13 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GameController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\JustOneController;
-use App\Http\Controllers\WerewolfController;
+use App\Http\Controllers\PlanetXController;
+use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WavelengthController;
+use App\Http\Controllers\WerewolfController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/justone/{game}', [JustOneController::class, 'show'])->name('justone.show');
     Route::post('/justone/{game}/move', [JustOneController::class, 'move'])->name('justone.move');
     Route::post('/justone/{game}/round', [JustOneController::class, 'round'])->name('justone.round');
+
+    // Planet X
+    Route::get('/planetx/{game}', [PlanetXController::class, 'show'])->name('planet_x.show');
+    Route::get('/planetx/{game}/hint', [PlanetXController::class, 'hint'])->name('planet_x.hint');
 
     // Werewolf
     Route::get('/werewolf/{game}', [WerewolfController::class, 'show'])->name('werewolf.show');

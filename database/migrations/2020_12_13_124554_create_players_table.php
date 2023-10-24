@@ -18,6 +18,7 @@ class CreatePlayersTable extends Migration
             $table->uuid('uuid')->unique();
             $table->unsignedInteger('game_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
+            $table->json('payload')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -8,6 +8,7 @@ use App\Http\Requests\GameCreateRequest;
 use App\Http\Requests\JoinGameRequest;
 use App\Models\Game;
 use App\Models\JustOneGame;
+use App\Models\PlanetXGame;
 use App\Models\WaveLengthGame;
 use App\Models\WerewolfGame;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -37,6 +38,10 @@ class GameController
                 ->whereHas('authenticatedPlayer')
                 ->get(),
             'justOneGames' => JustOneGame::query()
+                ->withCount(['players', 'rounds'])
+                ->whereHas('authenticatedPlayer')
+                ->get(),
+            'planetXGames' => PlanetXGame::query()
                 ->withCount(['players', 'rounds'])
                 ->whereHas('authenticatedPlayer')
                 ->get(),

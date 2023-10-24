@@ -1,5 +1,5 @@
 <?php
-/* @var App\Models\Game|\App\Models\WaveLengthGame|\App\Models\JustOneGame|\App\Models\WerewolfGame $game */
+/* @var App\Models\Game $game */
 
 /* @var App\Models\Player $player */
 ?>
@@ -34,6 +34,8 @@
                     <livewire:one-night-werewolf-component :game="$game"></livewire:one-night-werewolf-component>
                 @elseif(get_class($game) === \App\Models\JustOneGame::class)
                     <livewire:just-one-component :game="$game"></livewire:just-one-component>
+                @elseif(get_class($game) === \App\Models\PlanetXGame::class)
+                    <livewire:planet-x-component :game="$game"></livewire:planet-x-component>
                 @endif
             </div>
 

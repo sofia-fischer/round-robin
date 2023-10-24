@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
  * @property  string uuid
  * @property  int game_id
  * @property  int user_id
- * @property  string name
+ * @property  array payload
  * @property  Carbon created_at
  * @property  Carbon updated_at
  * @property  Carbon deleted_at
@@ -54,6 +54,7 @@ class Player extends BaseModel
         'uuid' => 'string',
         'game_id' => 'int',
         'user_id' => 'int',
+        'payload' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
