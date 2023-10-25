@@ -4,7 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\PlanetXGame;
 use App\Queue\Events\GameRoundAction;
-use App\ValueObjects\PlanetXRules\PlanetXBoard;
+use App\ValueObjects\Enums\PlanetXIconEnum;
+use App\ValueObjects\PlanetXBoard;
 use Livewire\Component;
 use Livewire\Livewire;
 
@@ -28,7 +29,7 @@ class PlanetXComponent extends Component
 
     public function hint(int $section, string $icon)
     {
-        $this->board->hint($section, $icon);
+        $this->board->hint($section, PlanetXIconEnum::from($icon));
     }
 
     /**

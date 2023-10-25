@@ -32,16 +32,7 @@ class PlanetXController
 
     public function hint(PlanetXHintRequest $request, PlanetXGame $game)
     {
-        $board = $game->getAuthenticatedPlayerBoard();
-        match ($request->get('icon')) {
-            PlanetXGame::PLANET => $board[$request->section]->planet = $request->value,
-            PlanetXGame::PLANET_X => $board[$request->section]->planetX = $request->value,
-            PlanetXGame::COMET => $board[$request->section]->comet = $request->value,
-            PlanetXGame::GALAXY => $board[$request->section]->galaxy = $request->value,
-            PlanetXGame::MOON => $board[$request->section]->moon = $request->value,
-            PlanetXGame::EMPTY_SPACE => $board[$request->section]->emptySpace = $request->value,
-        };
-
+        $board = $request->getBoard();
         $game->storeAuthenticatedPlayerBoard($board);
 
         return view('GamePage', ['game' => $game]);

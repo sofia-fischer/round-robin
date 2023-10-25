@@ -2,7 +2,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::COMET ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::COMET ? '' : 'hidden' }}"
         viewBox="124.513 116.202 270.48 467.078"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
@@ -32,7 +32,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::EMPTY_SPACE ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::EMPTY_SPACE ? '' : 'hidden' }}"
         viewBox="119.534 84.4057 400.474 605.068"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +53,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::GALAXY ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::GALAXY ? '' : 'hidden' }}"
         viewBox="59.5811 172.848 522.066 420.014"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +92,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::MOON ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::MOON ? '' : 'hidden' }}"
         viewBox="84.8551 149.548 470.165 472.178"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +108,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::PLANET ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::PLANET ? '' : 'hidden' }}"
         viewBox="111.056 174.195 366.547 404.934"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
@@ -143,7 +143,7 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\Models\PlanetXGame::PLANET_X ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::PLANET_X ? '' : 'hidden' }}"
         viewBox="54.0794 178.145 489.005 485.489"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">

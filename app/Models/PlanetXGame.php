@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Queue\Events\GameRoundAction;
-use App\ValueObjects\PlanetXRules\PlanetXBoard;
-use App\ValueObjects\PlanetXRules\PlanetXSector;
+use App\ValueObjects\PlanetXBoard;
+use App\ValueObjects\PlanetXSector;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 
@@ -20,12 +20,6 @@ class PlanetXGame extends Game
         The Players take turns and gather Information or publishing Theories on the different Sections.
         The Game ends when one Person locates Planet X and the surrounding Sections correctly.
         In the end Players are rewarded by correctly published Sections. ';
-    const  PLANET_X = 'planet_x';
-    const  MOON = 'moon';
-    const  GALAXY = 'galaxy';
-    const  EMPTY_SPACE = 'empty_space';
-    const  COMET = 'comet';
-    const  PLANET = 'planet';
 
     public PlanetXBoard $board;
 

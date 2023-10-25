@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PlanetXGame;
+use App\ValueObjects\Enums\PlanetXIconEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,18 +12,7 @@ class PlanetXHintRequest extends FormRequest
     {
         return [
             'section' => ['required', 'int', 'min:0', 'max:11'],
-            'icon' => [
-                'required',
-                'string',
-                Rule::in([
-                    PlanetXGame::PLANET,
-                    PlanetXGame::PLANET_X,
-                    PlanetXGame::COMET,
-                    PlanetXGame::GALAXY,
-                    PlanetXGame::MOON,
-                    PlanetXGame::EMPTY_SPACE,
-                ]),
-            ],
+            'icon' => ['required', 'string', Rule::in(PlanetXIconEnum::values())],
             'value' => ['required', 'bool'],
         ];
     }
