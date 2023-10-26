@@ -11,12 +11,17 @@ class InSectorRule extends PlanetXRule
 {
     public function __construct(
         private PlanetXIconEnum $icon,
-        private int    $sector
+        private int             $sector
     ) {
     }
 
     public function isValid(PlanetXBoard $board): bool
     {
-        return $board->getSector($this->sector)->hasIcon($this->icon);
+        if ($board->getSector($this->sector)->hasIcon($this->icon)) {
+            return true;
+        };
+        $this->errorMessage = "Sector " . $this->sector + 1 . " does not have " . $this->icon->value;
+
+        return false;
     }
 }

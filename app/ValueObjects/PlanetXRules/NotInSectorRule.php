@@ -11,12 +11,18 @@ class NotInSectorRule extends PlanetXRule
 {
     public function __construct(
         private PlanetXIconEnum $icon,
-        private int    $sector
+        private int             $sector
     ) {
     }
 
     public function isValid(PlanetXBoard $board): bool
     {
-        return ! $board->getSector($this->sector)->hasIcon($this->icon);
+        if ($board->getSector($this->sector)->hasIcon($this->icon)) {
+            $this->errorMessage = "There is a {$this->icon->value} in sector " . ($this->sector + 1) . ".";
+
+            return false;
+        };
+
+        return true;
     }
 }

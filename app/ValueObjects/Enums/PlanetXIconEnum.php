@@ -8,7 +8,7 @@ enum PlanetXIconEnum: string
     case  MOON = 'moon';
     case  GALAXY = 'galaxy';
     case  EMPTY_SPACE = 'empty_space';
-    case  COMET = 'comet';
+    case  ASTEROID = 'asteroid';
     case  PLANET = 'planet';
 
     /**
@@ -17,5 +17,17 @@ enum PlanetXIconEnum: string
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
+    }
+
+    public function appearsAs(): PlanetXIconEnum
+    {
+        return match ($this) {
+            self::PLANET_X => self::EMPTY_SPACE,
+            self::MOON => self::MOON,
+            self::GALAXY => self::GALAXY,
+            self::EMPTY_SPACE => self::EMPTY_SPACE,
+            self::ASTEROID => self::ASTEROID,
+            self::PLANET => self::PLANET,
+        };
     }
 }

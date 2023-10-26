@@ -35,6 +35,9 @@ class WithinNSectorsRule extends PlanetXRule
                 }
             }
 
+            $this->errorMessage = "Sector " . ($index + 1) . " does not have " . $this->icon->value
+                . " within " . $this->within . " sectors of " . $this->otherIcon->value;
+
             return false;
         }
 

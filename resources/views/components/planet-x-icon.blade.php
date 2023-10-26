@@ -2,12 +2,12 @@
 
     <svg stroke-miterlimit="10"
         style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"
-        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::COMET ? '' : 'hidden' }}"
+        class="w-full h-full {{ $icon === \App\ValueObjects\Enums\PlanetXIconEnum::ASTEROID ? '' : 'hidden' }}"
         viewBox="124.513 116.202 270.48 467.078"
         xml:space="preserve"
         xmlns="http://www.w3.org/2000/svg">
         <defs/>
-        <g id="comet">
+        <g id="asteroid">
             <path
                 d="M156.61 498.484C156.61 468.604 180.832 444.382 210.711 444.382C240.591 444.382 264.813 468.604 264.813 498.484C264.813 528.363 240.591 552.585 210.711 552.585C180.832 552.585 156.61 528.363 156.61 498.484Z"
                 fill="none" opacity="1" stroke-linecap="butt" stroke-linejoin="round" stroke-width="13.0975"

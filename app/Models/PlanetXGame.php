@@ -6,7 +6,6 @@ use App\Queue\Events\GameRoundAction;
 use App\ValueObjects\PlanetXBoard;
 use App\ValueObjects\PlanetXSector;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
 
 class PlanetXGame extends Game
 {
@@ -39,14 +38,13 @@ class PlanetXGame extends Game
             new PlanetXSector(planet: true),
             new PlanetXSector(galaxy: true),
             new PlanetXSector(galaxy: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
         );
 
-        $shuffled = Arr::shuffle($board->toArray());
-        $this->board = PlanetXBoard::fromArray($shuffled);
+        $this->board = $board;
     }
 
     public function startRound()

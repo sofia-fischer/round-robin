@@ -12,8 +12,7 @@ class NotNextToRule extends PlanetXRule
     public function __construct(
         private PlanetXIconEnum $icon,
         private PlanetXIconEnum $mustNotBeNextToIcon,
-    )
-    {
+    ) {
     }
 
     public function isValid(PlanetXBoard $board): bool
@@ -28,6 +27,9 @@ class NotNextToRule extends PlanetXRule
 
             if ($previousSector->hasIcon($this->mustNotBeNextToIcon)
                 || $nextSector->hasIcon($this->mustNotBeNextToIcon)) {
+                $this->errorMessage = "Sector " . ($index + 1) . " does have " . $this->icon->value
+                    . " next to " . $this->mustNotBeNextToIcon->value;
+
                 return false;
             }
         }

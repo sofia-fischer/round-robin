@@ -29,10 +29,10 @@ class PlanetXRulesTest extends TestCase
             new PlanetXSector(planet: true),
             new PlanetXSector(galaxy: true),
             new PlanetXSector(emptySpace: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
-            new PlanetXSector(comet: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
+            new PlanetXSector(asteroid: true),
             new PlanetXSector(moon: true),
         );
     }
@@ -72,7 +72,7 @@ class PlanetXRulesTest extends TestCase
         $validRule = new NotNextToRule(PlanetXIconEnum::PLANET_X, PlanetXIconEnum::GALAXY);
         $this->assertTrue($validRule->isValid($this->board));
 
-        $invalidRule = new NotNextToRule(PlanetXIconEnum::COMET, PlanetXIconEnum::COMET);
+        $invalidRule = new NotNextToRule(PlanetXIconEnum::ASTEROID, PlanetXIconEnum::ASTEROID);
         $this->assertFalse($invalidRule->isValid($this->board));
 
         $invalidRule = new NotNextToRule(PlanetXIconEnum::PLANET_X, PlanetXIconEnum::MOON);
@@ -81,7 +81,7 @@ class PlanetXRulesTest extends TestCase
 
     public function testInABandOfNSectors()
     {
-        $validRule = new InABandOfNSectorsRule(PlanetXIconEnum::COMET, 4);
+        $validRule = new InABandOfNSectorsRule(PlanetXIconEnum::ASTEROID, 4);
         $this->assertTrue($validRule->isValid($this->board));
 
         $validRule = new InABandOfNSectorsRule(PlanetXIconEnum::MOON, 5);
@@ -120,10 +120,10 @@ class PlanetXRulesTest extends TestCase
         $invalidRule = new WithinNSectorsRule(PlanetXIconEnum::MOON, 2, PlanetXIconEnum::GALAXY);
         $this->assertFalse($invalidRule->isValid($this->board));
 
-        $invalidRule = new WithinNSectorsRule(PlanetXIconEnum::MOON, 3, PlanetXIconEnum::COMET);
+        $invalidRule = new WithinNSectorsRule(PlanetXIconEnum::MOON, 3, PlanetXIconEnum::ASTEROID);
         $this->assertFalse($invalidRule->isValid($this->board));
 
-        $invalidRule = new WithinNSectorsRule(PlanetXIconEnum::PLANET_X, 1, PlanetXIconEnum::COMET);
+        $invalidRule = new WithinNSectorsRule(PlanetXIconEnum::PLANET_X, 1, PlanetXIconEnum::ASTEROID);
         $this->assertFalse($invalidRule->isValid($this->board));
     }
 

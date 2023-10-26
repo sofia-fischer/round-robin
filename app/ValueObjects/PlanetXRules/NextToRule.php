@@ -22,10 +22,11 @@ class NextToRule extends PlanetXRule
                 continue;
             }
 
-            $previousSector = $board->getSector(($index - 1) < 0 ? 11 : ($index - 1));
-            $nextSector = $board->getSector(($index + 1) % 12);
+            if (! $board->getSector(($index + 11) % 12)->hasIcon($this->mustBeNextToIcon)
+                && ! $board->getSector(($index + 1) % 12)->hasIcon($this->mustBeNextToIcon)) {
+                $this->errorMessage = "Sector " . $index + 1 . " does not have " .
+                    $this->icon->value . " next to " . $this->mustBeNextToIcon->value;
 
-            if (! $previousSector->hasIcon($this->mustBeNextToIcon) && ! $nextSector->hasIcon($this->mustBeNextToIcon)) {
                 return false;
             }
         }
