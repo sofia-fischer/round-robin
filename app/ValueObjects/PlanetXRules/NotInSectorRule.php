@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class NotInSectorRule extends PlanetXRule
 {
     public function __construct(
-        private PlanetXIconEnum $icon,
-        private int             $sector
+        public PlanetXIconEnum $icon,
+        public int             $sector
     ) {
     }
 
@@ -24,5 +24,22 @@ class NotInSectorRule extends PlanetXRule
         };
 
         return true;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'type' => self::class,
+            'icon' => $this->icon->value,
+            'sector' => $this->sector,
+        ];
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            icon: PlanetXIconEnum::from($data['icon']),
+            sector: $data['sector'],
+        );
     }
 }

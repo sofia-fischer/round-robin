@@ -4,8 +4,9 @@ namespace App\ValueObjects;
 
 use App\Exceptions\PlanetXBoardGenerationException;
 use App\ValueObjects\Enums\PlanetXIconEnum;
+use Illuminate\Contracts\Support\Arrayable;
 
-class PlanetXSector
+class PlanetXSector implements Arrayable
 {
     public function __construct(
         public bool $moon = false,
@@ -32,16 +33,28 @@ class PlanetXSector
         ]));
     }
 
-    public function hasIcon(PlanetXIconEnum $iconName): bool
+    /**
+     * @param  \App\ValueObjects\Enums\PlanetXIconEnum|array<PlanetXIconEnum>  $iconName
+     * @return bool
+     */
+    public function hasIcon(PlanetXIconEnum|array $icons): bool
     {
-        return match ($iconName) {
-            PlanetXIconEnum::PLANET => $this->planet,
-            PlanetXIconEnum::PLANET_X => $this->planetX,
-            PlanetXIconEnum::ASTEROID => $this->asteroid,
-            PlanetXIconEnum::GALAXY => $this->galaxy,
-            PlanetXIconEnum::MOON => $this->moon,
-            PlanetXIconEnum::EMPTY_SPACE => $this->emptySpace,
-        };
+        $icons = is_array($icons) ? $icons : [$icons];
+        foreach ($icons as $icon) {
+            $hasIcon = match ($icon) {
+                PlanetXIconEnum::PLANET => $this->planet,
+                PlanetXIconEnum::PLANET_X => $this->planetX,
+                PlanetXIconEnum::ASTEROID => $this->asteroid,
+                PlanetXIconEnum::GALAXY => $this->galaxy,
+                PlanetXIconEnum::MOON => $this->moon,
+                PlanetXIconEnum::EMPTY_SPACE => $this->emptySpace,
+            };
+
+            if ($hasIcon) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function setIcon(PlanetXIconEnum $iconName, bool $value): bool
@@ -69,6 +82,18 @@ class PlanetXSector
             PlanetXIconEnum::GALAXY => $this->galaxy = $value,
             PlanetXIconEnum::MOON => $this->moon = $value,
             PlanetXIconEnum::EMPTY_SPACE => $this->emptySpace = $value,
+        };
+    }
+
+    public function getIcon()
+    {
+        return match (true) {
+            $this->planet => PlanetXIconEnum::PLANET,
+            $this->planetX => PlanetXIconEnum::PLANET_X,
+            $this->asteroid => PlanetXIconEnum::ASTEROID,
+            $this->galaxy => PlanetXIconEnum::GALAXY,
+            $this->moon => PlanetXIconEnum::MOON,
+            $this->emptySpace => PlanetXIconEnum::EMPTY_SPACE,
         };
     }
 }

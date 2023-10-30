@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class NotNextToRule extends PlanetXRule
 {
     public function __construct(
-        private PlanetXIconEnum $icon,
-        private PlanetXIconEnum $mustNotBeNextToIcon,
+        public PlanetXIconEnum $icon,
+        public PlanetXIconEnum $mustNotBeNextToIcon,
     ) {
     }
 
@@ -35,5 +35,22 @@ class NotNextToRule extends PlanetXRule
         }
 
         return true;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'type' => self::class,
+            'icon' => $this->icon->value,
+            'mustNotBeNextToIcon' => $this->mustNotBeNextToIcon->value,
+        ];
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            icon: PlanetXIconEnum::from($data['icon']),
+            mustNotBeNextToIcon: PlanetXIconEnum::from($data['mustNotBeNextToIcon']),
+        );
     }
 }

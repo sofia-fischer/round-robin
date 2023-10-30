@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class InABandOfNSectorsRule extends PlanetXRule
 {
     public function __construct(
-        private PlanetXIconEnum $icon,
-        private int    $within,
+        public PlanetXIconEnum $icon,
+        public int             $within,
     ) {
     }
 
@@ -36,7 +36,24 @@ class InABandOfNSectorsRule extends PlanetXRule
             return true;
         }
 
-        $this->errorMessage = "There is no band of {$this->within} sectors, which do contain all {$this->icon}";
+        $this->errorMessage = "There is no band of {$this->within} sectors, which do contain all {$this->icon->value}";
+
         return false;
     }
-}
+
+    public function toArray(): array
+    {
+        return [
+            'type' => self::class,
+            'icon' => $this->icon->value,
+            'within' => $this->within,
+        ];
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            icon: PlanetXIconEnum::from($data['icon']),
+            within: $data['within'],
+        );
+    }}

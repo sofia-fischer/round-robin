@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\PlanetXGame;
 use App\Queue\Events\GameRoundAction;
+use App\Services\PlanetXBoardGenerationService;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXBoard;
 use Livewire\Component;
@@ -19,7 +20,8 @@ class PlanetXComponent extends Component
 
     public function mount()
     {
-        $this->board = $this->game->getAuthenticatedPlayerBoard();
+        $service = new PlanetXBoardGenerationService();
+        $this->board = $service->generateBoard();
     }
 
     public function render()

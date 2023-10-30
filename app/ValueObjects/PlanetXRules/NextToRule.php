@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class NextToRule extends PlanetXRule
 {
     public function __construct(
-        private PlanetXIconEnum $icon,
-        private PlanetXIconEnum $mustBeNextToIcon,
+        public readonly PlanetXIconEnum $icon,
+        public readonly PlanetXIconEnum $mustBeNextToIcon,
     ) {
     }
 
@@ -25,12 +25,29 @@ class NextToRule extends PlanetXRule
             if (! $board->getSector(($index + 11) % 12)->hasIcon($this->mustBeNextToIcon)
                 && ! $board->getSector(($index + 1) % 12)->hasIcon($this->mustBeNextToIcon)) {
                 $this->errorMessage = "Sector " . $index + 1 . " does not have " .
-                    $this->icon->value . " next to " . $this->mustBeNextToIcon->value;
+                    $this->icon->value . " next to a " . $this->mustBeNextToIcon->value;
 
                 return false;
             }
         }
 
         return true;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'type' => self::class,
+            'icon' => $this->icon->value,
+            'mustBeNextToIcon' => $this->mustBeNextToIcon->value,
+        ];
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            icon: PlanetXIconEnum::from($data['icon']),
+            mustBeNextToIcon: PlanetXIconEnum::from($data['mustBeNextToIcon']),
+        );
     }
 }

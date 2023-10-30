@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Queue\Events\GameRoundAction;
 use App\ValueObjects\PlanetXBoard;
-use App\ValueObjects\PlanetXSector;
 use Illuminate\Database\Eloquent\Builder;
 
 class PlanetXGame extends Game
@@ -25,26 +24,6 @@ class PlanetXGame extends Game
     public static function query(): Builder
     {
         return parent::query()->where('logic_identifier', self::$logic_identifier);
-    }
-
-    public function generateBoard(): void
-    {
-        $board = new PlanetXBoard(
-            new PlanetXSector(planetX: true),
-            new PlanetXSector(moon: true),
-            new PlanetXSector(moon: true),
-            new PlanetXSector(emptySpace: true),
-            new PlanetXSector(emptySpace: true),
-            new PlanetXSector(planet: true),
-            new PlanetXSector(galaxy: true),
-            new PlanetXSector(galaxy: true),
-            new PlanetXSector(asteroid: true),
-            new PlanetXSector(asteroid: true),
-            new PlanetXSector(asteroid: true),
-            new PlanetXSector(asteroid: true),
-        );
-
-        $this->board = $board;
     }
 
     public function startRound()

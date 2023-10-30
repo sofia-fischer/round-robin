@@ -7,27 +7,41 @@ use App\ValueObjects\PlanetXRules\NextToRule;
 use App\ValueObjects\PlanetXRules\NotInSectorRule;
 use App\ValueObjects\PlanetXRules\NotNextToRule;
 use App\ValueObjects\PlanetXRules\PlanetXRule;
+use Illuminate\Contracts\Support\Arrayable;
 use Iterator;
 use Livewire\Wireable;
 
-class PlanetXBoard implements Wireable, Iterator
+class PlanetXBoard implements Wireable, Iterator, Arrayable
 {
     private $position = 0;
 
-    public function __construct(
-        private PlanetXSector $sector0 = new PlanetXSector(),
-        private PlanetXSector $sector1 = new PlanetXSector(),
-        private PlanetXSector $sector2 = new PlanetXSector(),
-        private PlanetXSector $sector3 = new PlanetXSector(),
-        private PlanetXSector $sector4 = new PlanetXSector(),
-        private PlanetXSector $sector5 = new PlanetXSector(),
-        private PlanetXSector $sector6 = new PlanetXSector(),
-        private PlanetXSector $sector7 = new PlanetXSector(),
-        private PlanetXSector $sector8 = new PlanetXSector(),
-        private PlanetXSector $sector9 = new PlanetXSector(),
-        private PlanetXSector $sector10 = new PlanetXSector(),
-        private PlanetXSector $sector11 = new PlanetXSector(),
-    ) {
+    private PlanetXSector $sector0;
+    private PlanetXSector $sector1;
+    private PlanetXSector $sector2;
+    private PlanetXSector $sector3;
+    private PlanetXSector $sector4;
+    private PlanetXSector $sector5;
+    private PlanetXSector $sector6;
+    private PlanetXSector $sector7;
+    private PlanetXSector $sector8;
+    private PlanetXSector $sector9;
+    private PlanetXSector $sector10;
+    private PlanetXSector $sector11;
+
+    public function __construct()
+    {
+        $this->sector0 = new PlanetXSector();
+        $this->sector1 = new PlanetXSector();
+        $this->sector2 = new PlanetXSector();
+        $this->sector3 = new PlanetXSector();
+        $this->sector4 = new PlanetXSector();
+        $this->sector5 = new PlanetXSector();
+        $this->sector6 = new PlanetXSector();
+        $this->sector7 = new PlanetXSector();
+        $this->sector8 = new PlanetXSector();
+        $this->sector9 = new PlanetXSector();
+        $this->sector10 = new PlanetXSector();
+        $this->sector11 = new PlanetXSector();
     }
 
     public function getSector(int $index): PlanetXSector
@@ -81,7 +95,7 @@ class PlanetXBoard implements Wireable, Iterator
 
         foreach ($board as $index => $sector) {
             foreach (PlanetXIconEnum::cases() as $icon) {
-                $sector->setIcon($icon, in_array($icon->value, $data[$index]));
+                $sector->setIcon($icon, in_array($icon->value, $data[$index] ?? []));
             }
         }
 
@@ -113,15 +127,10 @@ class PlanetXBoard implements Wireable, Iterator
         $this->position = 0;
     }
 
-    public function getSectorIndexesWithoutIcon(): array
-    {
-        return array_keys(array_filter($this->toArray(), fn ($sector) => count($sector) === 0));
-    }
-
     public function getSingleSectorIndexesWithoutIcon(): array
     {
         return array_values(array_filter(
-            $this->getSectorIndexesWithoutIcon(),
+            $this->getSectorIndexesWithIcon(),
             fn ($index) => ($this->hasAnyIcon(($index + 1) % 12) && $this->hasAnyIcon(($index + 11) % 12))
         ));
     }
@@ -129,17 +138,6 @@ class PlanetXBoard implements Wireable, Iterator
     public function hasAnyIcon(int $index): bool
     {
         return count($this->getSector($index)->toArray()) !== 0;
-    }
-
-    public function getPlanetXSectorIndex(): ?int
-    {
-        foreach ($this as $index => $sector) {
-            if ($sector->hasIcon(PlanetXIconEnum::PLANET_X)) {
-                return $index;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -159,5 +157,22 @@ class PlanetXBoard implements Wireable, Iterator
             new NotNextToRule(PlanetXIconEnum::PLANET, PlanetXIconEnum::PLANET_X),
             new NextToRule(PlanetXIconEnum::GALAXY, PlanetXIconEnum::EMPTY_SPACE),
         ];
+    }
+
+    /**
+     * @param  PlanetXIconEnum|null|array<PlanetXIconEnum>  $icon
+     * @return array<int>
+     */
+    public function getSectorIndexesWithIcon(null|PlanetXIconEnum|array $icon = null): array
+    {
+        $icon = is_null($icon) ? [] : (is_array($icon) ? $icon : [$icon]);
+
+        if (count($icon) === 0) {
+            return array_keys(array_filter($this->toArray(), fn ($sector) => count($sector) === 0));
+        }
+
+        return array_keys(array_filter($this->toArray(), fn (PlanetXSector $sector) => $sector->hasIcon($icon)));
+
+//        return array_keys(array_filter($this->toArray(), fn (PlanetXSector $sector) => $sector->hasIcon($icon)));
     }
 }
