@@ -30,4 +30,17 @@ enum PlanetXIconEnum: string
             self::PLANET => self::PLANET,
         };
     }
+
+    public static function diff(array $icons, array $other = null): array
+    {
+        if ($other === null) {
+            $other = self::cases();
+        }
+
+        $iconValues = array_map(fn ($icon) => $icon->value, $icons);
+        $otherIconValues = array_map(fn ($icon) => $icon->value, $other);
+        $diff = array_diff($otherIconValues, $iconValues);
+
+        return array_map(fn ($icon) => self::from($icon), $diff);
+    }
 }

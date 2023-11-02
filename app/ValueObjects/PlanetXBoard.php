@@ -163,16 +163,17 @@ class PlanetXBoard implements Wireable, Iterator, Arrayable
      * @param  PlanetXIconEnum|null|array<PlanetXIconEnum>  $icon
      * @return array<int>
      */
-    public function getSectorIndexesWithIcon(null|PlanetXIconEnum|array $icon = null): array
+    public function getSectorIndexesWithIcon(PlanetXIconEnum|array $icon = []): array
     {
-        $icon = is_null($icon) ? [] : (is_array($icon) ? $icon : [$icon]);
+        $icons = is_array($icon) ? $icon : [$icon];
+        $sectors = [];
 
-        if (count($icon) === 0) {
-            return array_keys(array_filter($this->toArray(), fn ($sector) => count($sector) === 0));
+        foreach ($this as $index => $sector) {
+            if ($sector->hasIcon($icons)) {
+                $sectors[] = $index;
+            }
         }
 
-        return array_keys(array_filter($this->toArray(), fn (PlanetXSector $sector) => $sector->hasIcon($icon)));
-
-//        return array_keys(array_filter($this->toArray(), fn (PlanetXSector $sector) => $sector->hasIcon($icon)));
+        return $sectors;
     }
 }

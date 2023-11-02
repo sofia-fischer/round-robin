@@ -40,6 +40,11 @@ class PlanetXSector implements Arrayable
     public function hasIcon(PlanetXIconEnum|array $icons): bool
     {
         $icons = is_array($icons) ? $icons : [$icons];
+
+        if (count($icons) === 0) {
+            return $this->toArray() === [];
+        }
+
         foreach ($icons as $icon) {
             $hasIcon = match ($icon) {
                 PlanetXIconEnum::PLANET => $this->planet,
@@ -85,7 +90,7 @@ class PlanetXSector implements Arrayable
         };
     }
 
-    public function getIcon()
+    public function getIcon(): PlanetXIconEnum
     {
         return match (true) {
             $this->planet => PlanetXIconEnum::PLANET,

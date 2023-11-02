@@ -5,12 +5,6 @@ namespace App\Services;
 use App\Exceptions\PlanetXBoardGenerationException;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXBoard;
-use App\ValueObjects\PlanetXConferences;
-use App\ValueObjects\PlanetXRules\InABandOfNSectorsRule;
-use App\ValueObjects\PlanetXRules\NextToRule;
-use App\ValueObjects\PlanetXRules\NotInSectorRule;
-use App\ValueObjects\PlanetXRules\PlanetXRule;
-use http\Exception\RuntimeException;
 
 class PlanetXBoardGenerationService
 {
@@ -203,29 +197,4 @@ class PlanetXBoardGenerationService
 
         throw new PlanetXBoardGenerationException('Could not place cloud-empty, cloud-empty constellation', $board->toArray());
     }
-
-    /**
-     * @param  \App\ValueObjects\PlanetXBoard  $board
-     * @param  int  $count
-     * @return array<\App\ValueObjects\PlanetXRules\PlanetXRule>
-     */
-    public function generateRulesForBoard(PlanetXBoard $board, int $count): array
-    {
-        $tips = [];
-
-        while (count($tips) < $count) {
-            // get a random sector
-            $position = array_rand(range(0, 11));
-            $sector = $board->getSector($position);
-            // get the icons which are not in the sector
-            $icons = array_map(fn ($icon) => PlanetXIconEnum::from($icon), array_keys(array_filter($sector->toArray())));
-            // remove the planet x icon
-            $icons = array_diff($icons, [PlanetXIconEnum::PLANET_X]);
-            // add Not In Sector Rule
-            $tips[] = new NotInSectorRule($icons[array_rand($icons)], $position);
-        }
-
-        return $tips;
-    }
-
 }

@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Services\PlanetXBoardGenerationService;
+use App\Services\PlanetXConferenceGenerationService;
+use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXBoard;
 use PHPUnit\Framework\TestCase;
 
@@ -13,11 +15,43 @@ class PlanetXBoardGenerationTest extends TestCase
      */
     public function testGeneration()
     {
-        $service = new PlanetXBoardGenerationService();
-        $board = $service->generateBoard();
+        $boardService = new PlanetXBoardGenerationService();
+        $board = $boardService->generateBoard();
 
         foreach (PlanetXBoard::getStartingRules() as $rule) {
             $this->assertTrue($rule->isValid($board));
         }
+    }
+
+    /**
+     * command: vendor/bin/phpunit --filter 'Tests\\Unit\\PlanetXBoardGenerationTest::testStartRules'  --repeat 3000
+     */
+    public function testStartRules()
+    {
+        $boardService = new PlanetXBoardGenerationService();
+        $board = $boardService->generateBoard();
+        $conferenceService = new PlanetXConferenceGenerationService();
+        $startingRules = $conferenceService->generateRulesForBoard($board, 6);
+
+        foreach ($startingRules as $rule) {
+            $this->assertTrue($rule->isValid($board));
+        }
+    }
+
+    public function testGenerateConference()
+    {
+        $boardService = new PlanetXBoardGenerationService();
+        $board = $boardService->generateBoard();
+        $conferenceService = new PlanetXConferenceGenerationService();
+        $conferences = $conferenceService->generateRulesForConferences($board);
+
+        $this->assertTrue($conferences->alpha->isValid($board));
+        $this->assertTrue($conferences->beta->isValid($board));
+        $this->assertTrue($conferences->gamma->isValid($board));
+        $this->assertTrue($conferences->delta->isValid($board));
+        $this->assertTrue($conferences->epsilon->isValid($board));
+        $this->assertTrue($conferences->roh->isValid($board));
+        $this->assertTrue($conferences->xConference->isValid($board));
+        $this->assertTrue($conferences->xConference->icon === PlanetXIconEnum::PLANET_X);
     }
 }
