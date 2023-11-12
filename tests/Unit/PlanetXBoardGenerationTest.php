@@ -38,6 +38,9 @@ class PlanetXBoardGenerationTest extends TestCase
         }
     }
 
+    /**
+     * command: vendor/bin/phpunit --filter 'Tests\\Unit\\PlanetXBoardGenerationTest::testGenerateConference'  --repeat 3000
+     */
     public function testGenerateConference()
     {
         $boardService = new PlanetXBoardGenerationService();

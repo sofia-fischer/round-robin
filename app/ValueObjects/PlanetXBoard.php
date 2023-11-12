@@ -44,6 +44,24 @@ class PlanetXBoard implements Wireable, Iterator, Arrayable
         $this->sector11 = new PlanetXSector();
     }
 
+    public static function playerBoard(): PlanetXBoard
+    {
+        return PlanetXBoard::fromArray([
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+            [PlanetXIconEnum::values()],
+        ]);
+    }
+
     public function getSector(int $index): PlanetXSector
     {
         return match ($index) {

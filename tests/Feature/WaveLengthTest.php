@@ -183,7 +183,7 @@ class WaveLengthTest extends TestCase
             ->where('player_id', $notActivePlayer->id)
             ->where('user_id', $notActivePlayer->user_id)
             ->first();
-        $this->assertEquals('23', $move->payloadAttribute('guess'));
+        $this->assertEquals('23', $move->getPayloadWithKey('guess'));
         $this->assertNull($move->score);
 
         $this->assertNull($game->currentRound->completed_at);
@@ -238,7 +238,7 @@ class WaveLengthTest extends TestCase
             ->where('user_id', $secondNotActivePlayer->user_id)
             ->first();
 
-        $this->assertEquals(23, $secondNotActivePlayerMove->payloadAttribute('guess'));
+        $this->assertEquals(23, $secondNotActivePlayerMove->getPayloadWithKey('guess'));
         $this->assertNotNull($secondNotActivePlayerMove->score);
 
         $this->assertNotNull($game->currentRound->completed_at);
@@ -274,7 +274,7 @@ class WaveLengthTest extends TestCase
 
         $move->refresh();
 
-        $this->assertEquals(87, $move->payloadAttribute('guess'));
+        $this->assertEquals(87, $move->getPayloadWithKey('guess'));
         $this->assertNull($move->score);
 
         $this->assertNull($game->currentRound->completed_at);

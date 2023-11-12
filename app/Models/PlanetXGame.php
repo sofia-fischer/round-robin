@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use App\Queue\Events\GameRoundAction;
+use App\Services\PlanetXConferenceGenerationService;
 use App\ValueObjects\PlanetXBoard;
+use App\ValueObjects\PlanetXConferences;
+use App\ValueObjects\PlanetXRules\PlanetXRule;
 use Illuminate\Database\Eloquent\Builder;
 
 class PlanetXGame extends Game
@@ -14,31 +16,70 @@ class PlanetXGame extends Game
     static $title = 'Planet X';
 
     static $description = 'The sky is separated in 12 Sections.
-        In each Section is exactly one object out of Planet X, Gas Cloud, Dwarf Planet, Comet, Asteroid or Empty Space.
+        In each Section is exactly one object out of Planet X, Galaxy, Dwarf Planet, Moon, Asteroid or Empty Space.
         The Players take turns and gather Information or publishing Theories on the different Sections.
         The Game ends when one Person locates Planet X and the surrounding Sections correctly.
         In the end Players are rewarded by correctly published Sections. ';
-
-    public PlanetXBoard $board;
 
     public static function query(): Builder
     {
         return parent::query()->where('logic_identifier', self::$logic_identifier);
     }
 
-    public function startRound()
+    public function getCurrentBoard(): PlanetXBoard
     {
-        event(new GameRoundAction($this));
+        return PlanetXBoard::fromArray($this->currentPayloadAttribute('board'));
+    }
+
+    public function getCurrentConference(): PlanetXConferences
+    {
+        return PlanetXConferences::fromArray($this->currentPayloadAttribute('conference'));
+    }
+
+    public function getCurrentNightSkyIndex(): int
+    {
+        return 0;
     }
 
     public function getAuthenticatedPlayerBoard(): PlanetXBoard
     {
-        return PlanetXBoard::fromArray($this->authenticatedPlayer->payload['board'] ?? []);
+        $move = $this->authenticatedCurrentMove;
+
+        if ($move === null) {
+            $move = $this->authenticatedPlayer->moves()->create([
+                'round_id' => $this->currentRound->id,
+                'user_id' => $this->authenticatedPlayer->user_id,
+                'payload' => [
+                    'board' => PlanetXBoard::playerBoard()->toArray(),
+                ],
+            ]);
+        }
+
+        return PlanetXBoard::fromArray($move->getPayloadWithKey('board'));
     }
 
-    public function storeAuthenticatedPlayerBoard(PlanetXBoard $board): void
+    public function getAuthenticatedPlayerRules(): array
     {
-        $this->authenticatedPlayer->payload['board'] = $board->toArray();
+        $storedRules = $this->authenticatedPlayer->payload['rules'] ?? null;
+
+        if ($storedRules) {
+            $hydratedRules = [];
+            foreach ($storedRules as $key => $rule) {
+                $hydratedRules[$key] = PlanetXRule::fromArray($rule);
+            }
+
+            return $hydratedRules;
+        }
+
+        $service = new PlanetXConferenceGenerationService();
+        $rules = $service->generateRulesForBoard($this->getCurrentBoard(), 6);
+        $payload = $this->authenticatedPlayer->payload;
+        foreach ($rules as $key => $rule) {
+            $payload['rules'][$key] = $rule->toArray();
+        }
+        $this->authenticatedPlayer->payload = $payload;
         $this->authenticatedPlayer->save();
+
+        return $rules;
     }
 }

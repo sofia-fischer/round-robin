@@ -14,7 +14,6 @@ use App\Models\WerewolfGame;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameController
 {

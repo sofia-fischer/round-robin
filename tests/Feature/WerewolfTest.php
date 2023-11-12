@@ -160,19 +160,19 @@ class WerewolfTest extends TestCase
             ->where('user_id', $player->user_id)
             ->first();
 
-        $this->assertSame($extraCard, $move->payloadAttribute('see'));
+        $this->assertSame($extraCard, $move->getPayloadWithKey('see'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
             ->assertOk();
 
-        $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
     }
 
     /** @test */
@@ -227,25 +227,25 @@ class WerewolfTest extends TestCase
             ->where('user_id', $player->user_id)
             ->first();
 
-        $this->assertSame($extraCard, $move->payloadAttribute('see'));
+        $this->assertSame($extraCard, $move->getPayloadWithKey('see'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'see' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('see'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('see'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
             ->assertOk();
 
-        $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
     }
 
     /** @test */
@@ -304,19 +304,19 @@ class WerewolfTest extends TestCase
             ->where('user_id', $player->user_id)
             ->first();
 
-        $this->assertSame($targetPlayer, $move->payloadAttribute('steal'));
+        $this->assertSame($targetPlayer, $move->getPayloadWithKey('steal'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
             ->assertOk();
 
-        $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
     }
 
     /** @test */
@@ -367,25 +367,25 @@ class WerewolfTest extends TestCase
             ->where('user_id', $player->user_id)
             ->first();
 
-        $this->assertSame($targetPlayer, $move->payloadAttribute('switch1'));
+        $this->assertSame($targetPlayer, $move->getPayloadWithKey('switch1'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'switch2' => $extraCard]))
             ->assertOk();
 
-        $this->assertSame($extraCard, $move->fresh()->payloadAttribute('switch2'));
+        $this->assertSame($extraCard, $move->fresh()->getPayloadWithKey('switch2'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
             ->assertOk();
 
-        $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
     }
 
     /** @test */
@@ -444,19 +444,19 @@ class WerewolfTest extends TestCase
             ->where('user_id', $player->user_id)
             ->first();
 
-        $this->assertSame($extraCard, $move->payloadAttribute('drunk'));
+        $this->assertSame($extraCard, $move->getPayloadWithKey('drunk'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => $targetPlayer]))
             ->assertOk();
 
-        $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
         $this->actingAs($player->user)
             ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
             ->assertOk();
 
-        $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+        $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
     }
 
     /** @test */
@@ -521,13 +521,13 @@ class WerewolfTest extends TestCase
                     ->where('user_id', $player->user_id)
                     ->first();
 
-                $this->assertSame($targetPlayer, $move->fresh()->payloadAttribute('vote'));
+                $this->assertSame($targetPlayer, $move->fresh()->getPayloadWithKey('vote'));
 
                 $this->actingAs($player->user)
                     ->post(route('werewolf.move', ['game' => $game->uuid, 'vote' => 'nobody']))
                     ->assertOk();
 
-                $this->assertSame('nobody', $move->fresh()->payloadAttribute('vote'));
+                $this->assertSame('nobody', $move->fresh()->getPayloadWithKey('vote'));
             });
     }
 
@@ -595,23 +595,23 @@ class WerewolfTest extends TestCase
         $game->refresh();
 
         // werewolf sees left card
-        $this->assertSame(WerewolfGame::VILLAGER, $werewolf->moves()->latest()->first()->payloadAttribute('sawRole'));
+        $this->assertSame(WerewolfGame::VILLAGER, $werewolf->moves()->latest()->first()->getPayloadWithKey('sawRole'));
 
         // seer sees werewolf
-        $this->assertSame(WerewolfGame::WEREWOLF, $seer->moves()->latest()->first()->payloadAttribute('sawRole'));
+        $this->assertSame(WerewolfGame::WEREWOLF, $seer->moves()->latest()->first()->getPayloadWithKey('sawRole'));
 
         // robber robs werewolf
-        $this->assertSame(WerewolfGame::WEREWOLF, $robber->moves()->latest()->first()->payloadAttribute('becameRole'));
+        $this->assertSame(WerewolfGame::WEREWOLF, $robber->moves()->latest()->first()->getPayloadWithKey('becameRole'));
 
         // troublemaker switches robber and insomniac
-        $this->assertSame(WerewolfGame::WEREWOLF, $troublemaker->moves()->latest()->first()->payloadAttribute('switched1Role'));
-        $this->assertSame(WerewolfGame::INSOMNIAC, $troublemaker->moves()->latest()->first()->payloadAttribute('switched2Role'));
+        $this->assertSame(WerewolfGame::WEREWOLF, $troublemaker->moves()->latest()->first()->getPayloadWithKey('switched1Role'));
+        $this->assertSame(WerewolfGame::INSOMNIAC, $troublemaker->moves()->latest()->first()->getPayloadWithKey('switched2Role'));
 
         // drunk takes left card
-        $this->assertSame(__('werewolf.player.anonymous_drunk_role'), $drunk->moves()->latest()->first()->payloadAttribute('becameRole'));
+        $this->assertSame(__('werewolf.player.anonymous_drunk_role'), $drunk->moves()->latest()->first()->getPayloadWithKey('becameRole'));
 
         // insomniac see themselves
-        $this->assertSame(WerewolfGame::WEREWOLF, $insomniac->moves()->latest()->first()->payloadAttribute('sawRole'));
+        $this->assertSame(WerewolfGame::WEREWOLF, $insomniac->moves()->latest()->first()->getPayloadWithKey('sawRole'));
 
         // check correct distribution
         $this->assertSame(WerewolfGame::ROBBER, $game->newPlayerRoles->get($werewolf->id));

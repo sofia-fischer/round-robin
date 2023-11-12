@@ -29,21 +29,20 @@ class JustOneController
             'player_id' => $game->authenticatedPlayer->id,
         ], [
             'user_id' => Auth::id(),
-            'uuid'    => Str::uuid(),
         ]);
 
         $game->authenticatedPlayerIsActive
-            ? $move->addPayloadAttribute('guess', $request->guess())
-            : $move->addPayloadAttribute('clue', $request->clue());
+            ? $move->setPayloadWithKey('guess', $request->guess())
+            : $move->setPayloadWithKey('clue', $request->clue());
 
         // Calculate clues
         if ($game->isWaitingForClue && $game->currentRound->moves->count() === ($game->players->count() - 1)) {
-            $words = $game->currentRound->moves->map(fn (Move $move) => Str::upper($move->payloadAttribute('clue')));
+            $words = $game->currentRound->moves->map(fn (Move $move) => Str::upper($move->getPayloadWithKey('clue')));
 
             // calculate visibility of words
             $game->currentRound->moves->map(function (Move $move) use ($words) {
-                $moveWord = Str::upper($move->payloadAttribute('clue'));
-                $move->addPayloadAttribute('visible', $words->filter(fn ($word) => $word === $moveWord
+                $moveWord = Str::upper($move->getPayloadWithKey('clue'));
+                $move->setPayloadWithKey('visible', $words->filter(fn ($word) => $word === $moveWord
                         || Str::contains($word, $moveWord)
                         || Str::contains($moveWord, $word))->count() === 1);
             });
@@ -83,7 +82,6 @@ class JustOneController
 
         /** @var Player $player */
         $player = $game->players()->create([
-            'uuid'    => Str::uuid(),
             'user_id' => Auth::id(),
         ]);
         event(new PlayerCreated($player));
@@ -103,7 +101,6 @@ class JustOneController
         }
 
         Round::create([
-            'uuid'             => Str::uuid(),
             'game_id'          => $game->id,
             'active_player_id' => $game->nextPlayer->id,
             'payload'          => [

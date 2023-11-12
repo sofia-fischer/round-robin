@@ -68,7 +68,6 @@ class WerewolfGameFactory extends Factory
                 $playerRoles = $game->players->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => $roles[$index]]);
 
                 Round::create([
-                    'uuid'    => Str::uuid(),
                     'game_id' => $game->id,
                     'payload' => [
                         'state'       => 'night',
@@ -108,7 +107,6 @@ class WerewolfGameFactory extends Factory
                 $playerRoles = $game->players->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => $roles[$index]]);
 
                 Round::create([
-                    'uuid'    => Str::uuid(),
                     'game_id' => $game->id,
                     'payload' => [
                         'state'       => 'day',

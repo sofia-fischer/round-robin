@@ -159,7 +159,7 @@ class JustOneTest extends TestCase
         $move = $notActivePlayer->moves()->latest()->first();
         $this->assertNotNull($notActivePlayer);
 
-        $this->assertEquals('test', $move->payloadAttribute('clue'));
+        $this->assertEquals('test', $move->getPayloadWithKey('clue'));
         $this->assertNull($move->score);
         $this->assertNull($game->currentRound->completed_at);
 
@@ -208,8 +208,8 @@ class JustOneTest extends TestCase
         $thirdPlayerMove = $thirdPlayer->moves()->latest()->first();
         $this->assertNotNull($thirdPlayerMove);
 
-        $this->assertEquals('visible', $thirdPlayerMove->payloadAttribute('clue'));
-        $this->assertEquals(true, $thirdPlayerMove->payloadAttribute('visible'));
+        $this->assertEquals('visible', $thirdPlayerMove->getPayloadWithKey('clue'));
+        $this->assertEquals(true, $thirdPlayerMove->getPayloadWithKey('visible'));
         $this->assertNull($thirdPlayerMove->score);
 
         Event::assertDispatched(GameRoundAction::class);
@@ -299,7 +299,7 @@ class JustOneTest extends TestCase
 
         $move->refresh();
         $this->assertNull($move->score);
-        $this->assertEquals('something-else', $move->payloadAttribute('clue'));
+        $this->assertEquals('something-else', $move->getPayloadWithKey('clue'));
         $this->assertNull($game->currentRound->completed_at);
 
         $this->assertTrue($game->isWaitingForClue);

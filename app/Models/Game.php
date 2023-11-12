@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * @property \Illuminate\Support\Collection rounds
  * @see \App\Models\Game::rounds()
- * @property Round currentRound
+ * @property \App\Models\Round currentRound
  * @see \App\Models\Game::currentRound()
  * @property \Illuminate\Support\Collection players
  * @see \App\Models\Game::players()
@@ -35,6 +35,8 @@ use Illuminate\Support\Facades\Auth;
  * @see \App\Models\Game::hostPlayer()
  * @property \App\Models\User hostUser
  * @see \App\Models\Game::hostUser()
+ * @property \App\Models\Move authenticatedCurrentMove
+ * @see \App\Models\Game::authenticatedCurrentMove()
  *
  * Attributes
  *
@@ -66,20 +68,23 @@ class Game extends BaseModel
     static $title = 'Undefined Game';
     static $description = 'Undefined Description';
 
+    // A class that extends this game will cause Eloquent to generate a different table name
+    protected $table = 'games';
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
-        'id'           => 'int',
-        'uuid'         => 'string',
+        'id' => 'int',
+        'uuid' => 'string',
         'host_user_id' => 'int',
-        'started_at'   => 'datetime',
-        'ended_at'     => 'datetime',
-        'created_at'   => 'datetime',
-        'updated_at'   => 'datetime',
-        'deleted_at'   => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /*
@@ -96,6 +101,13 @@ class Game extends BaseModel
     public function moves()
     {
         return $this->hasManyThrough(Move::class, Round::class);
+    }
+
+    public function authenticatedCurrentMove()
+    {
+        return $this->hasOneThrough(Move::class, Round::class, 'game_id', 'round_id')
+            ->where('rounds.completed_at', null)
+            ->where('moves.user_id', Auth::id());
     }
 
     public function currentRound()
@@ -186,7 +198,7 @@ class Game extends BaseModel
             return $default;
         }
 
-        return $this->authenticatedPlayerMove->payloadAttribute($key, $default);
+        return $this->authenticatedPlayerMove->getPayloadWithKey($key, $default);
     }
 
     /*

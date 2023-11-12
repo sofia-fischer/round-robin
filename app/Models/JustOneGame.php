@@ -48,7 +48,7 @@ class JustOneGame extends Game
         /** @var Move $activePlayerMove */
         $activePlayerMove = $this->currentRound->moves->firstWhere('player_id', $this->currentRound->active_player_id);
 
-        return $activePlayerMove?->payloadAttribute('guess');
+        return $activePlayerMove?->getPayloadWithKey('guess');
     }
 
     protected function getIsCompletedAttribute(): bool

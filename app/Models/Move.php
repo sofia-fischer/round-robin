@@ -59,13 +59,12 @@ class Move extends BaseModel
      * @var array
      */
     protected $casts = [
-        'id'         => 'int',
-        'uuid'       => 'string',
-        'round_id'   => 'int',
-        'player_id'  => 'int',
-        'user_id'    => 'int',
-        'score'      => 'int',
-        'payload'    => 'array',
+        'id' => 'int',
+        'round_id' => 'int',
+        'player_id' => 'int',
+        'user_id' => 'int',
+        'score' => 'int',
+        'payload' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -93,14 +92,18 @@ class Move extends BaseModel
     |--------------------------------------------------------------------------
     */
 
-    public function payloadAttribute(string $key, $default = null)
+    public function getPayloadWithKey(string $key, $default = null): mixed
     {
         return $this->payload[$key] ?? $default;
     }
 
-    public function addPayloadAttribute(string $key, mixed $value): array
+    public function setPayloadWithKey(string $key, mixed $value): array
     {
-        $payload       = $this->payload ?? [];
+        if (! (is_scalar($value) || is_null($value) || is_array($value))) {
+            throw new \InvalidArgumentException('Value must be scalar, null, or array');
+        }
+
+        $payload = $this->payload ?? [];
         $payload[$key] = $value;
         $this->payload = $payload;
         $this->save();
@@ -108,7 +111,7 @@ class Move extends BaseModel
         return $this->payload;
     }
 
-    public function mergePayloadAttribute(array $data): array
+    public function mergePayload(array $data): array
     {
         $this->payload = array_merge($this->payload ?? [], $data);
         $this->save();

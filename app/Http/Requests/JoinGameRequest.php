@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Game;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class JoinGameRequest extends FormRequest
 {

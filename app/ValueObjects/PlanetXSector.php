@@ -5,8 +5,9 @@ namespace App\ValueObjects;
 use App\Exceptions\PlanetXBoardGenerationException;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use Illuminate\Contracts\Support\Arrayable;
+use Livewire\Wireable;
 
-class PlanetXSector implements Arrayable
+class PlanetXSector implements Arrayable, Wireable
 {
     public function __construct(
         public bool $moon = false,
@@ -59,6 +60,7 @@ class PlanetXSector implements Arrayable
                 return true;
             }
         }
+
         return false;
     }
 
@@ -100,5 +102,25 @@ class PlanetXSector implements Arrayable
             $this->moon => PlanetXIconEnum::MOON,
             $this->emptySpace => PlanetXIconEnum::EMPTY_SPACE,
         };
+    }
+
+    public function toLivewire()
+    {
+        return $this->toArray();
+    }
+
+    public static function fromLivewire($value)
+    {
+        return self::fromArray($value);
+    }
+
+    public static function fromArray(array $data)
+    {
+        $sector = new self();
+        foreach (PlanetXIconEnum::cases() as $icon) {
+            $sector->setIcon($icon, in_array($icon->value, $data ?? []));
+        }
+
+        return $sector;
     }
 }

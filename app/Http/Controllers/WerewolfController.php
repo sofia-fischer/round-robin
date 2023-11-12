@@ -25,7 +25,7 @@ class WerewolfController
             'uuid' => Str::uuid(),
         ]);
 
-        $move->addPayloadAttribute($request->payloadKey(), $request->payloadValue());
+        $move->setPayloadWithKey($request->payloadKey(), $request->payloadValue());
 
         return view('GamePage', ['game' => $game]);
     }
@@ -38,7 +38,6 @@ class WerewolfController
 
         /** @var \App\Models\Player $player */
         $player = $game->players()->create([
-            'uuid'    => Str::uuid(),
             'user_id' => Auth::id(),
         ]);
         $game->refresh();

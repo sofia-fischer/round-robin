@@ -33,7 +33,7 @@ class WavelengthController
 
         $game->authenticatedPlayerIsActive
             ? $game->currentRound->addPayloadAttribute('clue', $request->clue())
-            : $move->addPayloadAttribute('guess', $request->guess());
+            : $move->setPayloadWithKey('guess', $request->guess());
 
         // If current Round does not end
         if ($game->currentRound->moves()->count() < $game->players()->count()) {
@@ -50,7 +50,7 @@ class WavelengthController
             ->where('player_id', '!=', $game->currentRound->active_player_id)
             ->get()
             ->map(function (Move $move) use ($target) {
-                $diffFromTarget = abs($target - $move->payloadAttribute('guess'));
+                $diffFromTarget = abs($target - $move->getPayloadWithKey('guess'));
 
                 $move->score = match (true) {
                     $diffFromTarget <= 5 => 10,
@@ -86,7 +86,6 @@ class WavelengthController
 
         /** @var Player $player */
         $player = $game->players()->create([
-            'uuid'    => Str::uuid(),
             'user_id' => Auth::id(),
         ]);
         event(new PlayerCreated($player));
@@ -107,7 +106,6 @@ class WavelengthController
 
         $antonym = collect(__('antonyms'))->random();
         Round::create([
-            'uuid'             => Str::uuid(),
             'game_id'          => $game->id,
             'active_player_id' => $game->nextPlayer->id,
             'payload'          => [

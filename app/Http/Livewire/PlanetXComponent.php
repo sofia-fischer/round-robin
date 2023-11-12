@@ -4,24 +4,21 @@ namespace App\Http\Livewire;
 
 use App\Models\PlanetXGame;
 use App\Queue\Events\GameRoundAction;
-use App\Services\PlanetXBoardGenerationService;
-use App\ValueObjects\Enums\PlanetXIconEnum;
-use App\ValueObjects\PlanetXBoard;
+use App\ValueObjects\PlanetXBoardForm;
 use Livewire\Component;
 use Livewire\Livewire;
 
-Livewire::component('just-one-component', PlanetXComponent::class);
+Livewire::component('planet-x-component', PlanetXComponent::class);
 
 class PlanetXComponent extends Component
 {
     public PlanetXGame $game;
 
-    public PlanetXBoard $board;
+    public PlanetXBoardForm $form;
 
-    public function mount()
+    public function mount(PlanetXGame $game)
     {
-        $service = new PlanetXBoardGenerationService();
-        $this->board = $service->generateBoard();
+        $this->form->setBoard($game->getAuthenticatedPlayerBoard());
     }
 
     public function render()
@@ -29,14 +26,11 @@ class PlanetXComponent extends Component
         return view('livewire.PlanetXComponent');
     }
 
-    public function hint(int $section, string $icon)
+    public function updated($name, $value)
     {
-        $this->board->hint($section, PlanetXIconEnum::from($icon));
+        $this->game->authenticatedCurrentMove->setPayloadWithKey('board', ($this->form->getBoard()->toArray()));
     }
 
-    /**
-     * @return array
-     */
     public function getListeners(): array
     {
         return [

@@ -1,6 +1,7 @@
 <div class="w-full">
     <?php
     /* @var App\Models\WerewolfGame $game */
+
     /* @var App\Models\Player $player */
     /* @var App\Models\Move $move */
     ?>
@@ -313,29 +314,29 @@
                 <br class="mb-4">
 
                 @foreach($game->currentRound->moves as $move)
-                    @if($move->payloadAttribute('sawName'))
+                    @if($move->getPayloadWithKey('sawName'))
                         <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
                         saw the role of
-                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('sawColor') }}">
-                        {{ $move->payloadAttribute('sawName') }}
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->getPayloadWithKey('sawColor') }}">
+                        {{ $move->getPayloadWithKey('sawName') }}
                     </span>
-                        who was {{ $move->payloadAttribute('sawRole') }}
-                    @elseif($move->payloadAttribute('saw'))
+                        who was {{ $move->getPayloadWithKey('sawRole') }}
+                    @elseif($move->getPayloadWithKey('saw'))
                         <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
                         took the role of
-                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('becameColor') }}">
-                        {{ $move->payloadAttribute('becameName') }}
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->getPayloadWithKey('becameColor') }}">
+                        {{ $move->getPayloadWithKey('becameName') }}
                     </span>
-                        who was {{ $move->payloadAttribute('becameRole') }}
-                    @elseif($move->payloadAttribute('switched1Name'))
+                        who was {{ $move->getPayloadWithKey('becameRole') }}
+                    @elseif($move->getPayloadWithKey('switched1Name'))
                         <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->player->activeColor }}">{{ $move->player->name }}</span>
                         switched the roles of
-                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->payloadAttribute('switched1Color') }}">
-                        {{ $move->payloadAttribute('switched1Name') }}
+                        <span class="text-white rounded-full px-2 m-1 {{ 'bg-' . $move->getPayloadWithKey('switched1Color') }}">
+                        {{ $move->getPayloadWithKey('switched1Name') }}
                     </span>
                         and
-                        <span class="text-white rounded-full px-2 m-1  {{ 'bg-' . $move->payloadAttribute('switched2Color') }}">
-                        {{ $move->payloadAttribute('switched2Name') }}
+                        <span class="text-white rounded-full px-2 m-1  {{ 'bg-' . $move->getPayloadWithKey('switched2Color') }}">
+                        {{ $move->getPayloadWithKey('switched2Name') }}
                     </span>
                         .
                     @endif

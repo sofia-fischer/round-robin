@@ -21,19 +21,33 @@ class PlanetXConferenceGenerationService
      */
     public function generateRulesForBoard(PlanetXBoard $board, int $count): array
     {
-        $tips = [];
+        $playerRules = [];
 
-        while (count($tips) < $count) {
+        while (count($playerRules) < $count) {
             // get a random sector
             $position = array_rand(range(0, 11));
             $sector = $board->getSector($position);
             // get the icons which are not in the sector
             $icons = PlanetXIconEnum::diff([PlanetXIconEnum::PLANET_X, $sector->getIcon()]);
-            // add Not In Sector Rule
-            $tips[] = new NotInSectorRule($icons[array_rand($icons)], $position);
+
+            $newRule = new NotInSectorRule($icons[array_rand($icons)], $position);
+            // check that rule is not already in the list
+            foreach ($playerRules as $playerRule) {
+                if ($playerRule->equals($newRule)) {
+                    continue 2;
+                }
+            }
+
+            foreach (PlanetXBoard::getStartingRules() as $startingRule) {
+                if ($startingRule->equals($newRule)) {
+                    continue 2;
+                }
+            }
+
+            $playerRules[] = $newRule;
         }
 
-        return $tips;
+        return $playerRules;
     }
 
     public function generateRulesForConferences(PlanetXBoard $board): PlanetXConferences

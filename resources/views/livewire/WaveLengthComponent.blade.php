@@ -1,6 +1,7 @@
 <div class="w-full">
     <?php
     /* @var App\Models\WaveLengthGame $game */
+
     /* @var App\Models\Move $move */
     ?>
 
@@ -40,7 +41,7 @@
                     <div class="pt-7">
                         @foreach($moves as $move)
                             <div class="w-6 h-0  relative overflow-visible"
-                                style="margin-left: {{ $move->payloadAttribute('guess') }}%">
+                                style="margin-left: {{ $move->getPayloadWithKey('guess') }}%">
                                 <div class="bg-{{ $move->player->activeColor ?? 'pink-500' }}
                                     w-4 hover:w-16 h-4 absolute bottom-2 right-2
                                     rounded-b-lg rounded-r-lg hover-trigger">

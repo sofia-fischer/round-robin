@@ -69,7 +69,7 @@
             <div class="flex flex-wrap justify-evenly m-4 text-center text-white">
                 @foreach($game->currentRound->moves()->where('player_id', '!=', $game->currentRound->active_player_id)->get() as $move)
                     <div class="rounded-full text-center px-4 m-2 {{ 'bg-' . $move->player->activeColor }}">
-                        {{ ($game->isCompleted || $move->payloadAttribute('visible')) ? Str::upper($move->payloadAttribute('clue')) : '???' }}
+                        {{ ($game->isCompleted || $move->getPayloadWithKey('visible')) ? Str::upper($move->getPayloadWithKey('clue')) : '???' }}
                         <div class="text-xs">{{ $move->player->name }}</div>
                     </div>
                 @endforeach

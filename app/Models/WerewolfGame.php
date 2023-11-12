@@ -8,7 +8,6 @@ use App\Queue\Events\GameEnded;
 use App\Queue\Events\GameRoundAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 /**
  * Class Game
@@ -130,7 +129,7 @@ class WerewolfGame extends Game
 
     private function lookAtCurrentMove(Player $player, string|int $key): ?array
     {
-        $identifier = $this->currentMoveFromPlayer($player)->payloadAttribute($key);
+        $identifier = $this->currentMoveFromPlayer($player)->getPayloadWithKey($key);
 
         if (! $identifier) {
             return null;
@@ -207,7 +206,7 @@ class WerewolfGame extends Game
     {
         return $this->players
             ->firstWhere('id', $this->currentMoveFromPlayer($this->authenticatedPlayer)
-                ?->payloadAttribute('vote'));
+                ?->getPayloadWithKey('vote'));
     }
 
     public function startRound()
@@ -239,7 +238,6 @@ class WerewolfGame extends Game
         $extraRoles = $roles->slice(-3, 3)->values();
 
         Round::create([
-            'uuid' => Str::uuid(),
             'game_id' => $this->id,
             'payload' => [
                 'state' => 'night',
@@ -262,7 +260,7 @@ class WerewolfGame extends Game
         $this->playerWithRole(WerewolfGame::WEREWOLF)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(fn (Player $player) => $this->currentMoveFromPlayer($player)
-                ->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see')));
+                ->mergePayload($this->lookAtCurrentMove($player, 'see')));
 
         //    Minion
         //    Masons
@@ -270,14 +268,14 @@ class WerewolfGame extends Game
         $this->playerWithRole(WerewolfGame::SEER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(fn (Player $player) => $this->currentMoveFromPlayer($player)
-                ->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see')));
+                ->mergePayload($this->lookAtCurrentMove($player, 'see')));
 
         //    Robber
         $this->playerWithRole(WerewolfGame::ROBBER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(function (Player $player) {
-                $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->payloadAttribute('steal'));
-                $this->currentMoveFromPlayer($player)->mergePayloadAttribute([
+                $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->getPayloadWithKey('steal'));
+                $this->currentMoveFromPlayer($player)->mergePayload([
                     'becameName' => $result['switched2Name'],
                     'becameColor' => $result['switched2Color'],
                     'becameRole' => $result['switched2Role'],
@@ -288,17 +286,17 @@ class WerewolfGame extends Game
         $this->playerWithRole(WerewolfGame::TROUBLEMAKER)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->map(fn (Player $player) => $this->currentMoveFromPlayer($player)
-                ->mergePayloadAttribute($this->switchRoles(
-                    $this->currentMoveFromPlayer($player)->payloadAttribute('switch1') ?? $player->id,
-                    $this->currentMoveFromPlayer($player)->payloadAttribute('switch2') ?? $player->id
+                ->mergePayload($this->switchRoles(
+                    $this->currentMoveFromPlayer($player)->getPayloadWithKey('switch1') ?? $player->id,
+                    $this->currentMoveFromPlayer($player)->getPayloadWithKey('switch2') ?? $player->id
                 )));
 
         //    Drunk
         $this->playerWithRole(WerewolfGame::DRUNK)
             ->filter(fn (Player $player) => $this->currentMoveFromPlayer($player))
             ->each(function (Player $player) {
-                $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->payloadAttribute('drunk'));
-                $this->currentMoveFromPlayer($player)->mergePayloadAttribute([
+                $result = $this->switchRoles($player->id, $this->currentMoveFromPlayer($player)->getPayloadWithKey('drunk'));
+                $this->currentMoveFromPlayer($player)->mergePayload([
                     'becameName' => $result['switched2Name'],
                     'becameRole' => __('werewolf.player.anonymous_drunk_role'),
                 ]);
@@ -312,10 +310,9 @@ class WerewolfGame extends Game
                     'round_id' => $this->currentRound->id,
                     'user_id' => $player->user_id,
                     'player_id' => $player->id,
-                    'uuid' => Str::uuid(),
                 ]);
 
-                $this->currentMoveFromPlayer($player)->mergePayloadAttribute($this->lookAtCurrentMove($player, 'see'));
+                $this->currentMoveFromPlayer($player)->mergePayload($this->lookAtCurrentMove($player, 'see'));
             });
 
         $this->addCurrentPayloadAttribute('state', 'day');
@@ -328,7 +325,7 @@ class WerewolfGame extends Game
     {
         $killedPlayerId = $this->players
             ->mapWithKeys(fn (Player $player) => [
-                $player->id => $this->currentMoveFromPlayer($player)?->payloadAttribute('vote'),
+                $player->id => $this->currentMoveFromPlayer($player)?->getPayloadWithKey('vote'),
             ])
             ->countBy()
             ->sortDesc()
