@@ -10,7 +10,7 @@
         <div class="w-full">
             <div class="relative z-0">
                 <div style="height: 30px; overflow: hidden;">
-                    <svg viewBox="0 0 500 150" preserveAspectRatio="none" class="h-full w-full absolute z-0">
+                    <svg viewBox="0 0 500 150" preserveAspectRatio="none" class="h-full w-full absolute" style="z-index: -1;">
                         <path d="M0.00,150.48 C252.25,-3.45 252.25,-3.45 500.00,150.48 L500.00,150.48 L0.00,150.48 Z"
                             style="stroke: none; fill: #ffffff;"></path>
                     </svg>

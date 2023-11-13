@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\PlanetXConferenceRequest;
 use App\Http\Requests\WerewolfMoveCreateRequest;
 use App\Models\Move;
 use App\Models\PlanetXGame;
@@ -53,6 +54,25 @@ class PlanetXController
         return view('GamePage', ['game' => $game]);
     }
 
+    public function conference(PlanetXGame $game, PlanetXConferenceRequest $request)
+    {
+        $playerConference = $game->getAuthenticatedPlayerConference();
+        $gameConference = $game->getCurrentConference();
+
+        match ($request->get('conference')) {
+            'A' => $playerConference->alpha = $gameConference->alpha,
+            'B' => $playerConference->beta = $gameConference->beta,
+            'C' => $playerConference->gamma = $gameConference->gamma,
+            'D' => $playerConference->delta = $gameConference->delta,
+            'E' => $playerConference->epsilon = $gameConference->epsilon,
+            'F' => $playerConference->roh = $gameConference->roh,
+        };
+
+        $game->setAuthenticatedPlayerConference($playerConference);
+
+        return redirect()->route('planet_x.show', ['game' => $game]);
+    }
+
     public function round(
         PlanetXGame                        $game,
         PlanetXBoardGenerationService      $boardGenerationService,
@@ -62,14 +82,13 @@ class PlanetXController
 
         if (! $game->started_at) {
             $game->started_at = now();
-            $game->save();
         }
 
         if ($game->currentRound && ! $game->currentRound->completed_at) {
             $game->currentRound->completed_at = now();
-            $game->currentRound->save();
         }
 
+        $game->save();
         if (! $game->currentRound) {
             $board = $boardGenerationService->generateBoard();
             $conference = $conferenceGenerationService->generateRulesForConferences($board);

@@ -44,6 +44,15 @@ class WithinNSectorsRule extends PlanetXRule
         return true;
     }
 
+    public function equals(PlanetXRule $rule): bool
+    {
+        if (! $rule instanceof self) {
+            return false;
+        }
+
+        return $this->icon === $rule->icon && $this->otherIcon === $rule->otherIcon;
+    }
+
     public function toArray(): array
     {
         return [

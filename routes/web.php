@@ -58,6 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Planet X
     Route::get('/planetx/{game}', [PlanetXController::class, 'show'])->name('planet_x.show');
+    Route::post('/planetx/{game}/conference', [PlanetXController::class, 'conference'])->name('planet_x.conference');
 
     // Werewolf
     Route::get('/werewolf/{game}', [WerewolfController::class, 'show'])->name('werewolf.show');

@@ -10,7 +10,7 @@ class PlanetXBoardGenerationService
 {
     public function generateBoard(): PlanetXBoard
     {
-        $board = PlanetXBoard::emptyBoard();
+        $board = new PlanetXBoard();
 
         // So... there are 2.176.782.336 possible boards.
         // In University, I learned multiple algorithms to deal with Constraint satisfaction problems

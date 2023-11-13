@@ -28,7 +28,7 @@ class PlanetXComponent extends Component
 
     public function updated($name, $value)
     {
-        $this->game->authenticatedCurrentMove->setPayloadWithKey('board', ($this->form->getBoard()->toArray()));
+        $this->game->setAuthenticatedPlayerBoard($this->form->getBoard());
     }
 
     public function getListeners(): array

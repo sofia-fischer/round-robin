@@ -38,7 +38,34 @@ class PlanetXGame extends Game
 
     public function getCurrentNightSkyIndex(): int
     {
-        return 0;
+        return 9;
+    }
+
+    public function isInCurrentNightSky(int $index): bool
+    {
+        $current = $this->getCurrentNightSkyIndex();
+
+        $allCurrent = array_map(fn ($sector) => $sector % 12, range($current, $current + 5));
+
+        return in_array($index, $allCurrent);
+    }
+
+    public function gradientDegree(): int
+    {
+        return match($this->getCurrentNightSkyIndex()){
+            0 => 90,
+            1 => 60,
+            2 => 30,
+            3 => 0,
+            4 => 330,
+            5 => 300,
+            6 => 270,
+            7 => 240,
+            8 => 210,
+            9 => 180,
+            10 => 150,
+            11 => 120,
+        };
     }
 
     public function getAuthenticatedPlayerBoard(): PlanetXBoard
@@ -49,13 +76,50 @@ class PlanetXGame extends Game
             $move = $this->authenticatedPlayer->moves()->create([
                 'round_id' => $this->currentRound->id,
                 'user_id' => $this->authenticatedPlayer->user_id,
-                'payload' => [
-                    'board' => PlanetXBoard::playerBoard()->toArray(),
-                ],
             ]);
         }
 
-        return PlanetXBoard::fromArray($move->getPayloadWithKey('board'));
+        $rawBoard = $move->getPayloadWithKey('board');
+
+        if ($rawBoard === null) {
+            return $this->setAuthenticatedPlayerBoard(PlanetXBoard::playerBoard());
+        }
+
+        return PlanetXBoard::fromArray($rawBoard);
+    }
+
+    public function setAuthenticatedPlayerBoard(PlanetXBoard $board): PlanetXBoard
+    {
+        $this->authenticatedCurrentMove->setPayloadWithKey('board', $board->toArray());
+
+        return $board;
+    }
+
+    public function getAuthenticatedPlayerConference(): PlanetXConferences
+    {
+        $move = $this->authenticatedCurrentMove;
+
+        if ($move === null) {
+            $move = $this->authenticatedPlayer->moves()->create([
+                'round_id' => $this->currentRound->id,
+                'user_id' => $this->authenticatedPlayer->user_id,
+            ]);
+        }
+
+        $rawConference = $move->getPayloadWithKey('conference');
+
+        if ($rawConference === null) {
+            return $this->setAuthenticatedPlayerConference(PlanetXConferences::fromArray([]));
+        }
+
+        return PlanetXConferences::fromArray($rawConference);
+    }
+
+    public function setAuthenticatedPlayerConference(PlanetXConferences $conference): PlanetXConferences
+    {
+        $this->authenticatedCurrentMove->setPayloadWithKey('conference', $conference->toArray());
+
+        return $conference;
     }
 
     public function getAuthenticatedPlayerRules(): array

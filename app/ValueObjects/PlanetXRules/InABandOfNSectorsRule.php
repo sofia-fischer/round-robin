@@ -50,10 +50,20 @@ class InABandOfNSectorsRule extends PlanetXRule
         ];
     }
 
+    public function equals(PlanetXRule $rule): bool
+    {
+        if (! $rule instanceof self) {
+            return false;
+        }
+
+        return $this->icon === $rule->icon;
+    }
+
     public static function fromArray(array $data): self
     {
         return new self(
             icon: PlanetXIconEnum::from($data['icon']),
             within: $data['within'],
         );
-    }}
+    }
+}

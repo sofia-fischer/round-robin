@@ -47,18 +47,18 @@ class PlanetXBoard implements Wireable, Iterator, Arrayable
     public static function playerBoard(): PlanetXBoard
     {
         return PlanetXBoard::fromArray([
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
-            [PlanetXIconEnum::values()],
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
+            PlanetXIconEnum::values(),
         ]);
     }
 
