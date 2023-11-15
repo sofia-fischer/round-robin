@@ -178,6 +178,18 @@ class PlanetXBoard implements Wireable, Iterator, Arrayable
     }
 
     /**
+     * @return array<PlanetXRule>
+     */
+    public static function getVisibleStartingRules(): array
+    {
+        return [
+            new NextToRule(PlanetXIconEnum::ASTEROID, PlanetXIconEnum::ASTEROID),
+            new NotNextToRule(PlanetXIconEnum::PLANET, PlanetXIconEnum::PLANET_X),
+            new NextToRule(PlanetXIconEnum::GALAXY, PlanetXIconEnum::EMPTY_SPACE),
+        ];
+    }
+
+    /**
      * @param  PlanetXIconEnum|null|array<PlanetXIconEnum>  $icon
      * @return array<int>
      */

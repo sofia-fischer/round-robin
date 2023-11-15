@@ -2008,6 +2008,21 @@ video {
     border-top-right-radius: 9999px;
   }
 
+  .sm\:rounded-t-xl {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+
+  .sm\:rounded-t-lg {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+
+  .sm\:rounded-b-xl {
+    border-bottom-right-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
+  }
+
   .sm\:rounded-bl-md {
     border-bottom-left-radius: 0.375rem;
   }

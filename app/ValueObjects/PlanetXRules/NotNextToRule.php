@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class NotNextToRule extends PlanetXRule
 {
     public function __construct(
-        public PlanetXIconEnum $icon,
-        public PlanetXIconEnum $mustNotBeNextToIcon,
+        public readonly PlanetXIconEnum $icon,
+        public readonly PlanetXIconEnum $mustNotBeNextToIcon,
     ) {
     }
 

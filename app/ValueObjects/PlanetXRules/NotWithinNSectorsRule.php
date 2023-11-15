@@ -10,9 +10,9 @@ use App\ValueObjects\PlanetXBoard;
 class NotWithinNSectorsRule extends PlanetXRule
 {
     public function __construct(
-        public PlanetXIconEnum $icon,
-        public int             $notWithin,
-        public PlanetXIconEnum $otherIcon,
+        public readonly PlanetXIconEnum $icon,
+        public readonly int             $notWithin,
+        public readonly PlanetXIconEnum $otherIcon,
     ) {
     }
 

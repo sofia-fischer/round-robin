@@ -5,11 +5,11 @@ namespace App\ValueObjects\Enums;
 enum PlanetXIconEnum: string
 {
     case  PLANET_X = 'planet_x';
-    case  MOON = 'moon';
-    case  GALAXY = 'galaxy';
     case  EMPTY_SPACE = 'empty_space';
-    case  ASTEROID = 'asteroid';
+    case  GALAXY = 'galaxy';
     case  PLANET = 'planet';
+    case  ASTEROID = 'asteroid';
+    case  MOON = 'moon';
 
     /**
      * @return array<string>

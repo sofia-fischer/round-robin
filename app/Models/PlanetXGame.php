@@ -38,7 +38,7 @@ class PlanetXGame extends Game
 
     public function getCurrentNightSkyIndex(): int
     {
-        return 9;
+        return 11;
     }
 
     public function isInCurrentNightSky(int $index): bool
@@ -52,19 +52,19 @@ class PlanetXGame extends Game
 
     public function gradientDegree(): int
     {
-        return match($this->getCurrentNightSkyIndex()){
+        return match ($this->getCurrentNightSkyIndex()) {
             0 => 90,
-            1 => 60,
-            2 => 30,
+            1 => 40,
+            2 => 20,
             3 => 0,
-            4 => 330,
-            5 => 300,
+            4 => 340,
+            5 => 320,
             6 => 270,
-            7 => 240,
-            8 => 210,
+            7 => 220,
+            8 => 200,
             9 => 180,
-            10 => 150,
-            11 => 120,
+            10 => 160,
+            11 => 150,
         };
     }
 
@@ -122,27 +122,40 @@ class PlanetXGame extends Game
         return $conference;
     }
 
+    /**
+     * @param  array<PlanetXRule>  $rules
+     * @return array<PlanetXRule>
+     */
+    public function setAuthenticatedPlayerRules(array $rules): array
+    {
+        $raw = array_map(fn (PlanetXRule $rule) => $rule->toArray(), $rules);
+        $this->authenticatedCurrentMove->setPayloadWithKey('rules', $raw);
+
+        return $rules;
+    }
+
     public function getAuthenticatedPlayerRules(): array
     {
-        $storedRules = $this->authenticatedPlayer->payload['rules'] ?? null;
+        $move = $this->authenticatedCurrentMove;
 
-        if ($storedRules) {
-            $hydratedRules = [];
-            foreach ($storedRules as $key => $rule) {
-                $hydratedRules[$key] = PlanetXRule::fromArray($rule);
-            }
-
-            return $hydratedRules;
+        if ($move === null) {
+            $move = $this->authenticatedPlayer->moves()->create([
+                'round_id' => $this->currentRound->id,
+                'user_id' => $this->authenticatedPlayer->user_id,
+            ]);
         }
 
-        $service = new PlanetXConferenceGenerationService();
-        $rules = $service->generateRulesForBoard($this->getCurrentBoard(), 6);
-        $payload = $this->authenticatedPlayer->payload;
-        foreach ($rules as $key => $rule) {
-            $payload['rules'][$key] = $rule->toArray();
+        $rules = [];
+        foreach ($move->getPayloadWithKey('rules', []) as $key => $rule) {
+            $rules[$key] = PlanetXRule::fromArray($rule);
         }
-        $this->authenticatedPlayer->payload = $payload;
-        $this->authenticatedPlayer->save();
+
+        if (count($rules) === 0) {
+            $service = new PlanetXConferenceGenerationService();
+            $rules = $service->generateRulesForBoard($this->getCurrentBoard(), 6);
+
+            return $this->setAuthenticatedPlayerRules($rules);
+        }
 
         return $rules;
     }

@@ -10,8 +10,8 @@ use App\ValueObjects\PlanetXBoard;
 class InSectorRule extends PlanetXRule
 {
     public function __construct(
-        public PlanetXIconEnum $icon,
-        public int             $sector
+        public readonly PlanetXIconEnum $icon,
+        public readonly int             $sector
     ) {
     }
 

@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Requests\PlanetXConferenceRequest;
+use App\Http\Requests\PlanetXTargetRequest;
 use App\Http\Requests\WerewolfMoveCreateRequest;
 use App\Models\Move;
 use App\Models\PlanetXGame;
 use App\Models\Round;
 use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
+use App\ValueObjects\Enums\PlanetXIconEnum;
+use App\ValueObjects\PlanetXRules\InSectorRule;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -69,6 +72,20 @@ class PlanetXController
         };
 
         $game->setAuthenticatedPlayerConference($playerConference);
+
+        return redirect()->route('planet_x.show', ['game' => $game]);
+    }
+
+    public function target(PlanetXGame $game, PlanetXTargetRequest $request)
+    {
+        $index = $request->get('target');
+        $realIcon = $game->getCurrentBoard()->getSector($index)->getIcon();
+        $visibleIcon = $realIcon === PlanetXIconEnum::PLANET_X ? PlanetXIconEnum::EMPTY_SPACE : $realIcon;
+        $rule = new InSectorRule($visibleIcon, $index);
+
+        $rules = $game->getAuthenticatedPlayerRules();
+        $rules[] = $rule;
+        $game->setAuthenticatedPlayerRules($rules);
 
         return redirect()->route('planet_x.show', ['game' => $game]);
     }

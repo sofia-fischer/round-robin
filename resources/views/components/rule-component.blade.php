@@ -36,7 +36,7 @@
                     is in a band of
                 </div>
                 <div>
-                    {{ $rule->mustBeInBandOfIcon }} sectors
+                    {{ $rule->within }} sectors
                 </div>
                 @break
 
