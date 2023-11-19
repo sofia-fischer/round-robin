@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
@@ -9,11 +11,10 @@ use Illuminate\Support\Carbon;
  *
  * Fillables
  *
- * @property  int id
- * @property  string uuid
- * @property  int round_id
- * @property  int player_id
- * @property  int user_id
+ * @property  string $id
+ * @property  string round_id
+ * @property  string player_id
+ * @property  string user_id
  * @property  int score
  * @property  array payload
  * @property  Carbon created_at
@@ -59,10 +60,6 @@ class Move extends BaseModel
      * @var array
      */
     protected $casts = [
-        'id' => 'int',
-        'round_id' => 'int',
-        'player_id' => 'int',
-        'user_id' => 'int',
         'score' => 'int',
         'payload' => 'array',
         'created_at' => 'datetime',

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -27,8 +28,6 @@ class WavelengthController
             'round_id'  => $game->currentRound->id,
             'player_id' => $game->authenticatedPlayer->id,
             'user_id'   => Auth::id(),
-        ], [
-            'uuid' => Str::uuid(),
         ]);
 
         $game->authenticatedPlayerIsActive

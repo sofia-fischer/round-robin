@@ -30,7 +30,7 @@ class WaveLengthTest extends TestCase
         $game = $this->startedWavelengthGame();
 
         $this->actingAs($user)
-            ->get(route('wavelength.show', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -56,7 +56,7 @@ class WaveLengthTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->get(route('wavelength.show', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -97,7 +97,7 @@ class WaveLengthTest extends TestCase
         $this->travel(5);
 
         $this->actingAs($user)
-            ->get(route('wavelength.show', ['game' => $game->uuid]))
+            ->get(route('wavelength.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -114,7 +114,7 @@ class WaveLengthTest extends TestCase
         $game = $this->startedWavelengthGame();
 
         $this->actingAs($game->currentPlayer->user)
-            ->post(route('wavelength.move', ['game' => $game->uuid]))
+            ->post(route('wavelength.move', ['game' => $game->id]))
             ->assertInvalid(['guess', 'clue']);
     }
 
@@ -127,7 +127,7 @@ class WaveLengthTest extends TestCase
         $game = $this->startedWavelengthGame();
 
         $this->actingAs($game->currentPlayer->user)
-            ->post(route('wavelength.move', ['game' => $game->uuid, 'clue' => 'test']))
+            ->post(route('wavelength.move', ['game' => $game->id, 'clue' => 'test']))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -167,7 +167,7 @@ class WaveLengthTest extends TestCase
         $notActivePlayer = $game->players->skip(1)->first();
 
         $this->actingAs($notActivePlayer->user)
-            ->post(route('wavelength.move', ['game' => $game->uuid, 'guess' => 23]))
+            ->post(route('wavelength.move', ['game' => $game->id, 'guess' => 23]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -223,7 +223,7 @@ class WaveLengthTest extends TestCase
         $secondNotActivePlayer = $game->players->skip(2)->first();
 
         $this->actingAs($secondNotActivePlayer->user)
-            ->post(route('wavelength.move', ['game' => $game->uuid, 'guess' => 23]))
+            ->post(route('wavelength.move', ['game' => $game->id, 'guess' => 23]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -268,7 +268,7 @@ class WaveLengthTest extends TestCase
         ])->create();
 
         $this->actingAs($notActivePlayer->user)
-            ->post(route('wavelength.move', ['game' => $game->uuid, 'guess' => 87]))
+            ->post(route('wavelength.move', ['game' => $game->id, 'guess' => 87]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -294,7 +294,7 @@ class WaveLengthTest extends TestCase
         $oldRound  = $game->currentRound;
 
         $this->actingAs($game->currentPlayer->user)
-            ->post(route('wavelength.round', ['game' => $game->uuid]))
+            ->post(route('wavelength.round', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 

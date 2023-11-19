@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
@@ -10,10 +12,9 @@ use Illuminate\Support\Facades\Auth;
  *
  * Fillables
  *
- * @property  int id
- * @property  string uuid
- * @property  int game_id
- * @property  int active_player_id
+ * @property  string $id
+ * @property  string game_id
+ * @property  string active_player_id
  * @property  array payload
  * @property  Carbon completed_at
  * @property  Carbon created_at
@@ -43,7 +44,6 @@ class Round extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'uuid',
         'game_id',
         'active_player_id',
         'payload',
@@ -56,10 +56,6 @@ class Round extends BaseModel
      * @var array
      */
     protected $casts = [
-        'id'               => 'int',
-        'uuid'             => 'string',
-        'game_id'          => 'int',
-        'active_player_id' => 'int',
         'payload'          => 'array',
         'completed_at'     => 'datetime',
         'created_at'       => 'datetime',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Move;
@@ -23,7 +25,6 @@ class MoveFactory extends Factory
     public function definition()
     {
         return [
-            'uuid'      => Str::uuid(),
             'round_id'  => null,
             'player_id' => null,
             'user_id'   => null,

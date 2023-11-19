@@ -1,16 +1,14 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 
-use App\Models\Game;
 use App\Models\Player;
-use App\Queue\Events\PlayerUpdated;
-use Illuminate\Support\Facades\Auth;
 use App\Queue\Events\PlayerDestroyed;
-use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 
 class PlayerController
 {

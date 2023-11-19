@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\WerewolfMoveCreateRequest;
+use App\Http\Requests\WerewolfVoteRequest;
 use App\Models\Move;
-use Illuminate\Support\Str;
 use App\Models\WerewolfGame;
 use App\Queue\Events\PlayerCreated;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\WerewolfMoveCreateRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 
 class WerewolfController
 {
@@ -18,14 +19,26 @@ class WerewolfController
     {
         /** @var Move $move */
         $move = Move::updateOrCreate([
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $game->authenticatedPlayer->id,
-            'user_id'   => Auth::id(),
-        ], [
-            'uuid' => Str::uuid(),
+            'user_id' => Auth::id(),
         ]);
 
-        $move->setPayloadWithKey($request->payloadKey(), $request->payloadValue());
+        $move->setPayloadWithKey('move', $request->validated());
+
+        return view('GamePage', ['game' => $game]);
+    }
+
+    public function vote(WerewolfVoteRequest $request, WerewolfGame $game)
+    {
+        /** @var Move $move */
+        $move = Move::updateOrCreate([
+            'round_id' => $game->currentRound->id,
+            'player_id' => $game->authenticatedPlayer->id,
+            'user_id' => Auth::id(),
+        ]);
+
+        $move->setPayloadWithKey('vote', $request->get('vote'));
 
         return view('GamePage', ['game' => $game]);
     }
@@ -37,14 +50,9 @@ class WerewolfController
         }
 
         /** @var \App\Models\Player $player */
-        $player = $game->players()->create([
-            'user_id' => Auth::id(),
-        ]);
+        $player = $game->players()->create(['user_id' => Auth::id()]);
         $game->refresh();
 
-        if ($game->started_at) {
-            $game->addCurrentPayloadAttribute('playerRoles', collect([$player->id => WerewolfGame::WATCHER])->union($game->playerRoles));
-        }
         event(new PlayerCreated($player));
 
         return view('GamePage', ['game' => $game]);
@@ -54,7 +62,8 @@ class WerewolfController
     {
         throw_unless($game->host_user_id === Auth::id(), AuthorizationException::class);
 
-        if ($game->isDay) {
+        $board = $game->getCurrentWerewolfBoard();
+        if (! $board->isNight()) {
             return view('GamePage', ['game' => $game]);
         }
 
@@ -63,15 +72,16 @@ class WerewolfController
         return view('GamePage', ['game' => $game]);
     }
 
-    public function vote(WerewolfGame $game)
+    public function end(WerewolfGame $game)
     {
         throw_unless($game->host_user_id === Auth::id(), AuthorizationException::class);
 
-        if ($game->isNight) {
+        $board = $game->getCurrentWerewolfBoard();
+        if (! $board->isNight()) {
             return view('GamePage', ['game' => $game]);
         }
 
-        $game->vote();
+        $game->end();
 
         return view('GamePage', ['game' => $game]);
     }

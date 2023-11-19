@@ -64,7 +64,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Werewolf
     Route::get('/werewolf/{game}', [WerewolfController::class, 'show'])->name('werewolf.show');
     Route::post('/werewolf/{game}/move', [WerewolfController::class, 'move'])->name('werewolf.move');
-    Route::post('/werewolf/{game}/sunrise', [WerewolfController::class, 'sunrise'])->name('werewolf.sunrise');
     Route::post('/werewolf/{game}/vote', [WerewolfController::class, 'vote'])->name('werewolf.vote');
+    Route::post('/werewolf/{game}/sunrise', [WerewolfController::class, 'sunrise'])->name('werewolf.sunrise');
+    Route::post('/werewolf/{game}/end', [WerewolfController::class, 'end'])->name('werewolf.end');
     Route::post('/werewolf/{game}/round', [WerewolfController::class, 'round'])->name('werewolf.round');
 });

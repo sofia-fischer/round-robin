@@ -1,31 +1,28 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 
-use App\Models\Move;
-use App\Models\Round;
-use App\Models\Player;
-use Illuminate\Support\Str;
+use App\Http\Requests\JustOneMoveCreateRequest;
 use App\Models\JustOneGame;
+use App\Models\Move;
+use App\Models\Player;
+use App\Models\Round;
 use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
-use App\Queue\Events\GameRoundAction;
-use App\Http\Requests\JustOneMoveCreateRequest;
-use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Str;
 
 class JustOneController
 {
     public function move(JustOneMoveCreateRequest $request, JustOneGame $game)
     {
-        throw_if(! $game->authenticatedPlayerIsActive && ! $request->clue(), AuthorizationException::class);
-        throw_if($game->authenticatedPlayerIsActive && ! $request->guess(), AuthorizationException::class);
-
         /** @var Move $move */
         $move = Move::updateOrCreate([
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $game->authenticatedPlayer->id,
         ], [
             'user_id' => Auth::id(),
@@ -81,8 +78,9 @@ class JustOneController
         }
 
         /** @var Player $player */
-        $player = $game->players()->create([
+        $player = Player::query()->create([
             'user_id' => Auth::id(),
+            'game_id' => $game->id,
         ]);
         event(new PlayerCreated($player));
 
@@ -95,15 +93,15 @@ class JustOneController
 
     public function round(JustOneGame $game)
     {
-        if ($game->currentRound && ! $game->currentRound?->completed_at) {
-            $game->currentRound->completed_at = now();
-            $game->currentRound->save();
+        $round = $game->currentRound;
+        if ($round && ! $round->completed_at) {
+            $round->update(['completed_at' => now()]);
         }
 
         Round::create([
-            'game_id'          => $game->id,
+            'game_id' => $game->id,
             'active_player_id' => $game->nextPlayer->id,
-            'payload'          => [
+            'payload' => [
                 'word' => collect(__('words'))->random(),
             ],
         ]);

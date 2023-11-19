@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Livewire;
 
 use App\Models\PlanetXGame;
@@ -34,7 +36,7 @@ class PlanetXComponent extends Component
     public function getListeners(): array
     {
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
+            'echo:' . 'Game.' . $this->game->id . ',.' . GameRoundAction::class => '$refresh',
         ];
     }
 }

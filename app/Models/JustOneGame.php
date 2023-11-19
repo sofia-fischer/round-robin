@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +22,8 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @see \App\Models\JustOneGame::getIsWaitingForGuessAttribute()
  *
  * @package App\Models
+ *
+ * @method static \Database\Factories\JustOneGameFactory factory(...$parameters)
  */
 class JustOneGame extends Game
 {

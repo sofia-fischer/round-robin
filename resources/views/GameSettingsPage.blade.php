@@ -6,7 +6,7 @@
 
 <x-app-layout>
     <div class="max-w-2xl mx-auto mt-4 sm:px-6 lg:px-8 ">
-        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->uuid]) }}">
+        <a href="{{ route("{$game->logic_identifier}.show", ['game' => $game->id]) }}">
             <div class="rounded-xl bg-pink-600 my-2 p-2 hover:bg-purple-500 text-white text-center w-full flex justify-between">
                 <x-icons.arrow-left class="h-6"/>
                 <div> Back to the game</div>
@@ -36,7 +36,7 @@
 
                     <div class="my-1 w-full flex justify-center">
                         @foreach($game->players as $player)
-                            <form method="POST" action="{{ route('player.destroy', ['player' => $player->uuid]) }}"
+                            <form method="POST" action="{{ route('player.destroy', ['player' => $player->id]) }}"
                                 onsubmit="return confirm('The selected player will leave the game');">
                                 @csrf
                                 <input type="hidden" name="_method" value="DELETE">
@@ -54,7 +54,7 @@
 
                     <form class="my-1 w-full flex justify-center mb-4" method="POST"
                         onsubmit="return confirm('Just skip to the next round');"
-                        action="{{ route('game.round', ['game' => $game->uuid]) }}">
+                        action="{{ route('game.round', ['game' => $game->id]) }}">
                         @csrf
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="game_id" value="{{$game?->id}}">
@@ -65,7 +65,7 @@
 
                     <form class="my-1 w-full flex justify-center" method="POST"
                         onsubmit="return confirm('Do you want to destroy the current game?');"
-                        action="{{ route('game.destroy', ['game' => $game->uuid]) }}">
+                        action="{{ route('game.destroy', ['game' => $game->id]) }}">
                         @csrf
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="text-center rounded-xl h-7 px-2 bg-red-700 text-white hover:bg-purple-500">
@@ -77,7 +77,7 @@
                 <div class="rounded-xl bg-gray-800 my-2 p-4">
                     <h1 class="text-xl text-center font-semibold text-white mb-4">Leave Game</h1>
 
-                    <form class="my-1 w-full flex justify-center" method="POST" action="{{ route('player.destroy', ['player' => $game->authenticatedPlayer->uuid]) }}"
+                    <form class="my-1 w-full flex justify-center" method="POST" action="{{ route('player.destroy', ['player' => $game->authenticatedPlayer->id]) }}"
                         onsubmit="return confirm('The selected player will leave the game');">
                         @csrf
                         <input type="hidden" name="_method" value="DELETE">

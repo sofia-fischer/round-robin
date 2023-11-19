@@ -14,11 +14,10 @@ class CreateMovesTable extends Migration
     public function up()
     {
         Schema::create('moves', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->unique();
-            $table->unsignedInteger('round_id')->nullable();
-            $table->unsignedInteger('player_id')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('round_id')->references('id')->on('rounds');
+            $table->foreignUuid('player_id')->references('id')->on('players');
+            $table->foreignUuid('user_id')->references('id')->on('users');
             $table->integer('score')->nullable();
             $table->json('payload')->nullable();
             $table->timestamps();

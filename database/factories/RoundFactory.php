@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Round;
@@ -23,7 +25,6 @@ class RoundFactory extends Factory
     public function definition()
     {
         return [
-            'uuid'             => Str::uuid(),
             'game_id'          => null,
             'active_player_id' => null,
             'completed_at'     => null,

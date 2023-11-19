@@ -105,7 +105,7 @@
                         @if($rule)
                             <x-rule-component :rule="$rule" :board="$game->getAuthenticatedPlayerBoard()"></x-rule-component>
                         @else
-                            <form action="{{ route('planet_x.conference', ['game' => $game->uuid, 'conference' => $index]) }}"
+                            <form action="{{ route('planet_x.conference', ['game' => $game->id, 'conference' => $index]) }}"
                                 method="POST" class="my-1 w-full">
                                 @csrf
                                 <button type="submit"
@@ -120,7 +120,7 @@
             </ul>
         </div>
         <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
-            <form action="{{ route('planet_x.target', ['game' => $game->uuid]) }}"
+            <form action="{{ route('planet_x.target', ['game' => $game->id]) }}"
                 method="POST" class="my-1 w-full flex">
                 @csrf
 

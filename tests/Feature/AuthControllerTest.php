@@ -68,7 +68,7 @@ class AuthControllerTest extends TestCase
             'token' => $game->token,
         ])
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
+            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->id]));
 
         $this->assertAuthenticated('web');
         $this->assertDatabaseHas('users', [
@@ -116,10 +116,12 @@ class AuthControllerTest extends TestCase
     /** @test */
     public function login_with_token()
     {
-        /** @var Game $game */
-        $game = Game::factory()->create();
         /** @var User $existingUser */
         $existingUser = User::factory()->create();
+        /** @var Game $game */
+        $game = Game::factory()->create([
+            'host_user_id' => $existingUser->id,
+        ]);
 
         $this->post(route('login', [
             'name' => $existingUser->name,
@@ -127,7 +129,7 @@ class AuthControllerTest extends TestCase
             'token' => $game->token,
         ]))
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
+            ->assertRedirect(route("{$game->logic_identifier}.show", ['game' => $game->id]));
 
         $this->assertAuthenticated('web');
     }

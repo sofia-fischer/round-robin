@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
-use App\Models\Game;
 use App\Models\WerewolfGame;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -37,6 +38,6 @@ class OneNightWerewolfDayJob implements ShouldQueue
         Log::info('OneNightWerewolfNightJob started');
         /** @var WerewolfGame $game */
         $game = WerewolfGame::findOrFail($this->gameId);
-        $game->vote();
+        $game->end();
     }
 }

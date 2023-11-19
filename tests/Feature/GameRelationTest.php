@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Game;
+use App\Models\Player;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -14,13 +15,11 @@ class GameRelationTest extends TestCase
         $game = Game::factory()->create();
 
         /** @var \App\Models\Player $player */
-        $player = $game->players()->create([
-            'user_id' => User::factory()->create()->id,
-        ]);
+        $player = Player::factory()->create(['game_id' => $game->id]);
 
         /** @var \App\Models\Round $round */
         $round = $game->rounds()->create([
-            'active_player_id' => 1,
+            'active_player_id' => $player->id,
         ]);
 
         $move = $player->moves()->create([

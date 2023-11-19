@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('justone.move', ['game' => $game->uuid]) }}" class="mb-8 m-4 text-center pt-8">
+    <form method="POST" action="{{ route('justone.move', ['game' => $game->id]) }}" class="mb-8 m-4 text-center pt-8">
         @csrf
 
         <div class="flex text-center justify-center">
@@ -98,7 +98,7 @@
     {{-- End Round --}}
     @if($game->isCompleted && $game->authenticatedPlayerIsActive)
         <div>
-            <form action="{{ route('justone.round', ['game' => $game->uuid]) }}" method="POST" class="m-4">
+            <form action="{{ route('justone.round', ['game' => $game->id]) }}" method="POST" class="m-4">
                 @csrf
                 <button type="submit"
                     class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400">

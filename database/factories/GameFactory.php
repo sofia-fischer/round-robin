@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\JustOneGame;
 use App\Models\WaveLengthGame;
@@ -25,10 +26,9 @@ class GameFactory extends Factory
     public function definition()
     {
         return [
-            'uuid'             => Str::uuid(),
             'token'            => Str::upper(Str::random(5)),
             'logic_identifier' => WaveLengthGame::$logic_identifier,
-            'host_user_id'     => null,
+            'host_user_id'     => User::factory(),
             'started_at'       => null,
             'ended_at'         => null,
         ];

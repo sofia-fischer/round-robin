@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\ValueObjects\Color;
+use App\ValueObjects\ColorEnum;
 use Illuminate\Support\Carbon;
 
 /**
@@ -10,10 +12,9 @@ use Illuminate\Support\Carbon;
  *
  * Fillables
  *
- * @property  int id
- * @property  string uuid
- * @property  int game_id
- * @property  int user_id
+ * @property  string $id
+ * @property  string game_id
+ * @property  string user_id
  * @property  array payload
  * @property  Carbon created_at
  * @property  Carbon updated_at
@@ -22,7 +23,7 @@ use Illuminate\Support\Carbon;
  * Relationships
  * @property \Illuminate\Support\Collection moves
  * @property \App\Models\Game game
- * @property \App\Models\User user
+ * @property \App\Models\User|null user
  *
  * Attributes
  * @property string activeColor
@@ -39,7 +40,6 @@ class Player extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'uuid',
         'game_id',
         'user_id',
     ];
@@ -50,10 +50,6 @@ class Player extends BaseModel
      * @var array
      */
     protected $casts = [
-        'id' => 'int',
-        'uuid' => 'string',
-        'game_id' => 'int',
-        'user_id' => 'int',
         'payload' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -70,7 +66,6 @@ class Player extends BaseModel
     {
         return $this->hasMany(Move::class);
     }
-
     public function game()
     {
         return $this->belongsTo(Game::class);
@@ -89,22 +84,22 @@ class Player extends BaseModel
 
     protected function getActiveColorAttribute()
     {
-        return Color::fromInt($this->id)->baseColor();
+        return ColorEnum::fromUuid($this->id)->baseColor();
     }
 
     protected function getPassiveColorAttribute()
     {
-        return Color::fromInt($this->id)->passiveColor();
+        return ColorEnum::fromUuid($this->id)->passiveColor();
     }
 
-    protected function color(): Color
+    public function color(): ColorEnum
     {
-        return Color::fromInt($this->id);
+        return ColorEnum::fromUuid($this->id);
     }
 
     protected function getNameAttribute()
     {
-        return $this->user->name;
+        return $this->user?->name ?? ColorEnum::nameFromUuid($this->id);
     }
 
     protected function getScoreAttribute()

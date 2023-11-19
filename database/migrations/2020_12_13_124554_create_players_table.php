@@ -14,10 +14,9 @@ class CreatePlayersTable extends Migration
     public function up()
     {
         Schema::create('players', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->unique();
-            $table->unsignedInteger('game_id')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('game_id')->references('id')->on('games');
+            $table->foreignUuid('user_id')->nullable()->references('id')->on('users');
             $table->json('payload')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Queue\Listeners;
 
 use App\Queue\Events\TestEvent;

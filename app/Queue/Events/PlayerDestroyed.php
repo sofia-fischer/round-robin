@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Queue\Events;
 
 use App\Models\Player;
@@ -16,6 +18,6 @@ class PlayerDestroyed extends BaseEvent
 
     public function broadcastOn()
     {
-        return new Channel('Game.' . $this->player->game->uuid);
+        return new Channel('Game.' . $this->player->game->id);
     }
 }

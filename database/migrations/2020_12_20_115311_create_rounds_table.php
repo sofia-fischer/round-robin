@@ -14,10 +14,9 @@ class CreateRoundsTable extends Migration
     public function up()
     {
         Schema::create('rounds', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->unique();
-            $table->unsignedInteger('game_id')->nullable();
-            $table->unsignedInteger('active_player_id')->nullable();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('game_id')->references('id')->on('games');
+            $table->foreignUuid('active_player_id')->nullable()->references('id')->on('players');
             $table->json('payload')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

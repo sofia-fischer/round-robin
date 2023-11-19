@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\Player;
 use App\Models\Round;
-use App\Models\Experience;
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\JustOneGame;
-use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class JustOneGameFactory extends Factory
@@ -26,29 +28,34 @@ class JustOneGameFactory extends Factory
     public function definition()
     {
         return [
-            'uuid'             => Str::uuid(),
             'token'            => Str::upper(Str::random(5)),
             'logic_identifier' => JustOneGame::$logic_identifier,
-            'host_user_id'     => null,
+            'host_user_id'     => User::factory(),
             'started_at'       => now(),
             'ended_at'         => null,
         ];
     }
 
-    public function withRound(string $word = null)
+    public function withRound(string $word = null): self
     {
         return $this->afterCreating(fn (JustOneGame $game) => Round::factory()
             ->create([
                 'game_id'          => $game->id,
-                'active_player_id' => $game->host_user_id,
+                'active_player_id' => $game->hostPlayer->id,
                 'payload'          => ['word' => $word ?? collect(__('words'))->random(),],
             ]));
     }
 
-    public function withHostUser()
+    /**
+     * @return self
+     */
+    public function withHostUser(): self
     {
         return $this->afterCreating(function (JustOneGame $game) {
-            $game->update(['host_user_id' => $game->players->first()->user_id]);
+            Player::create([
+                'game_id' => $game->id,
+                'user_id' => $game->host_user_id,
+            ]);
         });
     }
 }

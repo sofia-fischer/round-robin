@@ -2,25 +2,24 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Move;
-use App\Models\Round;
-use App\Models\Player;
 use App\Models\JustOneGame;
+use App\Models\Move;
+use App\Models\Player;
+use App\Models\Round;
+use App\Models\User;
 use App\Queue\Events\GameEnded;
-use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\GameRoundAction;
-use Illuminate\Support\Facades\Event;
+use App\Queue\Events\PlayerCreated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
 class JustOneTest extends TestCase
 {
     use CanSeed;
     use RefreshDatabase;
 
-    /** @test */
-    public function join_started_game()
+    public function testJoinStartedGame()
     {
         Event::fake();
 
@@ -35,7 +34,7 @@ class JustOneTest extends TestCase
             ->create();
 
         $this->actingAs($user)
-            ->get(route('justone.show', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -47,8 +46,7 @@ class JustOneTest extends TestCase
         Event::assertDispatched(PlayerCreated::class);
     }
 
-    /** @test */
-    public function join_new_game()
+    public function testJoinNewGame()
     {
         Event::fake();
 
@@ -60,7 +58,7 @@ class JustOneTest extends TestCase
             ->create(['started_at' => null, 'host_user_id' => $user->id]);
 
         $this->actingAs($user)
-            ->get(route('justone.show', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -74,7 +72,7 @@ class JustOneTest extends TestCase
         $this->assertNotNull($game->started_at);
 
         $this->assertDatabaseHas('rounds', [
-            'game_id'          => $game->id,
+            'game_id' => $game->id,
             'active_player_id' => $player->id,
         ]);
 
@@ -82,8 +80,7 @@ class JustOneTest extends TestCase
         Event::assertDispatched(GameRoundAction::class);
     }
 
-    /** @test */
-    public function join_with_existing_player()
+    public function testJoinWithExistingPlayer()
     {
         Event::fake();
 
@@ -105,7 +102,7 @@ class JustOneTest extends TestCase
         $this->travel(5);
 
         $this->actingAs($user)
-            ->get(route('justone.show', ['game' => $game->uuid]))
+            ->get(route('justone.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -115,8 +112,7 @@ class JustOneTest extends TestCase
         Event::assertNotDispatched(GameRoundAction::class);
     }
 
-    /** @test */
-    public function make_empty_move()
+    public function testMakeEmptyMove()
     {
         /** @var \App\Models\JustOneGame $game */
         $game = JustOneGame::factory()
@@ -126,27 +122,26 @@ class JustOneTest extends TestCase
             ->create();
 
         $this->actingAs($game->currentPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid]))
-            ->assertInvalid(['guess', 'clue']);
+            ->post(route('justone.move', ['game' => $game->id]))
+            ->assertForbidden();
     }
 
-    /** @test */
-    public function make_clue_not_last_move()
+    public function testMakeClueNotLastMove()
     {
         Event::fake();
 
         /** @var \App\Models\JustOneGame $game */
         $game = JustOneGame::factory()
-            ->has(Player::factory()->count(3), 'players')
             ->withHostUser()
             ->withRound()
+            ->has(Player::factory()->count(2), 'players')
             ->create();
 
         /** @var Player $notActivePlayer */
-        $notActivePlayer = $game->players->last();
+        $notActivePlayer = $game->players->first();
 
         $this->actingAs($notActivePlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'test']))
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'test']))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -167,36 +162,35 @@ class JustOneTest extends TestCase
         Event::assertNotDispatched(GameEnded::class);
     }
 
-    /** @test */
-    public function make_clue_last_move()
+    public function testMakeVisibleAndInvisibleClues()
     {
         Event::fake();
 
         /** @var \App\Models\JustOneGame $game */
         $game = JustOneGame::factory()
-            ->has(Player::factory()->count(4), 'players')
+            ->has(Player::factory()->count(3), 'players')
             ->withHostUser()
-            ->withRound()
+            ->withRound('word')
             ->create();
 
-        $activePlayer = $game->players->first();
+        /** @var Player $firstPlayer */
+        $firstPlayer = $game->players->first();
         /** @var Player $secondPlayer */
-        $firstPlayer = $game->players->skip(1)->first();
-        /** @var Player $secondPlayer */
-        $secondPlayer = $game->players->skip(2)->first();
-        /** @var Player $secondPlayer */
-        $thirdPlayer = $game->players->skip(3)->first();
+        $secondPlayer = $game->players->skip(1)->first();
+        /** @var Player $thirdPlayer */
+        $thirdPlayer = $game->players->skip(2)->first();
 
         $this->actingAs($firstPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'subset']));
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'subset']))
+            ->assertOk();
 
         $this->actingAs($secondPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'set']));
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'set']))
+            ->assertOk();
 
         $this->actingAs($thirdPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'visible']))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'visible']))
+            ->assertOk();
 
         $game->refresh();
 
@@ -212,39 +206,46 @@ class JustOneTest extends TestCase
         $this->assertEquals(true, $thirdPlayerMove->getPayloadWithKey('visible'));
         $this->assertNull($thirdPlayerMove->score);
 
+        /** @var Move $secondPlayer */
+        $secondPlayer = $secondPlayer->moves()->latest()->first();
+        $this->assertNotNull($secondPlayer);
+
+        $this->assertEquals('set', $secondPlayer->getPayloadWithKey('clue'));
+        $this->assertEquals(false, $secondPlayer->getPayloadWithKey('visible'));
+        $this->assertNull($secondPlayer->score);
+
         Event::assertDispatched(GameRoundAction::class);
         Event::assertNotDispatched(GameEnded::class);
     }
 
-    /** @test */
-    public function make_guess()
+    public function testMakeGuess()
     {
         /** @var \App\Models\JustOneGame $game */
         $game = JustOneGame::factory()
-            ->has(Player::factory()->count(3), 'players')
+            ->has(Player::factory()->count(2), 'players')
             ->withHostUser()
             ->withRound('word')
             ->create();
 
         /** @var Player $activePlayer */
-        $activePlayer = $game->players->first();
+        $activePlayer = $game->players->last();
         /** @var Player $firstPlayer */
-        $firstPlayer = $game->players->skip(1)->first();
+        $firstPlayer = $game->players->first();
         /** @var Player $secondPlayer */
-        $secondPlayer = $game->players->skip(2)->first();
+        $secondPlayer = $game->players->skip(1)->first();
 
         $this->actingAs($firstPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'one']))
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'one']))
             ->assertOk();
 
         $this->actingAs($secondPlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'two']))
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'two']))
             ->assertOk();
 
         Event::fake();
 
         $this->actingAs($activePlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'guess' => 'Word']))
+            ->post(route('justone.move', ['game' => $game->id, 'guess' => 'Word']))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -268,8 +269,7 @@ class JustOneTest extends TestCase
         Event::assertDispatched(GameEnded::class);
     }
 
-    /** @test */
-    public function redo_move()
+    public function testRedoMove()
     {
         Event::fake();
 
@@ -284,7 +284,7 @@ class JustOneTest extends TestCase
         $notActivePlayer = $game->players->skip(1)->first();
 
         $this->actingAs($notActivePlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'test']))
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'test']))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -293,7 +293,7 @@ class JustOneTest extends TestCase
         $this->assertNotNull($move);
 
         $this->actingAs($notActivePlayer->user)
-            ->post(route('justone.move', ['game' => $game->uuid, 'clue' => 'something-else']))
+            ->post(route('justone.move', ['game' => $game->id, 'clue' => 'something-else']))
             ->assertOk()
             ->assertViewIs('GamePage');
 
@@ -310,33 +310,39 @@ class JustOneTest extends TestCase
         Event::assertNotDispatched(GameEnded::class);
     }
 
-    /** @test */
-    public function end_round()
+    public function testEndRound()
     {
         Event::fake();
+        $this->disableExceptionHandling();
 
         /** @var \App\Models\JustOneGame $game */
         $game = JustOneGame::factory()
-            ->has(Player::factory()->count(3), 'players')
+            ->has(Player::factory()->count(2), 'players')
             ->withHostUser()
             ->withRound()
             ->create();
 
-        $firstPlayer = $game->hostPlayer;
-        /** @var Player $secondPlayer */
-        $oldRound = $game->currentRound;
-
-        $this->assertDatabaseHas(Round::class, [
-            'game_id'          => $game->id,
-            'active_player_id' => $game->hostPlayer->id,
-        ]);
-
-        $this->actingAs($firstPlayer->user)
-            ->post(route('justone.round', ['game' => $game->uuid]))
+        // needed to show the game view
+        $this->actingAs($game->hostPlayer->user)
+            ->post(route('justone.move', ['game' => $game->id, 'guess' => 'debug']))
             ->assertOk();
 
         $this->assertDatabaseHas(Round::class, [
-            'game_id'          => $game->id,
+            'game_id' => $game->id,
+            'active_player_id' => $game->hostPlayer->id,
+        ]);
+
+        $this->actingAs($game->hostPlayer->user)
+            ->post(route('justone.round', ['game' => $game->id]))
+            ->assertOk();
+
+        $this->assertDatabaseHas(Round::class, [
+            'game_id' => $game->id,
+            'active_player_id' => $game->hostPlayer->id,
+        ]);
+
+        $this->assertDatabaseHas(Round::class, [
+            'game_id' => $game->id,
             'active_player_id' => $game->nextPlayer->id,
         ]);
 

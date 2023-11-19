@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('wavelength.move', ['game' => $game->uuid]) }}" class="m-4">
+    <form method="POST" action="{{ route('wavelength.move', ['game' => $game->id]) }}" class="m-4">
         @csrf
 
         {{-- Indicator --}}
@@ -117,7 +117,7 @@
     {{-- End Round --}}
     @if($game->isCompleted && $game->authenticatedPlayerIsActive)
         <div>
-            <form action="{{ route('wavelength.round', ['game' => $game->uuid]) }}" method="POST" class="m-4">
+            <form action="{{ route('wavelength.round', ['game' => $game->id]) }}" method="POST" class="m-4">
                 @csrf
                 <button type="submit"
                     class="text-pink-700 bg-pink-200 py-2 px-4 m-2 font-semibold rounded-full hover:bg-red-400">

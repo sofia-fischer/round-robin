@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Livewire;
 
 use Livewire\Component;
@@ -28,10 +30,10 @@ class WaveLengthComponent extends Component
     public function getListeners(): array
     {
         return [
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameRoundAction::class => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . GameEnded::class       => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerUpdated::class   => '$refresh',
-            'echo:' . 'Game.' . $this->game->uuid . ',.' . PlayerDestroyed::class => '$refresh',
+            'echo:' . 'Game.' . $this->game->id . ',.' . GameRoundAction::class => '$refresh',
+            'echo:' . 'Game.' . $this->game->id . ',.' . GameEnded::class       => '$refresh',
+            'echo:' . 'Game.' . $this->game->id . ',.' . PlayerUpdated::class   => '$refresh',
+            'echo:' . 'Game.' . $this->game->id . ',.' . PlayerDestroyed::class => '$refresh',
         ];
     }
 }

@@ -1,13 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\PlanetXConferenceRequest;
 use App\Http\Requests\PlanetXTargetRequest;
-use App\Http\Requests\WerewolfMoveCreateRequest;
-use App\Models\Move;
 use App\Models\PlanetXGame;
 use App\Models\Round;
 use App\Services\PlanetXBoardGenerationService;
@@ -16,26 +14,9 @@ use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXRules\InSectorRule;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class PlanetXController
 {
-    public function move(WerewolfMoveCreateRequest $request, PlanetXGame $game)
-    {
-        /** @var Move $move */
-        $move = Move::updateOrCreate([
-            'round_id' => $game->currentRound->id,
-            'player_id' => $game->authenticatedPlayer->id,
-            'user_id' => Auth::id(),
-        ], [
-            'uuid' => Str::uuid(),
-        ]);
-
-//        $move->setPayloadAttribute($request->payloadKey(), $request->payloadValue());
-
-        return view('GamePage', ['game' => $game]);
-    }
-
     public function show(
         PlanetXGame                        $game,
         PlanetXBoardGenerationService      $boardGenerationService,

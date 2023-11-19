@@ -14,11 +14,10 @@ class CreateGamesTable extends Migration
     public function up()
     {
         Schema::create('games', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->unique();
+            $table->uuid('id')->primary();
             $table->string('logic_identifier');
             $table->string('token');
-            $table->unsignedInteger('host_user_id')->nullable();
+            $table->foreignUuid('host_user_id')->references('id')->on('users');
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Queue\Events;
 
 use App\Models\Game;
@@ -18,6 +20,6 @@ class GameRoundAction extends BaseEvent
 
     public function broadcastOn()
     {
-        return new Channel('Game.' . $this->game->uuid);
+        return new Channel('Game.' . $this->game->id);
     }
 }

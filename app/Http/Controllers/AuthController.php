@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 
-use App\Models\User;
-use App\Models\Game;
 use App\Http\Requests\LoginRequest;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Game;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController
 {
@@ -41,7 +42,7 @@ class AuthController
     public function login(LoginRequest $request)
     {
         Auth::attempt([
-            'name'    => $request->input('name'),
+            'name' => $request->input('name'),
             'password' => $request->input('password')
         ], true);
 
@@ -59,6 +60,6 @@ class AuthController
             ->where('token', $token)
             ->firstOrFail();
 
-        return redirect(route("{$game->logic_identifier}.show", ['game' => $game->uuid]));
+        return redirect(route("{$game->logic_identifier}.show", ['game' => $game->id]));
     }
 }
