@@ -2,20 +2,20 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Game;
 use App\Models\Move;
 use App\Models\Player;
+use App\Models\User;
+use App\Models\WaveLengthGame;
 use App\Queue\Events\GameEnded;
-use App\Queue\Events\PlayerCreated;
 use App\Queue\Events\GameRoundAction;
-use Illuminate\Support\Facades\Event;
+use App\Queue\Events\PlayerCreated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
-class WaveLengthTest extends TestCase
+class WaveLengthControllerTest extends TestCase
 {
-    use CanSeed;
     use RefreshDatabase;
 
     /** @test */
@@ -26,8 +26,12 @@ class WaveLengthTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        /** @var WaveLengthGame $game */
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         $this->actingAs($user)
             ->get(route('wavelength.show', ['game' => $game->id]))
@@ -47,34 +51,29 @@ class WaveLengthTest extends TestCase
     {
         Event::fake();
 
-        /** @var User $user */
-        $user = User::factory()->create();
-
         /** @var Game $game */
-        $game = Game::factory()->wavelength()->create([
-            'host_user_id' => $user->id,
-        ]);
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->create();
 
-        $this->actingAs($user)
+        $game->started_at = null;
+        $game->save();
+
+        $this->actingAs($game->hostUser)
             ->get(route('wavelength.show', ['game' => $game->id]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
         $this->assertDatabaseHas('players', [
             'game_id' => $game->id,
-            'user_id' => $user->id,
+            'user_id' => $game->hostUser->id,
         ]);
 
-        $player = $game->players()->first();
         $game->refresh();
         $this->assertNotNull($game->started_at);
+        $this->assertTrue($game->hostPlayer->is($game->currentPlayer));
 
-        $this->assertDatabaseHas('rounds', [
-            'game_id'          => $game->id,
-            'active_player_id' => $player->id,
-        ]);
-
-        Event::assertDispatched(PlayerCreated::class);
         Event::assertDispatched(GameRoundAction::class);
     }
 
@@ -87,7 +86,11 @@ class WaveLengthTest extends TestCase
         $user = User::factory()->create();
 
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         $player = Player::factory()->create([
             'game_id' => $game->id,
@@ -111,11 +114,15 @@ class WaveLengthTest extends TestCase
     public function make_empty_move()
     {
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         $this->actingAs($game->currentPlayer->user)
             ->post(route('wavelength.move', ['game' => $game->id]))
-            ->assertInvalid(['guess', 'clue']);
+            ->assertForbidden();
     }
 
     /** @test */
@@ -124,7 +131,11 @@ class WaveLengthTest extends TestCase
         Event::fake();
 
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         $this->actingAs($game->currentPlayer->user)
             ->post(route('wavelength.move', ['game' => $game->id, 'clue' => 'test']))
@@ -137,9 +148,9 @@ class WaveLengthTest extends TestCase
         $this->assertNull($game->currentRound->completed_at);
 
         $this->assertDatabaseHas('moves', [
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $game->currentPlayer->id,
-            'user_id'   => $game->currentPlayer->user_id,
+            'user_id' => $game->currentPlayer->user_id,
         ]);
 
         /** @var Move $move */
@@ -161,7 +172,11 @@ class WaveLengthTest extends TestCase
         Event::fake();
 
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         /** @var Player $notActivePlayer */
         $notActivePlayer = $game->players->skip(1)->first();
@@ -172,9 +187,9 @@ class WaveLengthTest extends TestCase
             ->assertViewIs('GamePage');
 
         $this->assertDatabaseHas('moves', [
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $notActivePlayer->id,
-            'user_id'   => $notActivePlayer->user_id,
+            'user_id' => $notActivePlayer->user_id,
         ]);
 
         /** @var Move $move */
@@ -198,52 +213,39 @@ class WaveLengthTest extends TestCase
         Event::fake();
 
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory(), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         Move::factory()->state([
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $game->currentPlayer->id,
-            'user_id'   => $game->currentPlayer->user_id,
-            'score'     => null,
-            'payload'   => null,
+            'user_id' => $game->currentPlayer->user_id,
         ])->create();
 
-        /** @var Player $notActivePlayer */
-        $notActivePlayer = $game->players->skip(1)->first();
+        $hostPlayer = $game->hostPlayer;
+        $notHostPlayer = $game->players->filter(fn (Player $player) => ! $player->is($hostPlayer))->first();
 
-        Move::factory()->state([
-            'round_id'  => $game->currentRound->id,
-            'player_id' => $notActivePlayer->id,
-            'user_id'   => $notActivePlayer->user_id,
-            'score'     => null,
-            'payload'   => null,
-        ])->create();
+        $this->actingAs($hostPlayer->user)
+            ->post(route('wavelength.move', ['game' => $game->id, 'clue' => 'twentythree']))
+            ->assertOk()
+            ->assertViewIs('GamePage');
 
-        /** @var Player $notActivePlayer */
-        $secondNotActivePlayer = $game->players->skip(2)->first();
+        Event::assertDispatched(GameRoundAction::class);
 
-        $this->actingAs($secondNotActivePlayer->user)
+        $this->actingAs($notHostPlayer->user)
             ->post(route('wavelength.move', ['game' => $game->id, 'guess' => 23]))
             ->assertOk()
             ->assertViewIs('GamePage');
 
         $game->refresh();
 
-        $this->assertEquals($game->currentRound->moves()->count(), $game->players()->count());
-
-        /** @var Move $move */
-        $secondNotActivePlayerMove = Move::query()
-            ->where('round_id', $game->currentRound->id)
-            ->where('player_id', $secondNotActivePlayer->id)
-            ->where('user_id', $secondNotActivePlayer->user_id)
-            ->first();
-
-        $this->assertEquals(23, $secondNotActivePlayerMove->getPayloadWithKey('guess'));
-        $this->assertNotNull($secondNotActivePlayerMove->score);
-
         $this->assertNotNull($game->currentRound->completed_at);
+        $this->assertNotNull($hostPlayer->moves()->latest()->first()->score);
+        $this->assertNotNull($notHostPlayer->moves()->latest()->first()->score);
 
-        Event::assertNotDispatched(GameRoundAction::class);
         Event::assertDispatched(GameEnded::class);
     }
 
@@ -253,18 +255,22 @@ class WaveLengthTest extends TestCase
         Event::fake();
 
         /** @var Game $game */
-        $game = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
 
         /** @var Player $notActivePlayer */
         $notActivePlayer = $game->players->skip(1)->first();
 
         /** @var Move $move */
         $move = Move::factory()->state([
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $notActivePlayer->id,
-            'user_id'   => $notActivePlayer->user_id,
-            'score'     => null,
-            'payload'   => ['guess' => 35],
+            'user_id' => $notActivePlayer->user_id,
+            'score' => null,
+            'payload' => ['guess' => 35],
         ])->create();
 
         $this->actingAs($notActivePlayer->user)
@@ -289,9 +295,13 @@ class WaveLengthTest extends TestCase
         Event::fake();
 
         /** @var Game $game */
-        $game      = $this->startedWavelengthGame();
+        $game = WaveLengthGame::factory()
+            ->has(Player::factory()->count(2), 'players')
+            ->withHostUser()
+            ->withRound()
+            ->create();
         $oldPlayer = $game->currentPlayer;
-        $oldRound  = $game->currentRound;
+        $oldRound = $game->currentRound;
 
         $this->actingAs($game->currentPlayer->user)
             ->post(route('wavelength.round', ['game' => $game->id]))

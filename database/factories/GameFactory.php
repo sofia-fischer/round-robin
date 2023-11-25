@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Game;
+use App\Models\Player;
+use App\Models\Round;
 use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\JustOneGame;
@@ -34,17 +36,23 @@ class GameFactory extends Factory
         ];
     }
 
+    /**
+     * @return self
+     */
+    public function withHostUser(): self
+    {
+        return $this->afterCreating(function (Game $game) {
+            Player::create([
+                'game_id' => $game->id,
+                'user_id' => $game->host_user_id,
+            ]);
+        });
+    }
+
     public function wavelength(): self
     {
         return $this->state([
             'logic_identifier' => WaveLengthGame::$logic_identifier,
-        ]);
-    }
-
-    public function justOne(): self
-    {
-        return $this->state([
-            'logic_identifier' => JustOneGame::$logic_identifier,
         ]);
     }
 

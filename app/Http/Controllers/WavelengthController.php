@@ -5,29 +5,25 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\WavelengthMoveCreateRequest;
 use App\Models\Move;
+use App\Models\Player;
 use App\Models\Round;
-use Illuminate\Support\Str;
 use App\Models\WaveLengthGame;
 use App\Queue\Events\GameEnded;
+use App\Queue\Events\GameRoundAction;
 use App\Queue\Events\PlayerCreated;
 use Illuminate\Support\Facades\Auth;
-use App\Queue\Events\GameRoundAction;
-use App\Http\Requests\WavelengthMoveCreateRequest;
-use Illuminate\Auth\Access\AuthorizationException;
 
 class WavelengthController
 {
     public function move(WavelengthMoveCreateRequest $request, WaveLengthGame $game)
     {
-        throw_if($game->authenticatedPlayerIsActive && ! $request->clue(), AuthorizationException::class);
-        throw_if(! $game->authenticatedPlayerIsActive && ! $request->guess(), AuthorizationException::class);
-
         /** @var Move $move */
         $move = Move::updateOrCreate([
-            'round_id'  => $game->currentRound->id,
+            'round_id' => $game->currentRound->id,
             'player_id' => $game->authenticatedPlayer->id,
-            'user_id'   => Auth::id(),
+            'user_id' => Auth::id(),
         ]);
 
         $game->authenticatedPlayerIsActive
@@ -65,7 +61,7 @@ class WavelengthController
 
         // reward active player
         /** @var Move $activePlayerMove */
-        $activePlayerMove        = $game->currentRound->moves()->where('player_id', $game->currentRound->active_player_id)->first();
+        $activePlayerMove = $game->currentRound->moves()->where('player_id', $game->currentRound->active_player_id)->first();
         $activePlayerMove->score = ceil($scores->average());
         $activePlayerMove->save();
 
@@ -79,15 +75,13 @@ class WavelengthController
 
     public function show(WaveLengthGame $game)
     {
-        if ($game->authenticatedPlayer) {
-            return view('GamePage', ['game' => $game]);
+        if (! $game->authenticatedPlayer) {
+            /** @var Player $player */
+            $player = $game->players()->create([
+                'user_id' => Auth::id(),
+            ]);
+            event(new PlayerCreated($player));
         }
-
-        /** @var Player $player */
-        $player = $game->players()->create([
-            'user_id' => Auth::id(),
-        ]);
-        event(new PlayerCreated($player));
 
         if (! $game->started_at) {
             return $this->round($game);
@@ -104,13 +98,14 @@ class WavelengthController
         }
 
         $antonym = collect(__('antonyms'))->random();
+        $nextPlayer = $game->nextPlayer;
         Round::create([
-            'game_id'          => $game->id,
+            'game_id' => $game->id,
             'active_player_id' => $game->nextPlayer->id,
-            'payload'          => [
+            'payload' => [
                 'waveLength' => random_int(0, 100),
-                'antonym1'   => key($antonym),
-                'antonym2'   => $antonym[key($antonym)],
+                'antonym1' => key($antonym),
+                'antonym2' => $antonym[key($antonym)],
             ],
         ]);
 

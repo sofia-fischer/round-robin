@@ -17,6 +17,8 @@ use LEVELS\Analytics\Tracking\Queue\Events\CalculationQueued;
  * @property-read bool $isWaitingForGuess
  * @see \App\Models\WaveLengthGame::getIsWaitingForGuessAttribute()
  *
+ * @method static \Database\Factories\WavelengthGameFactory factory(...$parameters)
+ *
  * @package App\Models
  */
 class WaveLengthGame extends Game

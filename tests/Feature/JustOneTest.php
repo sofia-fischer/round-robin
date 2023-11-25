@@ -16,7 +16,6 @@ use Tests\TestCase;
 
 class JustOneTest extends TestCase
 {
-    use CanSeed;
     use RefreshDatabase;
 
     public function testJoinStartedGame()

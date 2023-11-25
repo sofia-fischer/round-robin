@@ -15,9 +15,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
-class WerewolfTest extends TestCase
+/**
+ * @see \App\Http\Controllers\PlanetXController
+ */
+class PlanetXControllerTest extends TestCase
 {
-    use CanSeed;
     use RefreshDatabase;
 
     public function testJoinGame()

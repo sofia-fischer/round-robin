@@ -145,11 +145,11 @@ class Game extends BaseModel
 
     protected function getNextPlayerAttribute()
     {
-        if (! $this->currentRound) {
-            return $this->hostPlayer;
+        if (! $this->currentRound?->active_player_id) {
+            return $this->hostPlayer()->first();
         }
 
-        $nextPlayer = $this->players->firstWhere('id', '>', $this->currentRound->active_player_id);
+        $nextPlayer = $this->players->firstWhere('created_at', '>', $this->currentRound->active_player_id);
 
         return $nextPlayer ?? $this->hostPlayer;
     }
@@ -161,7 +161,7 @@ class Game extends BaseModel
 
     protected function getAuthenticatedPlayerMoveAttribute()
     {
-        return $this->currentRound ? $this->currentRound->authenticatedPlayerMove : null;
+        return $this->currentRound?->authenticatedPlayerMove;
     }
 
     /*
@@ -187,15 +187,6 @@ class Game extends BaseModel
     public function mergeCurrentPayloadAttribute(array $data): array
     {
         return $this->currentRound->mergePayloadAttribute($data);
-    }
-
-    public function authenticatedMovePayloadAttribute(string $key, $default = null)
-    {
-        if (! $this->authenticatedPlayerMove) {
-            return $default;
-        }
-
-        return $this->authenticatedPlayerMove->getPayloadWithKey($key, $default);
     }
 
     /*

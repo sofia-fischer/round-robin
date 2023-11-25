@@ -15,6 +15,9 @@ use App\ValueObjects\PlanetXRules\InSectorRule;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @see \Tests\Feature\PlanetXControllerTest
+ */
 class PlanetXController
 {
     public function show(
