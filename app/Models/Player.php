@@ -24,10 +24,11 @@ use Illuminate\Support\Carbon;
  * @property \Illuminate\Support\Collection moves
  * @property \App\Models\Game game
  * @property \App\Models\User|null user
+ * @property \App\Models\Move|null currentMove
  *
  * Attributes
  * @property string activeColor
- * @property string passiveColor
+ * @property string name
  * @property int score
  *
  * @package app/Database/Models
@@ -66,6 +67,13 @@ class Player extends BaseModel
     {
         return $this->hasMany(Move::class);
     }
+
+    public function currentMove()
+    {
+        return $this->hasOne(Move::class)
+            ->whereHas('round', fn ($query) => $query->whereNull('completed_at'));
+    }
+
     public function game()
     {
         return $this->belongsTo(Game::class);
@@ -85,11 +93,6 @@ class Player extends BaseModel
     protected function getActiveColorAttribute()
     {
         return ColorEnum::fromUuid($this->id)->baseColor();
-    }
-
-    protected function getPassiveColorAttribute()
-    {
-        return ColorEnum::fromUuid($this->id)->passiveColor();
     }
 
     public function color(): ColorEnum

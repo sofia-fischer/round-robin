@@ -41,7 +41,7 @@
                                 @csrf
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
-                            {{ 'hover:bg-' . $player->passiveColor}} {{ 'bg-' . $player->activeColor}}">
+                            {{ 'hover:bg-' . $player->color()->passiveColor()}} {{ $player->color()->background()}}">
                                     {{ $player->user_id === \Illuminate\Support\Facades\Auth::id() ? 'Myself' : $player->name }}
                                 </button>
                             </form>
@@ -82,7 +82,7 @@
                         @csrf
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="text-center text-white rounded-xl h-7 w-36 m-1 hover:text-black
-                            {{ 'hover:bg-' . $game->authenticatedPlayer->passiveColor}} {{ 'bg-' . $game->authenticatedPlayer->activeColor}}">
+                            {{ 'hover:bg-' . $game->authenticatedPlayer->color()->passiveColor()}} {{ $game->authenticatedPlayer->color()->background() }}">
                             {{ $game->authenticatedPlayer->name }} wants to go?
                         </button>
                     </form>

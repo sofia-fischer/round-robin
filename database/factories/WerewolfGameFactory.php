@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Player;
 use App\Models\User;
 use App\Models\WerewolfGame;
 use Illuminate\Database\Eloquent\Model;

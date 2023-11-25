@@ -8,11 +8,11 @@ use App\Http\Requests\PlanetXConferenceRequest;
 use App\Http\Requests\PlanetXTargetRequest;
 use App\Models\PlanetXGame;
 use App\Models\Round;
+use App\Queue\Events\PlayerCreated;
 use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXRules\InSectorRule;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -27,11 +27,9 @@ class PlanetXController
     ) {
         if (! $game->authenticatedPlayer) {
             /** @var \App\Models\Player $player */
-            $player = $game->players()->create([
-                'user_id' => Auth::id(),
-                'game_id' => $game->id,
-            ]);
+            $player = $game->players()->create(['user_id' => Auth::id()]);
             $game->refresh();
+            event(new PlayerCreated($player));
         }
 
         if (! $game->currentRound) {
@@ -57,12 +55,12 @@ class PlanetXController
 
         $game->setAuthenticatedPlayerConference($playerConference);
 
-        return redirect()->route('planet_x.show', ['game' => $game]);
+        return view('GamePage', ['game' => $game]);
     }
 
     public function target(PlanetXGame $game, PlanetXTargetRequest $request)
     {
-        $index = $request->get('target');
+        $index = (int) $request->get('target');
         $realIcon = $game->getCurrentBoard()->getSector($index)->getIcon();
         $visibleIcon = $realIcon === PlanetXIconEnum::PLANET_X ? PlanetXIconEnum::EMPTY_SPACE : $realIcon;
         $rule = new InSectorRule($visibleIcon, $index);
@@ -71,7 +69,7 @@ class PlanetXController
         $rules[] = $rule;
         $game->setAuthenticatedPlayerRules($rules);
 
-        return redirect()->route('planet_x.show', ['game' => $game]);
+        return view('GamePage', ['game' => $game]);
     }
 
     public function round(
@@ -79,8 +77,6 @@ class PlanetXController
         PlanetXBoardGenerationService      $boardGenerationService,
         PlanetXConferenceGenerationService $conferenceGenerationService,
     ) {
-        throw_unless($game->host_user_id === Auth::id(), AuthorizationException::class);
-
         if (! $game->started_at) {
             $game->started_at = now();
         }
@@ -94,6 +90,7 @@ class PlanetXController
             $board = $boardGenerationService->generateBoard();
             $conference = $conferenceGenerationService->generateRulesForConferences($board);
 
+            /** @var Round $round */
             $round = Round::create([
                 'game_id' => $game->id,
                 'payload' => [
@@ -101,6 +98,15 @@ class PlanetXController
                     'conference' => $conference->toArray(),
                 ],
             ]);
+
+            foreach ($game->players as $player) {
+                $player->moves()->create([
+                    'round_id' => $round->id,
+                    'user_id' => $player->user_id,
+                ]);
+                $rules = $conferenceGenerationService->generateRulesForBoard($board, 6);
+                $game->setAuthenticatedPlayerRules($rules);
+            }
 
             $game->refresh();
         }

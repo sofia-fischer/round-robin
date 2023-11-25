@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Services\PlanetXConferenceGenerationService;
 use App\ValueObjects\PlanetXBoard;
 use App\ValueObjects\PlanetXConferences;
 use App\ValueObjects\PlanetXRules\PlanetXRule;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @method static PlanetXGame create(array $attributes = [])
+ * @method static \Database\Factories\PlanetXGameFactory factory(...$parameters)
+ */
 class PlanetXGame extends Game
 {
     protected $table = 'games';
@@ -79,6 +82,7 @@ class PlanetXGame extends Game
                 'round_id' => $this->currentRound->id,
                 'user_id' => $this->authenticatedPlayer->user_id,
             ]);
+            $this->refresh();
         }
 
         $rawBoard = $move->getPayloadWithKey('board');
@@ -106,6 +110,7 @@ class PlanetXGame extends Game
                 'round_id' => $this->currentRound->id,
                 'user_id' => $this->authenticatedPlayer->user_id,
             ]);
+            $this->refresh();
         }
 
         $rawConference = $move->getPayloadWithKey('conference');
@@ -145,18 +150,12 @@ class PlanetXGame extends Game
                 'round_id' => $this->currentRound->id,
                 'user_id' => $this->authenticatedPlayer->user_id,
             ]);
+            $this->refresh();
         }
 
         $rules = [];
         foreach ($move->getPayloadWithKey('rules', []) as $key => $rule) {
             $rules[$key] = PlanetXRule::fromArray($rule);
-        }
-
-        if (count($rules) === 0) {
-            $service = new PlanetXConferenceGenerationService();
-            $rules = $service->generateRulesForBoard($this->getCurrentBoard(), 6);
-
-            return $this->setAuthenticatedPlayerRules($rules);
         }
 
         return $rules;
