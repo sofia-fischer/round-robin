@@ -87,9 +87,36 @@
                     <x-rule-component :rule="$rule" :board="$game->getAuthenticatedPlayerBoard()"></x-rule-component>
                 @endforeach
             </ul>
+            Total Numbers:
+            <ul>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::MOON"></x-planet-x-icon>
+                    2 Moons
+                </li>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::ASTEROID"></x-planet-x-icon>
+                    4 Asteroids
+                </li>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::PLANET"></x-planet-x-icon>
+                    1 Dwarf Planet
+                </li>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::GALAXY"></x-planet-x-icon>
+                    2 Galaxies
+                </li>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::PLANET_X"></x-planet-x-icon>
+                    1 Planet X
+                </li>
+                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                    <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::EMPTY_SPACE"></x-planet-x-icon>
+                    2 Truly Empty Spaces
+                </li>
+            </ul>
         </div>
         <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
-            Additional Rules (different for everyone):
+            Rules you discovered:
             <ul>
                 @foreach($game->getAuthenticatedPlayerRules() as $rule)
                     <x-rule-component :rule="$rule" :board="$game->getAuthenticatedPlayerBoard()"></x-rule-component>
