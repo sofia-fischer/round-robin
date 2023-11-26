@@ -155,6 +155,14 @@ class PlanetXBoardForm extends Form implements Iterator
             }
         }
 
+        $this->sector_0_moon = false;
+        $this->sector_3_moon = false;
+        $this->sector_5_moon = false;
+        $this->sector_7_moon = false;
+        $this->sector_8_moon = false;
+        $this->sector_9_moon = false;
+        $this->sector_11_moon = false;
+
         return $this;
     }
 }

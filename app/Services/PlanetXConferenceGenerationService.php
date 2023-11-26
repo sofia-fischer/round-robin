@@ -61,10 +61,8 @@ class PlanetXConferenceGenerationService
         $icons = PlanetXIconEnum::diff([PlanetXIconEnum::PLANET_X]);
         $startingrules = PlanetXBoard::getStartingRules();
 
-        while (count($rules) < 6) {
-            $newRuleIndex = array_rand([0,1,2,3,4]);
-
-            $newRule = match ($newRuleIndex) {
+        while (count($rules) <= 6) {
+            $newRule = match (array_rand([0,1,2,3,4])) {
                 0 => $this->getNextToRule($board, $icons),
                 1 => $this->getInABandOfNSectorsRule($board, $icons),
                 2 => $this->getWithinNSectorsRule($board, $icons),
@@ -93,10 +91,11 @@ class PlanetXConferenceGenerationService
 
         $planetXRule = null;
         while ($planetXRule === null) {
-            $newRule = match (array_rand([0, 1, 2])) {
+            $newRule = match (array_rand([0, 1, 2, 3])) {
                 0 => $this->getInABandOfNSectorsRule($board, [PlanetXIconEnum::PLANET_X]),
                 1 => $this->getWithinNSectorsRule($board, [PlanetXIconEnum::PLANET_X]),
                 2 => $this->getNotWithinNSectorsRule($board, [PlanetXIconEnum::PLANET_X]),
+                3 => $this->getNotNextToRule($board, [PlanetXIconEnum::PLANET_X]),
             };
 
             if ($newRule === null) {
