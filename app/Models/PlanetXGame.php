@@ -43,7 +43,7 @@ class PlanetXGame extends Game
 
     public function getCurrentNightSkyIndex(): int
     {
-        return 11;
+        return $this->players->map(fn (Player $player) => $this->getPlayerTimeFor($player))->min() % 12;
     }
 
     public function isInCurrentNightSky(int $index): bool
@@ -159,5 +159,31 @@ class PlanetXGame extends Game
         }
 
         return $rules;
+    }
+
+    public function setAuthenticatedPlayerTime(int $time): int
+    {
+        $this->authenticatedCurrentMove->setPayloadWithKey('time', $time);
+
+        return $time;
+    }
+
+    public function getAuthenticatedPlayerTime(): int
+    {
+        return $this->getPlayerTimeFor($this->authenticatedPlayer);
+    }
+
+    public function getPlayerTimeFor(Player $player): int
+    {
+        $move = $player->currentMove;
+
+        if ($move === null) {
+            $move = $this->authenticatedPlayer->moves()->create([
+                'round_id' => $this->currentRound->id,
+                'user_id' => $this->authenticatedPlayer->user_id,
+            ]);
+        }
+
+        return $move->getPayloadWithKey('time', 0);
     }
 }

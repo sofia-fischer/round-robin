@@ -56,6 +56,9 @@ class PlanetXController
 
         $game->setAuthenticatedPlayerConference($playerConference);
 
+        $playerTime = $game->getAuthenticatedPlayerTime();
+        $game->setAuthenticatedPlayerTime($playerTime + 1);
+
         return view('GamePage', ['game' => $game]);
     }
 
@@ -77,6 +80,9 @@ class PlanetXController
 
         $rules[] = $rule;
         $game->setAuthenticatedPlayerRules($rules);
+
+        $playerTime = $game->getAuthenticatedPlayerTime();
+        $game->setAuthenticatedPlayerTime($playerTime + 4);
 
         return view('GamePage', ['game' => $game]);
     }
