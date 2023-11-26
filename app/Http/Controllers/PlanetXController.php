@@ -13,6 +13,7 @@ use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXRules\InSectorRule;
+use App\ValueObjects\PlanetXRules\PlanetXRule;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -61,11 +62,19 @@ class PlanetXController
     public function target(PlanetXGame $game, PlanetXTargetRequest $request)
     {
         $index = (int) $request->get('target');
+
+        // check for duplicates
+        // assumption: the only way one get a InSectorRule is by target
+        $rules = $game->getAuthenticatedPlayerRules();
+        $duplicatedRule = array_filter($rules, fn (PlanetXRule $rule) => $rule instanceof InSectorRule && $rule->sector === $index);
+        if (count($duplicatedRule) > 0) {
+            return view('GamePage', ['game' => $game]);
+        }
+
         $realIcon = $game->getCurrentBoard()->getSector($index)->getIcon();
         $visibleIcon = $realIcon === PlanetXIconEnum::PLANET_X ? PlanetXIconEnum::EMPTY_SPACE : $realIcon;
         $rule = new InSectorRule($visibleIcon, $index);
 
-        $rules = $game->getAuthenticatedPlayerRules();
         $rules[] = $rule;
         $game->setAuthenticatedPlayerRules($rules);
 

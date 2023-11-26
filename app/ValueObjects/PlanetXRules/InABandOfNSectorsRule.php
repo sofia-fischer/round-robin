@@ -36,7 +36,7 @@ class InABandOfNSectorsRule extends PlanetXRule
             return true;
         }
 
-        $this->errorMessage = "There is no band of {$this->within} sectors, which do contain all {$this->icon->value}";
+        $this->errorMessage = "Not all {$this->icon->value} are withing {$this->within} sectors.";
 
         return false;
     }
