@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlanetXConferenceRequest;
+use App\Http\Requests\PlanetXSurveyRequest;
 use App\Http\Requests\PlanetXTargetRequest;
 use App\Models\PlanetXGame;
 use App\Models\Round;
@@ -12,8 +13,8 @@ use App\Queue\Events\PlayerCreated;
 use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
 use App\ValueObjects\Enums\PlanetXIconEnum;
+use App\ValueObjects\PlanetXRules\CountInSectorsRule;
 use App\ValueObjects\PlanetXRules\InSectorRule;
-use App\ValueObjects\PlanetXRules\PlanetXRule;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -55,36 +56,21 @@ class PlanetXController
         };
 
         $game->setAuthenticatedPlayerConference($playerConference);
+        $game->addAuthenticatedPlayerTime(1);
 
-        $playerTime = $game->getAuthenticatedPlayerTime();
-        $game->setAuthenticatedPlayerTime($playerTime + 1);
-
-        return view('GamePage', ['game' => $game]);
+        return redirect()->route('planet_x.show', ['game' => $game]);
     }
 
     public function target(PlanetXGame $game, PlanetXTargetRequest $request)
     {
         $index = (int) $request->get('target');
 
-        // check for duplicates
-        // assumption: the only way one get a InSectorRule is by target
-        $rules = $game->getAuthenticatedPlayerRules();
-        $duplicatedRule = array_filter($rules, fn (PlanetXRule $rule) => $rule instanceof InSectorRule && $rule->sector === $index);
-        if (count($duplicatedRule) > 0) {
-            return view('GamePage', ['game' => $game]);
-        }
-
         $realIcon = $game->getCurrentBoard()->getSector($index)->getIcon();
         $visibleIcon = $realIcon === PlanetXIconEnum::PLANET_X ? PlanetXIconEnum::EMPTY_SPACE : $realIcon;
-        $rule = new InSectorRule($visibleIcon, $index);
+        $game->addAuthenticatedPlayerRule(new InSectorRule($visibleIcon, $index));
+        $game->addAuthenticatedPlayerTime(4);
 
-        $rules[] = $rule;
-        $game->setAuthenticatedPlayerRules($rules);
-
-        $playerTime = $game->getAuthenticatedPlayerTime();
-        $game->setAuthenticatedPlayerTime($playerTime + 4);
-
-        return view('GamePage', ['game' => $game]);
+        return redirect()->route('planet_x.show', ['game' => $game]);
     }
 
     public function round(
@@ -126,6 +112,27 @@ class PlanetXController
             $game->refresh();
         }
 
-        return view('GamePage', ['game' => $game]);
+        return redirect()->route('planet_x.show', ['game' => $game]);
+    }
+
+    public function survey(PlanetXGame $game, PlanetXSurveyRequest $request)
+    {
+        $icon = PlanetXIconEnum::from($request->get('icon'));
+        $from = (int) $request->get('from');
+        $to = (int) $request->get('to');
+        $absolutTo = $to < $from ? $to + 12 : $to;
+
+        $board = $game->getCurrentBoard();
+        $counter = 0;
+        foreach (array_map(fn ($sector) => $sector % 12, range($from, $absolutTo)) as $index) {
+            if ($board->getSector($index)->hasIcon($icon)) {
+                $counter++;
+            }
+        }
+
+        $game->addAuthenticatedPlayerRule(new CountInSectorsRule($icon, $from, $to, $counter));
+        $game->addAuthenticatedPlayerTime(($absolutTo - $from) <= 3 ? 4 : 3);
+
+        return redirect()->route('planet_x.show', ['game' => $game]);
     }
 }

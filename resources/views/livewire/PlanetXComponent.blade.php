@@ -80,7 +80,7 @@
     </div>
 
     <div class="flex flex-wrap text-sm">
-        <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
+        <div class="bg-slate-100 rounded-3xl p-2 m-2 text-center">
             Base Rules (known to everyone):
             <ul>
                 @foreach(\App\ValueObjects\PlanetXBoard::getVisibleStartingRules() as $rule)
@@ -89,33 +89,33 @@
             </ul>
             Total Numbers:
             <ul>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::MOON"></x-planet-x-icon>
                     2 Moons
                 </li>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::ASTEROID"></x-planet-x-icon>
                     4 Asteroids
                 </li>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::PLANET"></x-planet-x-icon>
                     1 Dwarf Planet
                 </li>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::GALAXY"></x-planet-x-icon>
                     2 Galaxies
                 </li>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::PLANET_X"></x-planet-x-icon>
                     1 Planet X
                 </li>
-                <li class="max-w-sm bg-slate-300 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
+                <li class="max-w-sm bg-slate-100 rounded-full flex px-2 py-1 my-1 justify-evenly text-sm h-8 ">
                     <x-planet-x-icon class="fill-slate-800 stroke-slate-800 px-1" :icon="PlanetXIconEnum::EMPTY_SPACE"></x-planet-x-icon>
                     2 Truly Empty Spaces
                 </li>
             </ul>
         </div>
-        <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
+        <div class="bg-slate-100 rounded-3xl p-2 m-2 text-center">
             Rules you discovered:
             <ul>
                 @foreach($game->getAuthenticatedPlayerRules() as $rule)
@@ -123,7 +123,7 @@
                 @endforeach
             </ul>
         </div>
-        <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
+        <div class="bg-slate-100 rounded-3xl p-2 m-2 text-center">
             Conference (same for everyone):
             <ul>
                 @foreach($game->getAuthenticatedPlayerConference() as $index => $rule)
@@ -146,30 +146,62 @@
                 @endforeach
             </ul>
         </div>
-        <div class="bg-slate-300 rounded-3xl p-2 m-2 text-center">
+        <div class="bg-slate-100 rounded-3xl p-2 m-2 text-center">
             <form action="{{ route('planet_x.target', ['game' => $game->id]) }}"
-                method="POST" class="my-1 w-full flex">
+                method="POST" class="my-1 w-full ">
                 @csrf
 
-                <select id="target" class="bg-slate-300" name="target">
-                    <option {{ $game->isInCurrentNightSky(0) ? '' : 'disabled' }} value="0">1</option>
-                    <option {{ $game->isInCurrentNightSky(1) ? '' : 'disabled' }} value="1">2</option>
-                    <option {{ $game->isInCurrentNightSky(2) ? '' : 'disabled' }} value="2">3</option>
-                    <option {{ $game->isInCurrentNightSky(3) ? '' : 'disabled' }} value="3">4</option>
-                    <option {{ $game->isInCurrentNightSky(4) ? '' : 'disabled' }} value="4">5</option>
-                    <option {{ $game->isInCurrentNightSky(5) ? '' : 'disabled' }} value="5">6</option>
-                    <option {{ $game->isInCurrentNightSky(6) ? '' : 'disabled' }} value="6">7</option>
-                    <option {{ $game->isInCurrentNightSky(7) ? '' : 'disabled' }} value="7">8</option>
-                    <option {{ $game->isInCurrentNightSky(8) ? '' : 'disabled' }} value="8">9</option>
-                    <option {{ $game->isInCurrentNightSky(9) ? '' : 'disabled' }} value="9">10</option>
-                    <option {{ $game->isInCurrentNightSky(10) ? '' : 'disabled' }} value="10">11</option>
-                    <option {{ $game->isInCurrentNightSky(11) ? '' : 'disabled' }} value="11">12</option>
-                </select>
+                <div class="flex">
+                    <select id="target" class="bg-slate-700 text-yellow-300 rounded-l-full" name="target">
+                        @foreach(range(0, 11) as $targetIndex)
+                            <option {{ $game->isInCurrentNightSky($targetIndex) ? '' : 'disabled' }} value="{{$targetIndex}}">
+                                {{$targetIndex +1 }}
+                            </option>
+                        @endforeach
+                    </select>
 
-                <button type="submit"
-                    class="px-2 py-2 rounded-full w-full text-yellow-300 bg-slate-700 hover:bg-yellow-200 hover:text-slate-800">
-                    Target Sector for Info
-                </button>
+                    <button type="submit"
+                        class="px-2 py-2 rounded-r-full w-full text-yellow-300 bg-slate-700 hover:bg-yellow-200 hover:text-slate-800">
+                        Target (⏳ 4)
+                    </button>
+                </div>
+                <div class="text-xs">Know object in one Sector</div>
+            </form>
+
+            <form action="{{ route('planet_x.survey', ['game' => $game->id]) }}"
+                method="POST" class="my-1 w-full ">
+                @csrf
+
+                <div class="flex text-yellow-300 bg-slate-700 rounded-full px-3">
+                    <select id="icon" class="hover:bg-slate-500 bg-slate-700" name="icon" style="appearance: none;">
+                        <option value="{{ PlanetXIconEnum::MOON->value }}">{{ PlanetXIconEnum::MOON->humaneReadable() }}</option>
+                        <option value="{{ PlanetXIconEnum::ASTEROID->value }}">{{ PlanetXIconEnum::ASTEROID->humaneReadable() }}</option>
+                        <option value="{{ PlanetXIconEnum::PLANET->value }}">{{ PlanetXIconEnum::PLANET->humaneReadable() }}</option>
+                        <option value="{{ PlanetXIconEnum::GALAXY->value }}">{{ PlanetXIconEnum::GALAXY->humaneReadable() }}</option>
+                        <option value="{{ PlanetXIconEnum::EMPTY_SPACE->value }}">{{ PlanetXIconEnum::EMPTY_SPACE->humaneReadable() }}</option>
+                    </select>
+                    <select id="from" class="hover:bg-slate-500 bg-slate-700" name="from" style="appearance: none;">
+                        @foreach(range(0, 11) as $fromIndex)
+                            <option {{ $game->isInCurrentNightSky($fromIndex) ? '' : 'disabled' }} value="{{$fromIndex}}">
+                                {{$fromIndex +1 }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <label for="to" class="p-2">to</label>
+                    <select id="to" class="hover:bg-slate-500 bg-slate-700" name="to" style="appearance: none;">
+                        @foreach(range(0, 11) as $toIndex)
+                            <option {{ $game->isInCurrentNightSky($toIndex) ? '' : 'disabled' }} value="{{$toIndex}}">
+                                {{$toIndex +1 }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <button type="submit"
+                        class="px-2 py-2 rounded-r-full w-full hover:bg-yellow-200 hover:text-slate-800">
+                        Survey (⏳ 3-4)
+                    </button>
+                </div>
+                <div class="text-xs">Know the number of objects in a range of sectors</div>
             </form>
         </div>
     </div>

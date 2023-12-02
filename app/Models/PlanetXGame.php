@@ -141,6 +141,26 @@ class PlanetXGame extends Game
         return $rules;
     }
 
+    /**
+     * @param  array<PlanetXRule>  $rules
+     * @return array<PlanetXRule>
+     */
+    public function addAuthenticatedPlayerRule(PlanetXRule $rule): array
+    {
+        $rules = $this->getAuthenticatedPlayerRules();
+
+        foreach ($rules as $existingRule) {
+            if ($existingRule->equals($rule)) {
+                return $rules;
+            }
+        }
+
+        $rules[] = $rule;
+        $this->setAuthenticatedPlayerRules($rules);
+
+        return $rules;
+    }
+
     public function getAuthenticatedPlayerRules(): array
     {
         $move = $this->authenticatedCurrentMove;
@@ -161,11 +181,12 @@ class PlanetXGame extends Game
         return $rules;
     }
 
-    public function setAuthenticatedPlayerTime(int $time): int
+    public function addAuthenticatedPlayerTime(int $time): int
     {
-        $this->authenticatedCurrentMove->setPayloadWithKey('time', $time);
+        $currentTime = $this->getAuthenticatedPlayerTime();
+        $this->authenticatedCurrentMove->setPayloadWithKey('time', $currentTime + $time);
 
-        return $time;
+        return $currentTime + $time;
     }
 
     public function getAuthenticatedPlayerTime(): int

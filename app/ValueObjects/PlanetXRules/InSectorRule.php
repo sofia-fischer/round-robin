@@ -20,6 +20,11 @@ class InSectorRule extends PlanetXRule
         if ($board->getSector($this->sector)->hasIcon($this->icon)) {
             return true;
         };
+
+        if ($this->icon === PlanetXIconEnum::EMPTY_SPACE && $board->getSector($this->sector)->hasIcon(PlanetXIconEnum::PLANET_X)) {
+            return true;
+        }
+
         $this->errorMessage = "Sector " . $this->sector + 1 . " does not have " . $this->icon->value;
 
         return false;

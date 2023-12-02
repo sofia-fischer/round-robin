@@ -16,21 +16,9 @@ enum PlanetXIconEnum: string
     /**
      * @return array<string>
      */
-    public static function  values(): array
+    public static function values(): array
     {
         return array_column(self::cases(), 'value');
-    }
-
-    public function appearsAs(): PlanetXIconEnum
-    {
-        return match ($this) {
-            self::PLANET_X => self::EMPTY_SPACE,
-            self::MOON => self::MOON,
-            self::GALAXY => self::GALAXY,
-            self::EMPTY_SPACE => self::EMPTY_SPACE,
-            self::ASTEROID => self::ASTEROID,
-            self::PLANET => self::PLANET,
-        };
     }
 
     public static function diff(array $icons, array $other = null): array
@@ -44,5 +32,17 @@ enum PlanetXIconEnum: string
         $diff = array_diff($otherIconValues, $iconValues);
 
         return array_map(fn ($icon) => self::from($icon), $diff);
+    }
+
+    public function humaneReadable(): string
+    {
+        return match ($this) {
+            self::PLANET_X => 'Planet X',
+            self::MOON => 'Moon',
+            self::GALAXY => 'Galaxy',
+            self::EMPTY_SPACE => 'Emptiness',
+            self::ASTEROID => 'Asteroid',
+            self::PLANET => 'Planet',
+        };
     }
 }
