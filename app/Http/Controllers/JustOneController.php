@@ -47,7 +47,7 @@ class JustOneController
             $game->addCurrentPayloadAttribute('clues_calculated', true);
             event(new GameRoundAction($game));
 
-            return view('GamePage', ['game' => $game]);
+            return redirect()->route('justone.show', ['game' => $game->id]);
         }
 
         // calculate results and end round
@@ -62,13 +62,13 @@ class JustOneController
 
             event(new GameEnded($game->currentRound->game_id));
 
-            return view('GamePage', ['game' => $game]);
+            return redirect()->route('justone.show', ['game' => $game->id]);
         }
 
         // continue with game without changing
         event(new GameRoundAction($game));
 
-        return view('GamePage', ['game' => $game]);
+        return redirect()->route('justone.show', ['game' => $game->id]);
     }
 
     public function show(JustOneGame $game)
@@ -114,6 +114,6 @@ class JustOneController
         event(new GameRoundAction($game));
         $game->refresh();
 
-        return view('GamePage', ['game' => $game]);
+        return redirect()->route('justone.show', ['game' => $game->id]);
     }
 }

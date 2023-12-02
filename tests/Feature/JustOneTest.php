@@ -58,8 +58,7 @@ class JustOneTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('justone.show', ['game' => $game->id]))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $this->assertDatabaseHas('players', [
             'game_id' => $game->id,
@@ -141,8 +140,7 @@ class JustOneTest extends TestCase
 
         $this->actingAs($notActivePlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'test']))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $game->refresh();
         $this->assertTrue($game->isWaitingForClue);
@@ -181,16 +179,13 @@ class JustOneTest extends TestCase
 
         $this->actingAs($firstPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'subset']))
-            ->assertOk();
-
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
         $this->actingAs($secondPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'set']))
-            ->assertOk();
-
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
         $this->actingAs($thirdPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'visible']))
-            ->assertOk();
-
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
         $game->refresh();
 
         $this->assertFalse($game->isWaitingForClue);
@@ -235,18 +230,17 @@ class JustOneTest extends TestCase
 
         $this->actingAs($firstPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'one']))
-            ->assertOk();
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $this->actingAs($secondPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'two']))
-            ->assertOk();
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         Event::fake();
 
         $this->actingAs($activePlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'guess' => 'Word']))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $game->refresh();
 
@@ -284,8 +278,8 @@ class JustOneTest extends TestCase
 
         $this->actingAs($notActivePlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'test']))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
+
 
         /** @var Move $move */
         $move = $notActivePlayer->moves()->latest()->first();
@@ -293,8 +287,7 @@ class JustOneTest extends TestCase
 
         $this->actingAs($notActivePlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'clue' => 'something-else']))
-            ->assertOk()
-            ->assertViewIs('GamePage');
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $move->refresh();
         $this->assertNull($move->score);
@@ -324,7 +317,7 @@ class JustOneTest extends TestCase
         // needed to show the game view
         $this->actingAs($game->hostPlayer->user)
             ->post(route('justone.move', ['game' => $game->id, 'guess' => 'debug']))
-            ->assertOk();
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $this->assertDatabaseHas(Round::class, [
             'game_id' => $game->id,
@@ -333,7 +326,7 @@ class JustOneTest extends TestCase
 
         $this->actingAs($game->hostPlayer->user)
             ->post(route('justone.round', ['game' => $game->id]))
-            ->assertOk();
+            ->assertRedirect(route('justone.show', ['game' => $game->id]));
 
         $this->assertDatabaseHas(Round::class, [
             'game_id' => $game->id,
