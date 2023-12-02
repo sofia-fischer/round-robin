@@ -35,7 +35,8 @@ abstract class PlanetXRule implements Arrayable
             InABandOfNSectorsRule::class => InABandOfNSectorsRule::fromArray($data),
             NotWithinNSectorsRule::class => NotWithinNSectorsRule::fromArray($data),
             WithinNSectorsRule::class => WithinNSectorsRule::fromArray($data),
-            CountInSectorsRule::class => CountInSectorsRule::fromArray($data),
+            CountInFewSectorsRule::class => CountInFewSectorsRule::fromArray($data),
+            CountInManySectorsRule::class => CountInManySectorsRule::fromArray($data),
             default => throw new \Exception('Unknown rule type: ' . $data['type']),
         };
     }

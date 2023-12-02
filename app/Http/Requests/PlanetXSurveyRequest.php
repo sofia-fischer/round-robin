@@ -23,4 +23,9 @@ class PlanetXSurveyRequest extends FormRequest
             'to' => ['int', 'required', 'min:0', 'max:11', Rule::in($visibleSky)],
         ];
     }
+
+    public function getIcon(): PlanetXIconEnum
+    {
+        return PlanetXIconEnum::from($this->get('icon'));
+    }
 }

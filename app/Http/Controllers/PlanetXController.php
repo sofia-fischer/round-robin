@@ -12,9 +12,8 @@ use App\Models\Round;
 use App\Queue\Events\PlayerCreated;
 use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
-use App\ValueObjects\Enums\PlanetXIconEnum;
-use App\ValueObjects\PlanetXRules\CountInSectorsRule;
-use App\ValueObjects\PlanetXRules\InSectorRule;
+use App\Services\PlanetXRuleGenerationService;
+use App\ValueObjects\PlanetXRules\CountInFewSectorsRule;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -26,6 +25,7 @@ class PlanetXController
         PlanetXGame                        $game,
         PlanetXBoardGenerationService      $boardGenerationService,
         PlanetXConferenceGenerationService $conferenceGenerationService,
+        PlanetXRuleGenerationService       $ruleGenerationService,
     ) {
         if (! $game->authenticatedPlayer) {
             /** @var \App\Models\Player $player */
@@ -35,7 +35,7 @@ class PlanetXController
         }
 
         if (! $game->currentRound) {
-            return $this->round($game, $boardGenerationService, $conferenceGenerationService);
+            return $this->round($game, $boardGenerationService, $conferenceGenerationService, $ruleGenerationService);
         }
 
         return view('GamePage', ['game' => $game]);
@@ -61,13 +61,10 @@ class PlanetXController
         return redirect()->route('planet_x.show', ['game' => $game]);
     }
 
-    public function target(PlanetXGame $game, PlanetXTargetRequest $request)
+    public function target(PlanetXGame $game, PlanetXTargetRequest $request, PlanetXRuleGenerationService $ruleService)
     {
-        $index = (int) $request->get('target');
-
-        $realIcon = $game->getCurrentBoard()->getSector($index)->getIcon();
-        $visibleIcon = $realIcon === PlanetXIconEnum::PLANET_X ? PlanetXIconEnum::EMPTY_SPACE : $realIcon;
-        $game->addAuthenticatedPlayerRule(new InSectorRule($visibleIcon, $index));
+        $rule = $ruleService->generateInSectorRule($game->getCurrentBoard(), (int) $request->get('target'));
+        $game->addAuthenticatedPlayerRule($rule);
         $game->addAuthenticatedPlayerTime(4);
 
         return redirect()->route('planet_x.show', ['game' => $game]);
@@ -77,6 +74,7 @@ class PlanetXController
         PlanetXGame                        $game,
         PlanetXBoardGenerationService      $boardGenerationService,
         PlanetXConferenceGenerationService $conferenceGenerationService,
+        PlanetXRuleGenerationService       $ruleGenerationService,
     ) {
         if (! $game->started_at) {
             $game->started_at = now();
@@ -89,14 +87,13 @@ class PlanetXController
         $game->save();
         if (! $game->currentRound) {
             $board = $boardGenerationService->generateBoard();
-            $conference = $conferenceGenerationService->generateRulesForConferences($board);
 
             /** @var Round $round */
             $round = Round::create([
                 'game_id' => $game->id,
                 'payload' => [
                     'board' => $board->toArray(),
-                    'conference' => $conference->toArray(),
+                    'conference' => $conferenceGenerationService->generateRulesForConferences($board)->toArray(),
                 ],
             ]);
 
@@ -105,7 +102,7 @@ class PlanetXController
                     'round_id' => $round->id,
                     'user_id' => $player->user_id,
                 ]);
-                $rules = $conferenceGenerationService->generateRulesForBoard($board, 6);
+                $rules = $ruleGenerationService->generateStartingRules($board, 6);
                 $game->setAuthenticatedPlayerRules($rules);
             }
 
@@ -115,23 +112,16 @@ class PlanetXController
         return redirect()->route('planet_x.show', ['game' => $game]);
     }
 
-    public function survey(PlanetXGame $game, PlanetXSurveyRequest $request)
+    public function survey(PlanetXGame $game, PlanetXSurveyRequest $request, PlanetXRuleGenerationService $ruleService)
     {
-        $icon = PlanetXIconEnum::from($request->get('icon'));
-        $from = (int) $request->get('from');
-        $to = (int) $request->get('to');
-        $absolutTo = $to < $from ? $to + 12 : $to;
-
-        $board = $game->getCurrentBoard();
-        $counter = 0;
-        foreach (array_map(fn ($sector) => $sector % 12, range($from, $absolutTo)) as $index) {
-            if ($board->getSector($index)->hasIcon($icon)) {
-                $counter++;
-            }
-        }
-
-        $game->addAuthenticatedPlayerRule(new CountInSectorsRule($icon, $from, $to, $counter));
-        $game->addAuthenticatedPlayerTime(($absolutTo - $from) <= 3 ? 4 : 3);
+        $rule = $ruleService->generateCountInSectorRule(
+            $game->getCurrentBoard(),
+            $request->getIcon(),
+            (int) $request->get('from'),
+            (int) $request->get('to'),
+        );
+        $game->addAuthenticatedPlayerRule($rule);
+        $game->addAuthenticatedPlayerTime($rule instanceof CountInFewSectorsRule ? 3 : 4);
 
         return redirect()->route('planet_x.show', ['game' => $game]);
     }

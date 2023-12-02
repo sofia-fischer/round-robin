@@ -76,7 +76,7 @@
                 </div>
                 @break
 
-            @case($rule instanceOf \App\ValueObjects\PlanetXRules\CountInSectorsRule)
+            @case($rule instanceOf \App\ValueObjects\PlanetXRules\CountInFewSectorsRule || $rule instanceOf \App\ValueObjects\PlanetXRules\CountInManySectorsRule)
                 <div>
                     {{ $rule->count }}
                 </div>

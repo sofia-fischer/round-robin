@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\PlanetXBoardGenerationService;
 use App\Services\PlanetXConferenceGenerationService;
+use App\Services\PlanetXRuleGenerationService;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXBoard;
 use PHPUnit\Framework\TestCase;
@@ -30,8 +31,8 @@ class PlanetXBoardGenerationTest extends TestCase
     {
         $boardService = new PlanetXBoardGenerationService();
         $board = $boardService->generateBoard();
-        $conferenceService = new PlanetXConferenceGenerationService();
-        $startingRules = $conferenceService->generateRulesForBoard($board, 6);
+        $ruleService = new PlanetXRuleGenerationService();
+        $startingRules = $ruleService->generateStartingRules($board, 6);
 
         foreach ($startingRules as $rule) {
             $this->assertTrue($rule->isValid($board));

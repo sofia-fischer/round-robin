@@ -7,7 +7,7 @@ namespace App\ValueObjects\PlanetXRules;
 use App\ValueObjects\Enums\PlanetXIconEnum;
 use App\ValueObjects\PlanetXBoard;
 
-class CountInSectorsRule extends PlanetXRule
+class CountInFewSectorsRule extends PlanetXRule
 {
     public function __construct(
         public readonly PlanetXIconEnum $icon,

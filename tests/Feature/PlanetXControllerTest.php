@@ -6,7 +6,7 @@ use App\Models\PlanetXGame;
 use App\Models\User;
 use App\Queue\Events\PlayerCreated;
 use App\ValueObjects\Enums\PlanetXIconEnum;
-use App\ValueObjects\PlanetXRules\CountInSectorsRule;
+use App\ValueObjects\PlanetXRules\CountInManySectorsRule;
 use App\ValueObjects\PlanetXRules\InSectorRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -118,6 +118,8 @@ class PlanetXControllerTest extends TestCase
                 'to' => 5,
             ]))
             ->assertSessionHasErrors(['icon']);
+
+        $this->disableExceptionHandling();
         // valid survey
         $this->actingAs($game->hostUser)
             ->post(route('planet_x.survey', [
@@ -132,7 +134,7 @@ class PlanetXControllerTest extends TestCase
         $rules = $game->getAuthenticatedPlayerRules();
         $this->assertCount(1, $rules);
         $rule = $rules[0];
-        $this->assertInstanceOf(CountInSectorsRule::class, $rule);
+        $this->assertInstanceOf(CountInManySectorsRule::class, $rule);
         $this->assertEquals(1, $rule->from);
         $this->assertEquals(5, $rule->to);
         $this->assertEquals(PlanetXIconEnum::PLANET, $rule->icon);

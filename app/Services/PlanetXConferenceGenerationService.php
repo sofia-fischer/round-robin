@@ -16,42 +16,6 @@ use App\ValueObjects\PlanetXRules\WithinNSectorsRule;
 
 class PlanetXConferenceGenerationService
 {
-    /**
-     * @param  \App\ValueObjects\PlanetXBoard  $board
-     * @param  int  $count
-     * @return array<\App\ValueObjects\PlanetXRules\PlanetXRule>
-     */
-    public function generateRulesForBoard(PlanetXBoard $board, int $count): array
-    {
-        $playerRules = [];
-
-        while (count($playerRules) < $count) {
-            // get a random sector
-            $position = array_rand(range(0, 11));
-            $sector = $board->getSector($position);
-            // get the icons which are not in the sector
-            $icons = PlanetXIconEnum::diff([PlanetXIconEnum::PLANET_X, $sector->getIcon()]);
-
-            $newRule = new NotInSectorRule($icons[array_rand($icons)], $position);
-            // check that rule is not already in the list
-            foreach ($playerRules as $playerRule) {
-                if ($playerRule->equals($newRule)) {
-                    continue 2;
-                }
-            }
-
-            foreach (PlanetXBoard::getStartingRules() as $startingRule) {
-                if ($startingRule->equals($newRule)) {
-                    continue 2;
-                }
-            }
-
-            $playerRules[] = $newRule;
-        }
-
-        return $playerRules;
-    }
-
     public function generateRulesForConferences(PlanetXBoard $board): PlanetXConferences
     {
         // There is no "opposite of Rule". I felt like the UI Design would be too confusing
